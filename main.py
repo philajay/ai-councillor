@@ -1,9 +1,9 @@
-
 import os
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 import concurrent.futures
+import re
 
 def get_filename_from_url(url):
     """Generates a valid filename from a URL."""
@@ -11,7 +11,7 @@ def get_filename_from_url(url):
     path = parsed_url.path.strip("/").replace("/", "_")
     if not path:
         path = "index"
-    return f"html/{path}.html"
+    return f"htmls/{path}.html"
 
 def download_and_save(url):
     """
@@ -35,25 +35,25 @@ def download_and_save(url):
     except IOError as e:
         return f"Error saving file for {url}: {e}"
 
-def scrape_sitemap(sitemap_url):
+def scrape_courses_from_file(filepath):
     """
-    Scrapes a sitemap for URLs and saves the content of each URL to a file.
+    Scrapes URLs from a text file and saves the content of each URL to a file.
 
     Args:
-        sitemap_url: The URL of the sitemap.
+        filepath: The path to the text file containing the URLs.
     """
     try:
-        response = requests.get(sitemap_url)
-        response.raise_for_status()  # Raise an exception for bad status codes
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching sitemap: {e}")
+        with open(filepath, "r") as f:
+            content = f.read()
+    except IOError as e:
+        print(f"Error reading file: {e}")
         return
 
-    soup = BeautifulSoup(response.content, "xml")
-    urls = [loc.text for loc in soup.find_all("loc")]
+    soup = BeautifulSoup(content, "html.parser")
+    urls = [a['href'] for a in soup.find_all('a', href=True)]
 
-    if not os.path.exists("html"):
-        os.makedirs("html")
+    if not os.path.exists("htmls"):
+        os.makedirs("htmls")
 
     # Filter out URLs that have already been downloaded
     urls_to_download = []
@@ -78,5 +78,5 @@ def scrape_sitemap(sitemap_url):
                 print(f'{url} generated an exception: {exc}')
 
 if __name__ == "__main__":
-    sitemap_url = "https://www.cuchd.in/sitemap.xml"
-    scrape_sitemap(sitemap_url)
+    courses_filepath = "courses.txt"
+    scrape_courses_from_file(courses_filepath)

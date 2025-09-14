@@ -1,3 +1,5 @@
 requests
 beautifulsoup4
 lxml
+google-genai
+psycopg2-binary
