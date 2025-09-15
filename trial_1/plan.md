@@ -44,6 +44,7 @@ CREATE TABLE courses (
     alternate_names TEXT[],
     stream VARCHAR(255),
     course_category VARCHAR(255),
+    program_level VARCHAR(10), -- UG, PG, or PhD
     course_description TEXT,
     program_highlights TEXT,
     career_prospects TEXT,
@@ -93,9 +94,10 @@ CREATE INDEX ON courses USING ivfflat (course_embedding vector_cosine_ops) WITH 
     *   Initialize empty sets to collect unique terms: `unique_subjects = set()`, `unique_qualifications = set()`, `unique_specializations = set()`.
 3.  **Processing Loop:**
     *   Iterate through each `course` object in the JSON data.
+    *   **Determine Program Level:** Based on the `course_tag_text` or `source_course_name` (e.g., "B.Tech" is UG, "M.Tech" is PG), determine the program level.
     *   **Create Course Document:** Concatenate the text from `source_course_name`, `summary`, `career_prospects`, `why_us`, and `alternate_names` into a single, comprehensive text document.
     *   **Generate Course Embedding:** Use the loaded model to convert this document into a `course_embedding` vector.
-    *   **Insert Course:** `INSERT` the course data (name, stream, etc.) and the `course_embedding` into the `courses` table. Use `RETURNING id` to get the `course_id` for the new entry.
+    *   **Insert Course:** `INSERT` the course data (name, stream, program_level, etc.) and the `course_embedding` into the `courses` table. Use `RETURNING id` to get the `course_id` for the new entry.
     *   **Process Eligibility Rules:** For each `rule` in the course's `eligibility_rules` array:
         *   `INSERT` the rule's data into the `eligibility_rules` table, linking it with the `course_id`.
         *   Add the rule's `qualification` to the `unique_qualifications` set.
