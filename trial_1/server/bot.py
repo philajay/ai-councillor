@@ -1,0 +1,152 @@
+from fastapi import APIRouter, WebSocket
+import json
+from google.adk.agents import Agent
+from google.genai import types
+from google.adk.events import Event, EventActions
+from google.adk.sessions.base_session_service import BaseSessionService
+from google.adk.sessions.session import Session
+import asyncio
+from agents.controller import Controller
+
+
+from google.genai.types import (
+    Part,
+)
+from google.adk.runners import InMemoryRunner
+
+APP_NAME = "bot"
+
+
+
+
+
+router = APIRouter()
+
+
+
+class AgentSession:
+    def __init__(self, user_id, is_audio=False):
+        self.user_id = user_id
+        self.is_audio = is_audio
+        self.session = None
+        self.runner = None
+        self.last_client_text_message = None
+        self.session_id = "123"
+
+    async def start(self):
+        """Starts an agent session"""
+
+        # Create a Runner
+        self.runner = InMemoryRunner(
+            app_name=APP_NAME,
+            agent=Controller(),
+        )
+
+        # Create a Session
+        self.session = await self.runner.session_service.create_session(
+            app_name=APP_NAME,
+            user_id=self.user_id,  # Replace with actual user ID
+            state = {
+            },
+            session_id=self.session_id
+        )
+        
+
+
+    async def handle_connection(self, client_websocket:WebSocket):
+        while True:
+            try:
+                message_json = await client_websocket.receive_text()
+                message = json.loads(message_json)
+                data = message.get("text", "")
+
+                content = types.Content(role='user', parts=[types.Part(text=data)])
+                # Key Concept: run_async executes the agent logic and yields Events.
+                # We iterate through events to find the final answer.
+                async for event in self.runner.run_async(user_id=self.user_id, session_id=self.session.id, new_message=content):
+                    if event.error_code:
+                        print(f'Failing with {event.error_code}')
+                        await client_websocket.send_text(json.dumps({
+                                                    "error": event.error_code
+                                                }))
+                    print('Invoked agent is -->', event.author)
+                    # If the turn complete or interrupted, send it
+                    if event.turn_complete or event.interrupted:
+                        message = {
+                            "endOfTurn": True,
+                            "agent": event.author
+                        }
+                        #await websocket.send_text(json.dumps(message))
+                        await client_websocket.send_text(json.dumps({
+                                                "endOfTurn": True,
+                                                "agent": event.author
+                                            }))
+                        print(f"[AGENT TO CLIENT]: {message}")
+                        continue
+
+                    # Read the Content and its first Part
+                    part: Part = (
+                        event.content and event.content.parts and event.content.parts[0]
+                    )
+                    if not part:
+                        continue
+
+                    if part.function_response:
+                        print(f'[Function Called]: {part.function_response.name}')
+                        #Send the response of function call to user if required
+
+
+                    # If it's text and a parial text, send it
+                    elif part.text and event.partial:
+                        message = {
+                            "text": part.text,
+                            "agent": event.author
+                            }
+                        await client_websocket.send_text(json.dumps(message))
+                        print(f"[AGENT TO CLIENT PARTIALTEST]: text/plain: {message}")
+
+
+                    # Key Concept: is_final_response() marks the concluding message for the turn.
+                    if event.is_final_response():
+                        if event.content and event.content.parts:
+                            # Assuming text response in the first part
+                            final_response_text = event.content.parts[0].text
+                            message = {
+                                "text": final_response_text,
+                                "agent": event.author
+                            }
+                            await client_websocket.send_text(json.dumps(message))
+                            print(f"[AGENT TO CLIENT]: text/plain: {message}")
+                            await client_websocket.send_text(json.dumps({
+                                                "endOfTurn": True,
+                                                "agent": event.author
+                            }))
+
+            except Exception as e:
+                print(f"Caught exception in handle_connection: {e}")
+                await client_websocket.send_text(json.dumps({
+                    'error': f'exception caught: {e}'
+                }))
+                continue
+
+
+@router.websocket("/bot")
+async def websocket_endpoint(websocket: WebSocket):
+    try:
+        await websocket.accept()
+        user_id="John Doe"
+        agent_session = AgentSession(user_id, False)
+        await agent_session.start()
+
+        tasks = [asyncio.create_task(agent_session.handle_connection(websocket))]
+        d, b = await asyncio.wait(tasks, return_when=asyncio.FIRST_EXCEPTION)
+        print(d)
+        print(b)
+
+        # Disconnected
+        print(f"Client #{user_id} disconnected")
+    except Exception as e:
+        print(f"Error in WebSocket handler: {e}")
+    finally:
+        await websocket.close()
+        print("WebSocket connection closed")
