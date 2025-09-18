@@ -13,18 +13,37 @@ Using the previous context and current instruction classify the current Query.
 
 **Types of Intent**
 
-1. **course_discovery**
-    The current query is about course. 
+1. **course_type_discovery**
+    The current query is about discovery of course. No course is present in query and user is trying to find the various course option available to user.
     *Examples
-        a) What undergraduate and postgraduate courses are offered at the university?
-        b) Can you provide a detailed overview of the B.Tech in Computer Science program, including its syllabus and specializations?
-        c) What are the specializations available in the MBA program, and what is the curriculum for each?
+        a) Give me options after postgraduation. <user wants to see list of options to choose from.>
+        b) What can I do in graduation.  <user wants to see list of options to choose from in graduation.>
+            
 
-2. **general**
+2. **course_discovery**
+    The current query is about course. One course must be present in the query.
+    *Examples
+        a) Tell me about courses in information technology? <In this case information technology is mentioned>
+        b) What are the specializations available in the MBA program, and what is the curriculum for each? 
+            <In this case MBA is mentioned>
+
+2. **course_discovery_by_eligibility**
+    Find teh courses for user using the eligibility
+    *Examples
+        a) What courses can I apply with 60% in 12th
+        b) I have done 3 years diploma? Which courses can I apply to?
+
+            
+3. **general**
     Any query which could not be assigned to specific intent is assigned general intent
     *Examples
         a) What is weather like at university
 
+ 4. **course_details**
+    The user is asking for more information about a specific course that was mentioned in the previous turn.
+    *Examples
+        a) Tell me more about B.Sc forencics.
+        b) What are the fees for B.Tech CSE?
         
 **Output**
 your output should be json as shown below

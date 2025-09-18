@@ -6,59 +6,49 @@ from google.adk.planners import BuiltInPlanner
 from google.genai import types
 from pydantic import BaseModel, Field
 import json
-from db.search_engine import find_by_discovery, modify_course_result
+from db.search_engine import find_by_discovery, modify_course_result, find_by_eligibility
 from common.common import remove_json_tags
 from google.adk.agents.readonly_context import ReadonlyContext
 
-ENTITY_STATE_KEY = "course__entities"
+ENTITY_STATE_KEY = "eligibility"
 
 def getEntityExtractor():
     instructions = '''You are expert enity extractor for india education system.
 **Task**
-From the current user query extract the entities. If program_level is not mentioned ask user politely to mention the program_level.
+From the current user query extract the entities. 
 
 **Entities to be extracted.**
-
-1. **program_level**
-    program level for which user is exploring courses. 
+1. **qualification**
+    The last qualification user has finished 
     **Possible Values**
-    It can be either 'ug' or 'pg'
+    "Certificate course", "B.Sc.", "Diploma", "Graduate", "Bachelor's Degree", "B.C.A", "10+2", "M. Sc.", "B.E./B.Tech"
     *Examples
         a) Show me undergraduat courses
         b) Show me post graduat courses.
         c) show me courses. 
     **Note**
-    Sometime user will not directly mention 'ug' or 'pg'. They will mention their last qualification from which you need to infer if student is lookig for ug or pf course.
-    For example user might say I have done my +2. In this case we can infer that user is looking for ug courses.
 
-2. *course_stream_type**
-    In india there are various types of courses offered based on stream user is pursuing.
-    **Possible Values**
-    It can be either "MCA", "BCA", "BA", "BE/B.Tech", "B.Pharm", "LLB", "BBA/BMS", "BA/BBA LLB", "MBA/PGDM", "B.Com", "D.El.Ed", "ME/M.Tech", "B.Sc"
+2. *subject**
+    The subjects which user has opted in the last qualification
+    
+3. *specialization**
+    The course done by user in his graduation. 
+
+4.  *percentage**
+    Percentage obtained by user.
     
         
-**Constraints**
-If program_level is not mentioned ask user politry about the program_level. 
-
-
-We will always follow **this Chain of Thoughts:**
-1) if program_level is missing, ask user politely about program_level.
-2) if program_level is present return json 
-    {
-        "program_level": <level>,
-        "course_stream_type": <Return if present else return null>
-    }
-
+Expected output:
 {{
-    "program_level": <level>,
-    "course_stream_type": <Return if present else return null>
-    "needs_clarification": <True if program_level is missing>
-    "clarification_question": <Question to get the program_level>
+    "qualification": <>,
+    "subject": <Return if present else return null>
+    "specialization": <True if program_level is missing>
+    "percentage": <Question to get the program_level>
 }}
 
 '''
     return LlmAgent(
-        name="extract_order_entity",
+        name="extract_eligibility_entity",
         model="gemini-2.5-flash",
         planner=BuiltInPlanner(
             thinking_config=types.ThinkingConfig(
@@ -75,24 +65,27 @@ We will always follow **this Chain of Thoughts:**
     )
 
 
-def course_discovery_instruction(context: ReadonlyContext):
+def eligibility_instruction(context: ReadonlyContext):
     entity = context.state[ENTITY_STATE_KEY]
     return f'''You are and expert education consultant.
 **Task**
-Answer the question using the data obtained by tool find_by_discovery.
+Answer the question using the data obtained by tool find_by_eligibility.
 
 Extracted Entities: {entity}
 
 You have access to the following tool:
-1.  **`find_by_discovery(filters: list)`**: This tool returns the courses based on user query and program_level entity.
+1.  **`find_by_eligibility(criteria (dict))`**: 
+    criteria (dict): A dictionary with keys 'qualification', 
+                         'percentage', 'stream', 'subject', 'specialization'.
 
 Instructions:
 Always end the response explaing why CGC is good choice for user.
 '''
 
-def course_discovery():
+
+def eligibility():
     return LlmAgent(
-        name="get_course_info",
+        name="get_eligibility",
         model="gemini-2.5-flash",
         planner=BuiltInPlanner(
             thinking_config=types.ThinkingConfig(
@@ -103,15 +96,15 @@ def course_discovery():
         generate_content_config=types.GenerateContentConfig(
             temperature=1
         ),
-        instruction=course_discovery_instruction,
-        tools=[find_by_discovery],
+        instruction=eligibility_instruction,
+        tools=[find_by_eligibility],
         after_tool_callback=modify_course_result,
         output_key=ENTITY_STATE_KEY
     )
 
 
-class CourseAgent(BaseAgent, BaseModel):
-    name: str = Field(default='root_intent_classifier')
+class EligibilityAgent(BaseAgent, BaseModel):
+    name: str = Field(default='root_rligibilty_classifier')
     extract_entities: LlmAgent = Field(default_factory=getEntityExtractor)
     # name: str = 'root_intent_classifier'
     # agent_to_run: LlmAgent
@@ -125,19 +118,15 @@ class CourseAgent(BaseAgent, BaseModel):
     async def _run_async_impl(
         self, ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
-    
-        cd = course_discovery() 
         async for event in self.extract_entities.run_async(ctx):
             yield event
 
         entity = json.loads(remove_json_tags( ctx.session.state[ENTITY_STATE_KEY]))
         print(f"Entities extracted are {entity}")
 
-        if not entity["program_level"]:
-            return
 
-        if  entity["program_level"]:
-            async for event in cd.run_async(ctx):
-                yield event
+        er = eligibility()
+        async for event in er.run_async(ctx):
+            yield event
 
         print(f"Entities extracted are {ctx.session.state[ENTITY_STATE_KEY]}")

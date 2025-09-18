@@ -9,6 +9,8 @@ from common.common import remove_json_tags
 
 from .IntentClassifierAgent import IntentClassifierAgent
 from .courseAgent import CourseAgent
+from .eligibiltyAgent import EligibilityAgent
+from .courseDetailAgent import CourseDetailAgent
 
 
 class Controller(BaseAgent, BaseModel):
@@ -18,6 +20,8 @@ class Controller(BaseAgent, BaseModel):
     name: str = Field(default='root_controller')
     classifier: IntentClassifierAgent = Field(default_factory=IntentClassifierAgent)
     courseAgent: CourseAgent = Field(default_factory=CourseAgent)
+    eligibilityAgent: EligibilityAgent = Field(default_factory=EligibilityAgent)
+    courseDetailAgent: CourseDetailAgent = Field(default_factory=CourseDetailAgent)
 
 
     def __init__(self, **data):
@@ -37,5 +41,13 @@ class Controller(BaseAgent, BaseModel):
             print("COURSE DISCOVERY CALLED")
             async for event in self.courseAgent.run_async(ctx):
                 yield event
-        print(f'Entities is {ctx.session.state["course__entities"]}')
+        if intent == "course_discovery_by_eligibility":
+            print("course_discovery_by_eligibility CALLED")
+            async for event in self.eligibilityAgent.run_async(ctx):
+                yield event
+        if intent == "course_details":
+            print("COURSE DETAILS CALLED")
+            async for event in self.courseDetailAgent.run_async(ctx):
+                yield event
+        
 
