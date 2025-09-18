@@ -5,6 +5,12 @@ from google.adk.events import Event
 from google.adk.planners import BuiltInPlanner
 from google.genai import types
 from pydantic import BaseModel, Field
+import json
+from db.search_engine import find_by_discovery, modify_course_result
+from common.common import remove_json_tags
+from google.adk.agents.readonly_context import ReadonlyContext
+
+ENTITY_STATE_KEY = "course__entities"
 
 def getEntityExtractor():
     instructions = '''You are expert enity extractor for india education system.
@@ -27,10 +33,8 @@ From the current user query extract the entities. If program_level is not mentio
 
 2. *course_stream_type**
     In india there are various types of courses offered based on stream user is pursuing.
-    For example. In arts you can do B.A, B.A(Hons)
-    in non medical user can do B.Tech, B.E. or B.Sc
-    and so on. 
-    You need to extract the course_stream_type B.Sc, BA, B.com, B.des  etc
+    **Possible Values**
+    It can be either "MCA", "BCA", "BA", "BE/B.Tech", "B.Pharm", "LLB", "BBA/BMS", "BA/BBA LLB", "MBA/PGDM", "B.Com", "D.El.Ed", "ME/M.Tech", "B.Sc"
     
         
 **Constraints**
@@ -45,10 +49,17 @@ We will always follow **this Chain of Thoughts:**
         "course_stream_type": <Return if present else return null>
     }
 
+{{
+    "program_level": <level>,
+    "course_stream_type": <Return if present else return null>
+    "needs_clarification": <True if program_level is missing>
+    "clarification_question": <Question to get the program_level>
+}}
+
 '''
     return LlmAgent(
         name="extract_order_entity",
-        model="gemini-2.0-flash",
+        model="gemini-2.5-flash",
         planner=BuiltInPlanner(
             thinking_config=types.ThinkingConfig(
                 include_thoughts=False,
@@ -57,19 +68,52 @@ We will always follow **this Chain of Thoughts:**
         ),
         generate_content_config=types.GenerateContentConfig(
             temperature=1,
-            #response_mime_type="application/json"
+            response_mime_type="application/json"
         ),
         instruction=instructions,
-        output_key='course__entities'
+        output_key=ENTITY_STATE_KEY
     )
 
 
+def course_discovery_instruction(context: ReadonlyContext):
+    entity = context.state[ENTITY_STATE_KEY]
+    course_discovery_instruction_singleton =  f'''You are and expert education consultant.
+**Task**
+Answer the question using the data obtained by tool find_by_discovery.
+
+Extracted Entities: {entity}
+
+You have access to the following tool:
+1.  **`find_by_discovery(filters: list)`**: This tool returns the courses based on user query and program_level entity.
+
+Instructions:
+User results if you can else make call to Tool.
+'''
+    return course_discovery_instruction_singleton
+
+def course_discovery():
+    return LlmAgent(
+        name="get_course_info",
+        model="gemini-2.5-flash",
+        planner=BuiltInPlanner(
+            thinking_config=types.ThinkingConfig(
+                include_thoughts=False,
+                thinking_budget=0,
+            )
+        ),
+        generate_content_config=types.GenerateContentConfig(
+            temperature=1
+        ),
+        instruction=course_discovery_instruction,
+        tools=[find_by_discovery],
+        after_tool_callback=modify_course_result,
+        output_key=ENTITY_STATE_KEY
+    )
 
 
 class CourseAgent(BaseAgent, BaseModel):
     name: str = Field(default='root_intent_classifier')
-    agent_to_run: LlmAgent = Field(default_factory=getEntityExtractor)
-
+    extract_entities: LlmAgent = Field(default_factory=getEntityExtractor)
     # name: str = 'root_intent_classifier'
     # agent_to_run: LlmAgent
     model_config = {"arbitrary_types_allowed": True}
@@ -82,7 +126,18 @@ class CourseAgent(BaseAgent, BaseModel):
     async def _run_async_impl(
         self, ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
-        async for event in self.agent_to_run.run_async(ctx):
+        cd = course_discovery() 
+        async for event in self.extract_entities.run_async(ctx):
             yield event
 
-        print(f"Entities extracted are {ctx.session.state['extracted_entities']}")
+        entity = json.loads(remove_json_tags( ctx.session.state[ENTITY_STATE_KEY]))
+        print(f"Entities extracted are {entity}")
+
+        if not entity["program_level"]:
+            return
+
+        if  entity["program_level"]:
+            async for event in cd.run_async(ctx):
+                yield event
+
+        print(f"Entities extracted are {ctx.session.state[ENTITY_STATE_KEY]}")

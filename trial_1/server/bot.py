@@ -59,7 +59,7 @@ class AgentSession:
                 message_json = await client_websocket.receive_text()
                 message = json.loads(message_json)
                 data = message.get("text", "")
-
+                print(f"1st --> {data}")
                 content = types.Content(role='user', parts=[types.Part(text=data)])
                 # Key Concept: run_async executes the agent logic and yields Events.
                 # We iterate through events to find the final answer.
@@ -69,7 +69,7 @@ class AgentSession:
                         await client_websocket.send_text(json.dumps({
                                                     "error": event.error_code
                                                 }))
-                    print('Invoked agent is -->', event.author)
+                    print('Event fired by -->', event.author)
                     # If the turn complete or interrupted, send it
                     if event.turn_complete or event.interrupted:
                         message = {
@@ -124,6 +124,10 @@ class AgentSession:
 
             except Exception as e:
                 print(f"Caught exception in handle_connection: {e}")
+                #print stack trace
+                import traceback
+                traceback.print_exception(e)
+
                 await client_websocket.send_text(json.dumps({
                     'error': f'exception caught: {e}'
                 }))

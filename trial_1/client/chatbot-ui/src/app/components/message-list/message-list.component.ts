@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Message, MessageService } from '../../services/message.service';
 import { CommonModule } from '@angular/common';
+import { MarkdownComponent } from 'ngx-markdown';
 
 @Component({
   selector: 'app-message-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MarkdownComponent],
   templateUrl: './message-list.component.html',
   styleUrls: ['./message-list.component.css']
 })

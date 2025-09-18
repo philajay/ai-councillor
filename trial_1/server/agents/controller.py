@@ -4,6 +4,8 @@ from typing import override
 from google.adk.events import Event
 from pydantic import BaseModel, Field
 import json
+from common.common import remove_json_tags
+
 
 from .IntentClassifierAgent import IntentClassifierAgent
 from .courseAgent import CourseAgent
@@ -30,8 +32,9 @@ class Controller(BaseAgent, BaseModel):
             yield event
         print(f'Intent is {ctx.session.state["classified_intent"]}')
         intent = ctx.session.state["classified_intent"]
-        intent = json.loads(intent)["intent"]
+        intent = json.loads(remove_json_tags(intent))["intent"]
         if intent == "course_discovery":
+            print("COURSE DISCOVERY CALLED")
             async for event in self.courseAgent.run_async(ctx):
                 yield event
         print(f'Entities is {ctx.session.state["course__entities"]}')
