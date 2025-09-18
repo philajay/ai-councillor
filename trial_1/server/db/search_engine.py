@@ -178,8 +178,10 @@ def find_by_eligibility(criteria:dict) -> list:
             params['percentage'] = criteria['percentage']
             
         if 'subject' in criteria:
-            where_clauses.append(" %(subject)s = ANY(er.required_subjects)")
+            where_clauses.append("( %(subject)s = ANY(er.required_subjects) OR er.required_subjects IS NULL OR cardinality(er.required_subjects) = 0)")
             params['subject'] = criteria['subject']
+        else:
+            where_clauses.append("(er.required_subjects IS NULL OR cardinality(er.required_subjects) = 0)")
 
         if 'specialization' in criteria:
             # This clause handles cases where a rule accepts any specialization
