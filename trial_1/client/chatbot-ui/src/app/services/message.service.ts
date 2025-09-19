@@ -4,6 +4,8 @@ import { WebsocketService } from './websocket.service';
 export interface Message {
   text: string;
   sender: 'user' | 'bot';
+  isJson?: boolean;
+  json?:any;
 }
 
 @Injectable({
@@ -31,6 +33,15 @@ export class MessageService {
   private handleServerEvent(event: any) {
     if (event.endOfTurn) {
       this.isNewMessageStream = true;
+      const lastMessage = this.messages[this.messages.length - 1];
+        if (lastMessage && lastMessage.sender === 'bot' ) {
+          try{
+            lastMessage.json = JSON.parse(lastMessage.text);
+            lastMessage.isJson = true;
+          }catch(e){
+            lastMessage.isJson = false;
+          }
+        }
       return;
     }
 
@@ -40,8 +51,14 @@ export class MessageService {
         this.isNewMessageStream = false;
       } else {
         const lastMessage = this.messages[this.messages.length - 1];
-        if (lastMessage && lastMessage.sender === 'bot') {
+        if (lastMessage && lastMessage.sender === 'bot' && event.text) {
           lastMessage.text += event.text;
+          try{
+            lastMessage.json = JSON.parse(lastMessage.text);
+            lastMessage.isJson = true;
+          }catch(e){
+            lastMessage.isJson = false;
+          }
         }
       }
     }

@@ -1,1 +1,4 @@
 While showing the course use grouping so that its easier for user to go through them
+-- Ned to think more about its
+
+routerAgent ClarificationAgent: message is not being sent to client

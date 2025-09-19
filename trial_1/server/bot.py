@@ -119,8 +119,8 @@ class AgentSession:
                             await client_websocket.send_text(json.dumps(message))
                             print(f"[AGENT TO CLIENT]: text/plain: {message}")
                             await client_websocket.send_text(json.dumps({
-                                                "endOfTurn": True,
-                                                "agent": event.author
+                                "endOfTurn": True,
+                                "agent": event.author
                             }))
 
             except Exception as e:
