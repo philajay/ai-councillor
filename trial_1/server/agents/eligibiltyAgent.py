@@ -73,36 +73,22 @@ Expected output:
 def eligibility_instruction(context: ReadonlyContext):
     entity = context.state[EXTRACTED_ENTITY]
     gist = context.state.get(GIST_OUTPUT_KEY, '')
-    last_db_results = context.state.get(DB_RESULTS, [])
-
-    return f'''You are an expert education consultant.
+    print(f"gist --> {gist}")
+    return f'''You are and expert education consultant.
 **Task**
-Your primary goal is to answer the user's questions about course eligibility. You must be smart about using your tools and the information you already have.
+Answer the question using the data obtained by tool find_by_eligibility.
 
-**Conversation Context:**
-The following courses were discussed or shown to the user in the previous turn. Each item is a comma-separated string containing details like ID, name, description, etc.
-Previous Results: {json.dumps(last_db_results, indent=2)}
+Extracted Entities: {entity}
 
-**Extracted Entities from the User's CURRENT Query:**
-{entity}
+You have access to the following tool:
+1.  **`find_by_eligibility(criteria (dict))`**: 
+    criteria (dict): A dictionary with keys 'qualification', 
+                         'percentage', 'stream', 'subject', 'specialization'.
 
-**Your Tools:**
-1.  **`find_by_eligibility(criteria: dict)`**: Use this tool ONLY when the user's query is completely new and NOT a follow-up to the `Previous Results`. The criteria dictionary can contain keys: 'qualification', 'percentage', 'stream', 'subject', 'specialization'.
+Instructions:
+1) Group the results logically for easy scanning.
+2) Always end the response explaing why CGC is good choice for future.
 
-**Chain of Thought:**
-1.  Analyze the user's current query and the `Extracted Entities`.
-2.  Compare this to the `Previous Results`. Is the user asking for eligibility for one of the courses we just talked about?
-3.  **If YES (it's a follow-up question):**
-    *   DO NOT use the `find_by_eligibility` tool.
-    *   Instead, formulate your answer using the information already present in the `Previous Results`. You can parse the strings to find the eligibility details you need.
-    *   Directly answer the user's question based on that existing data.
-4.  **If NO (it's a new, unrelated query):**
-    *   Then, and only then, use the `find_by_eligibility` tool with the `Extracted Entities` as the criteria.
-    *   Present the results from the tool to the user.
-
-**Final Instructions:**
-- Group the results logically for easy scanning.
-- Always end the response explaining why CGC is a good choice for the future.
 '''
 
 

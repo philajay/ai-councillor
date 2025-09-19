@@ -102,7 +102,10 @@ def find_by_discovery(query_text:str, program_level:str):
             pl = program_level.upper()
             # Execute the vector search query
             cur.execute(
-                f'''SELECT id, course_name, course_description, career_prospects, program_highlights, 1 - (course_embedding <=> %s) AS similarity FROM courses 
+                f'''SELECT id, course_name, course_description, 
+                career_prospects, program_highlights, 
+                admission_eligibility_rules, admission_test_requirement, lateral_entry,
+                1 - (course_embedding <=> %s) AS similarity FROM courses 
                 where program_level = '{pl}'
                 ORDER BY similarity DESC LIMIT 10''',
                 (query_embedding,)

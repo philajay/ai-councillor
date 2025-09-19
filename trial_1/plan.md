@@ -19,9 +19,11 @@ The system is composed of three main components:
 
 ## Phase 1: The Foundation (Database Setup & Data Population)
 
-**Objective:** Prepare the database schema, load all course data from `step5.json`, and generate all necessary vector embeddings for search and normalization.
+**Objective:** Prepare the database schema, load all course data from a JSON file, and generate all necessary vector embeddings for search and normalization.
 
-**Script:** `populate_database.py`
+**Scripts:** 
+- `create_step6.py` (for data transformation)
+- `populate_database.py` (for database population)
 
 ### 1.1. Dependencies
 Install the required Python libraries:
@@ -29,8 +31,11 @@ Install the required Python libraries:
 pip install psycopg2-binary pgvector sentence-transformers
 ```
 
-### 1.2. Database Schema Definition
-The script will first connect to PostgreSQL and execute the following SQL commands to set up the necessary tables and extensions.
+### 1.2. Data Transformation
+A preliminary script, `create_step6.py`, is run to process the initial `data/step5.json`. This script transforms the string-based `admission_test_requirement` field into a structured JSON object, `admission_test_requirement_json`, and saves the output as `data/step6.json`. This pre-processing step makes the data easier to load and query in the database.
+
+### 1.3. Database Schema Definition
+The `populate_database.py` script will first connect to PostgreSQL and execute the following SQL commands to set up the necessary tables and extensions.
 
 ```sql
 -- Enable vector and trigram support
@@ -49,6 +54,9 @@ CREATE TABLE courses (
     program_highlights TEXT,
     career_prospects TEXT,
     fees_inr INTEGER,
+    admission_eligibility_rules TEXT,
+    admission_test_requirement JSONB,
+    lateral_entry BOOLEAN DEFAULT FALSE,
     course_embedding VECTOR(384) -- For semantic "discovery" search
 );
 
@@ -84,20 +92,20 @@ CREATE TABLE canonical_specializations (
 CREATE INDEX ON courses USING ivfflat (course_embedding vector_cosine_ops) WITH (lists = 100);
 ```
 
-### 1.3. Script Logic (`populate_database.py`)
+### 1.4. Script Logic (`populate_database.py`)
 1.  **Initialization:**
     *   Load the `sentence-transformers` model (`all-MiniLM-L6-v2`).
     *   Establish a connection to the PostgreSQL database.
-    *   Execute the schema setup SQL from step 1.2.
+    *   Execute the schema setup SQL from step 1.3.
 2.  **Data Ingestion:**
-    *   Read and parse the `data/step5.json` file.
+    *   Read and parse the transformed `data/step6.json` file.
     *   Initialize empty sets to collect unique terms: `unique_subjects = set()`, `unique_qualifications = set()`, `unique_specializations = set()`.
 3.  **Processing Loop:**
     *   Iterate through each `course` object in the JSON data.
     *   **Determine Program Level:** Based on the `course_tag_text` or `source_course_name` (e.g., "B.Tech" is UG, "M.Tech" is PG), determine the program level.
     *   **Create Course Document:** Concatenate the text from `source_course_name`, `summary`, `career_prospects`, `why_us`, and `alternate_names` into a single, comprehensive text document.
     *   **Generate Course Embedding:** Use the loaded model to convert this document into a `course_embedding` vector.
-    *   **Insert Course:** `INSERT` the course data (name, stream, program_level, etc.) and the `course_embedding` into the `courses` table. Use `RETURNING id` to get the `course_id` for the new entry.
+    *   **Insert Course:** `INSERT` the course data (name, stream, program_level, etc.) and the new fields (`admission_eligibility_rules`, `admission_test_requirement`, `lateral_entry`) into the `courses` table. Use `RETURNING id` to get the `course_id`.
     *   **Process Eligibility Rules:** For each `rule` in the course's `eligibility_rules` array:
         *   `INSERT` the rule's data into the `eligibility_rules` table, linking it with the `course_id`.
         *   Add the rule's `qualification` to the `unique_qualifications` set.
@@ -197,5 +205,6 @@ CREATE INDEX ON courses USING ivfflat (course_embedding vector_cosine_ops) WITH 
 ## Execution Workflow
 
 1.  **Setup:** Install Python dependencies and ensure PostgreSQL is running.
-2.  **Populate:** Run `python populate_database.py` from the terminal. This only needs to be done once.
-3.  **Run Application:** Run `python main.py`. The script will process the hard-coded test query and print the results. From here, it can be adapted into a web server (API) or a more interactive CLI.
+2.  **Transform Data:** Run `python create_step6.py` to generate the structured JSON file.
+3.  **Populate:** Run `python populate_database.py` from the terminal. This only needs to be done once per data update.
+4.  **Run Application:** Run `python main.py`. The script will process the hard-coded test query and print the results. From here, it can be adapted into a web server (API) or a more interactive CLI.

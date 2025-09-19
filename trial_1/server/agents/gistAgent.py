@@ -11,7 +11,7 @@ def get_gist_agent(state:dict):
     gist = state.get(GIST_OUTPUT_KEY, '')
     instructions = f'''You are an expert conversation summarizer.
 **Task**
-Your job is to summarize the gist till now with important details of this turn including the user query, any agent agent response.
+Your job is to summarize the gist , succintly using minimum sentences, till now with important details of this turn including the user query, any agent agent response.
 gist till now: {gist}
 
 Instructions:

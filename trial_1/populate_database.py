@@ -1,6 +1,6 @@
 import json
 import psycopg2
-from psycopg2.extras import execute_values
+from psycopg2.extras import execute_values, Json
 from sentence_transformers import SentenceTransformer
 from pgvector.psycopg2 import register_vector
 import os
@@ -62,6 +62,9 @@ def setup_database_schema(conn):
                 program_highlights TEXT,
                 career_prospects TEXT,
                 fees_inr INTEGER,
+                admission_eligibility_rules TEXT,
+                admission_test_requirement JSONB,
+                lateral_entry BOOLEAN DEFAULT FALSE,
                 course_embedding VECTOR(384)
             );
         """)
@@ -123,9 +126,9 @@ def populate_data(conn, model):
     """Reads data from JSON, generates embeddings, and populates the database."""
     print("Starting data population...")
     
-    # Correct the path to step5.json relative to the script's location
+    # Correct the path to step6.json relative to the script's location
     script_dir = os.path.dirname(__file__) # Gets the directory where the script is located
-    json_path = os.path.join(script_dir, '..', 'data', 'step5.json') # Go up one level, then into data/
+    json_path = os.path.join(script_dir, '..', 'data', 'step6.json') # Go up one level, then into data/
 
     with open(json_path, 'r') as f:
         data = json.load(f)
@@ -139,9 +142,6 @@ def populate_data(conn, model):
 
     print(f"Processing {len(data)} courses from JSON file...")
     for course in data:
-
-        if course["source_course_name"] == "B.Tech. CE (Civil Engineering)":
-            print("halt")
 
         # 1. Prepare course data and collect unique terms
         alt_names = course.get('alternate_names', [])
@@ -160,6 +160,9 @@ def populate_data(conn, model):
         ]))
         
         program_level = get_program_level(course.get('source_course_name', ''), course.get('course_tag_text', ''))
+        
+        # Determine lateral entry status for the course
+        lateral_entry_bool = course.get('lateral_entry', 'No').lower() == 'yes'
 
         courses_to_insert.append({
             'name': course.get('source_course_name'),
@@ -171,6 +174,9 @@ def populate_data(conn, model):
             'highlights': course.get('why_us'),
             'careers': course.get('career_prospects'),
             'fees': int(course['fees_inr']) if course.get('fees_inr') and course['fees_inr'].isdigit() else None,
+            'admission_rules': course.get('eligibility_criteria'),
+            'admission_test_req': course.get('admission_test_requirement_json'),
+            'lateral_entry': lateral_entry_bool,
             'doc': doc
         })
 
@@ -190,23 +196,27 @@ def populate_data(conn, model):
     course_docs = [c['doc'] for c in courses_to_insert]
     course_embeddings = model.encode(course_docs, show_progress_bar=True)
 
-    # --- DEBUG: Print the forensic science embedding ---
-    for i, course in enumerate(courses_to_insert):
-        if "Forensic" in course['name']:
-            print(f"DEBUG: Embedding for {course['name']}:\n{course_embeddings[i][:10]}...")
-    # --- END DEBUG ---
-
     # 3. Insert courses and get their IDs
     with conn.cursor() as cur:
         course_data_for_sql = [
-            (c['name'], c['alt_names'], c['stream'], c['category'], c['program_level'], c['desc'], c['highlights'], c['careers'], c['fees'], emb)
+            (
+                c['name'], c['alt_names'], c['stream'], c['category'], 
+                c['program_level'], c['desc'], c['highlights'], c['careers'], 
+                c['fees'], c['admission_rules'], Json(c['admission_test_req']), 
+                c['lateral_entry'], emb
+            )
             for c, emb in zip(courses_to_insert, course_embeddings)
         ]
         
         # Use execute_values for efficient batch insertion
         inserted_ids = execute_values(
             cur,
-            """INSERT INTO courses (course_name, alternate_names, stream, course_category, program_level, course_description, program_highlights, career_prospects, fees_inr, course_embedding)
+            """INSERT INTO courses (
+                   course_name, alternate_names, stream, course_category, 
+                   program_level, course_description, program_highlights, 
+                   career_prospects, fees_inr, admission_eligibility_rules, 
+                   admission_test_requirement, lateral_entry, course_embedding
+               )
                VALUES %s RETURNING id""",
             course_data_for_sql,
             template=None,
