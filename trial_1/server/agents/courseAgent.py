@@ -93,7 +93,8 @@ You have access to the following tool:
 1.  **`find_by_discovery(filters: list)`**: This tool returns the courses based on user query and program_level entity.
 
 Instructions:
-Always end the response explaing why CGC is good choice for user.
+1) Group the results logically for easy scanning.
+2) Always end the response explaing why CGC is good choice for future.
 '''
 
 def course_discovery():

@@ -9,6 +9,7 @@ from google.adk.agents.readonly_context import ReadonlyContext
 from google.adk.sessions import Session
 from google.genai import types
 from common.common import DB_RESULTS
+from db.search_engine import get_course_details_by_id, modify_course_result
 
 
 def get_course_detail_agent(session: Session):
@@ -19,15 +20,23 @@ def get_course_detail_agent(session: Session):
 Your task is to provide detailed information about a specific course that the user is asking about.
 
 **Context:**
-The user was previously shown this list of courses:
+The user was previously shown this list of courses. Each course entry is a string with comma-separated values, the first of which is the course ID.
 {json.dumps(last_results, indent=2)}
 
+You have access to the following tool:
+1.  **`get_course_details_by_id(course_id: int)`**: This tool returns all details for a given course ID.
 
 **Instructions:**
-1.  First, identify which course from the list the user is referring to. They might refer to it by number (e.g., "the first one," "option 2") or by name (e.g., "the MBA program").
-2.  Once you have identified the specific course, extract all its details from the provided context.
-3.  Present these details to the user in a clear, well-formatted, and comprehensive way.
-4.  If you cannot determine which course the user is asking about, politely ask them to clarify.
+1.  First, identify which course from the context the user is referring to. They might refer to it by number (e.g., "the first one," "option 2") or by name (e.g., "the MBA program").
+2.  Extract the `course_id` for that specific course from the context. The ID is the first value in the course string.
+3.  Use the `get_course_details_by_id` tool with the extracted `course_id` to get the complete details.
+4.  Present these details to the user in a clear, well-formatted, and comprehensive way.
+5.  If you cannot determine which course the user is asking about, politely ask them to clarify. Do not use the tool if you are unsure.
+
+In the response Highlight following:
+Career Prospects:
+Why choose this university:
+Eligibility:
 '''
     return LlmAgent(
         name="present_course_details",
@@ -42,6 +51,7 @@ The user was previously shown this list of courses:
             temperature=1,
         ),
         instruction=instructions,
+        tools=[get_course_details_by_id],
     )
 
 class CourseDetailAgent(BaseAgent, BaseModel):

@@ -157,7 +157,7 @@ def find_by_eligibility(criteria:dict) -> list:
     with conn.cursor() as cur:
         # Start with a base query that joins the tables
         query = """
-            SELECT DISTINCT c.course_name, c.course_description, 
+            SELECT DISTINCT c.id, c.course_name, c.course_description, 
             c.career_prospects, c.program_highlights, er.qualification,
             er.min_percentage, er.accepted_specializations, er.required_subjects,
             er.notes
@@ -211,6 +211,41 @@ def find_by_eligibility(criteria:dict) -> list:
             conn.close()
 
 
+
+
+def get_course_details_by_id(course_id: int):
+    """
+    Retrieves course and eligibility details for a specific course ID.
+
+    Args:
+        course_id (int): The ID of the course to retrieve.
+
+    Returns:
+        list: A list of strings, where each string contains the comma-separated
+              details of a course and its eligibility rules. Returns an error
+              message if the connection fails or the course is not found.
+    """
+    conn = get_db_connection()
+    if not conn:
+        return ["Error: Could not connect to the database."]
+
+    with conn.cursor() as cur:
+        try:
+            cur.execute("""
+                SELECT c.id, c.course_name, c.course_description, c.career_prospects,
+                       c.program_highlights, er.qualification, er.min_percentage,
+                       er.accepted_specializations, er.required_subjects, er.notes
+                FROM courses c
+                LEFT JOIN eligibility_rules er ON c.id = er.course_id
+                WHERE c.id = %s;
+            """, (course_id,))
+            results = [",".join(map(str, row)) for row in cur.fetchall()]
+            return results if results else [f"No course found with ID: {course_id}"]
+        except Exception as e:
+            print(f"An error occurred during course detail retrieval: {e}")
+            return [f"Error retrieving course details: {e}"]
+        finally:
+            conn.close()
 
 
 def modify_course_result(

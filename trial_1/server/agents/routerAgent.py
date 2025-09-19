@@ -15,18 +15,20 @@ from .courseAgent import CourseAgent
 from .eligibiltyAgent import EligibilityAgent
 from .courseDetailAgent import CourseDetailAgent
 
-from common.common import EXTRACTED_ENTITY, DB_RESULTS
-
+from common.common import EXTRACTED_ENTITY, DB_RESULTS, GIST_OUTPUT_KEY
+from .gistAgent import GistAgent
 
 
 
 def getInstructions(state):
     ee = state.get(EXTRACTED_ENTITY, {})
     dr = state.get(DB_RESULTS, [])
+    gist = state.get(GIST_OUTPUT_KEY, [])
     return f'''You are an expert education consultant routing queries to the correct department.                                                          
  
  You have access to details of last turn of conversation.
  Conversation: {ee} {dr}
+ gist: {gist}
  
  Your job is to analyze the conversation history and user's query and delegate it to the appropriate agent.                                                                        
  You have access to the following agents:                                                                                                                 
@@ -114,3 +116,8 @@ class RouterAgent(BaseAgent, BaseModel):
 
         async for event in router_agent.run_async(ctx):
             yield event
+        g = GistAgent()
+        
+        async for event in g.run_async(ctx):
+            yield event
+        
