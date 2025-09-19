@@ -7,6 +7,7 @@ from google.adk.sessions.base_session_service import BaseSessionService
 from google.adk.sessions.session import Session
 import asyncio
 from agents.controller import Controller
+from agents.routerAgent import RouterAgent
 
 
 from google.genai.types import (
@@ -39,7 +40,7 @@ class AgentSession:
         # Create a Runner
         self.runner = InMemoryRunner(
             app_name=APP_NAME,
-            agent=Controller(),
+            agent=RouterAgent(),
         )
 
         # Create a Session
@@ -151,6 +152,9 @@ async def websocket_endpoint(websocket: WebSocket):
         print(f"Client #{user_id} disconnected")
     except Exception as e:
         print(f"Error in WebSocket handler: {e}")
+        import traceback
+        traceback.print_exception(e)
+
     finally:
         await websocket.close()
         print("WebSocket connection closed")

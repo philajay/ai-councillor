@@ -9,8 +9,8 @@ import json
 from db.search_engine import find_by_discovery, modify_course_result, find_by_eligibility
 from common.common import remove_json_tags
 from google.adk.agents.readonly_context import ReadonlyContext
+from common.common import EXTRACTED_ENTITY, DB_RESULTS
 
-ENTITY_STATE_KEY = "eligibility"
 
 def getEntityExtractor():
     instructions = '''You are expert enity extractor for india education system.
@@ -31,6 +31,10 @@ From the current user query extract the entities.
 2. *subject**
     The subjects which user has opted in the last qualification
     
+3. **stream**
+    In indian eductaion system student opts stream in which he wants to pursue higher studies. They are
+    arts, commerce, medical and non medical.
+
 3. *specialization**
     The course done by user in his graduation. 
 
@@ -42,8 +46,9 @@ Expected output:
 {{
     "qualification": <>,
     "subject": <Return if present else return null>
-    "specialization": <True if program_level is missing>
-    "percentage": <Question to get the program_level>
+    "specialization": <>
+    "percentage": <>
+    "stream":<>
 }}
 
 '''
@@ -61,12 +66,12 @@ Expected output:
             response_mime_type="application/json"
         ),
         instruction=instructions,
-        output_key=ENTITY_STATE_KEY
+        output_key=EXTRACTED_ENTITY
     )
 
 
 def eligibility_instruction(context: ReadonlyContext):
-    entity = context.state[ENTITY_STATE_KEY]
+    entity = context.state[EXTRACTED_ENTITY]
     return f'''You are and expert education consultant.
 **Task**
 Answer the question using the data obtained by tool find_by_eligibility.
@@ -98,8 +103,8 @@ def eligibility():
         ),
         instruction=eligibility_instruction,
         tools=[find_by_eligibility],
-        after_tool_callback=modify_course_result,
-        output_key=ENTITY_STATE_KEY
+        #after_tool_callback=modify_course_result,
+        output_key=DB_RESULTS
     )
 
 
@@ -121,7 +126,7 @@ class EligibilityAgent(BaseAgent, BaseModel):
         async for event in self.extract_entities.run_async(ctx):
             yield event
 
-        entity = json.loads(remove_json_tags( ctx.session.state[ENTITY_STATE_KEY]))
+        entity = json.loads(remove_json_tags( ctx.session.state[EXTRACTED_ENTITY]))
         print(f"Entities extracted are {entity}")
 
 
@@ -129,4 +134,3 @@ class EligibilityAgent(BaseAgent, BaseModel):
         async for event in er.run_async(ctx):
             yield event
 
-        print(f"Entities extracted are {ctx.session.state[ENTITY_STATE_KEY]}")

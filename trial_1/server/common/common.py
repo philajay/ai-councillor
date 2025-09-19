@@ -60,3 +60,6 @@ def remove_json_tags(llm_output_str: str) -> str:
         if match:
             return match.group(0)
         return '{}' # Return empty JSON if all else fails
+    
+EXTRACTED_ENTITY = "extracted_entity"
+DB_RESULTS = "db_results"

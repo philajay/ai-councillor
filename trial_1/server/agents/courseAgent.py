@@ -9,13 +9,18 @@ import json
 from db.search_engine import find_by_discovery, modify_course_result
 from common.common import remove_json_tags
 from google.adk.agents.readonly_context import ReadonlyContext
+from common.common import EXTRACTED_ENTITY, DB_RESULTS
 
-ENTITY_STATE_KEY = "course__entities"
 
-def getEntityExtractor():
-    instructions = '''You are expert enity extractor for india education system.
+def getEntityExtractor(state):
+    x = state.get(EXTRACTED_ENTITY, {})
+    instructions = f'''You are expert enity extractor for india education system.
 **Task**
 From the current user query extract the entities. If program_level is not mentioned ask user politely to mention the program_level.
+
+You also have access to history of the last entities extracted.
+history: {x}
+
 
 **Entities to be extracted.**
 
@@ -44,10 +49,10 @@ If program_level is not mentioned ask user politry about the program_level.
 We will always follow **this Chain of Thoughts:**
 1) if program_level is missing, ask user politely about program_level.
 2) if program_level is present return json 
-    {
+    {{
         "program_level": <level>,
         "course_stream_type": <Return if present else return null>
-    }
+    }}
 
 {{
     "program_level": <level>,
@@ -71,12 +76,13 @@ We will always follow **this Chain of Thoughts:**
             response_mime_type="application/json"
         ),
         instruction=instructions,
-        output_key=ENTITY_STATE_KEY
+        output_key=EXTRACTED_ENTITY
     )
 
 
+
 def course_discovery_instruction(context: ReadonlyContext):
-    entity = context.state[ENTITY_STATE_KEY]
+    entity = context.state.get(DB_RESULTS, {})
     return f'''You are and expert education consultant.
 **Task**
 Answer the question using the data obtained by tool find_by_discovery.
@@ -105,14 +111,14 @@ def course_discovery():
         ),
         instruction=course_discovery_instruction,
         tools=[find_by_discovery],
-        after_tool_callback=modify_course_result,
-        output_key=ENTITY_STATE_KEY
+        #after_tool_callback=modify_course_result,
+        output_key=DB_RESULTS
     )
 
 
 class CourseAgent(BaseAgent, BaseModel):
     name: str = Field(default='root_intent_classifier')
-    extract_entities: LlmAgent = Field(default_factory=getEntityExtractor)
+    #extract_entities: LlmAgent = Field(default_factory=getEntityExtractor)
     # name: str = 'root_intent_classifier'
     # agent_to_run: LlmAgent
     model_config = {"arbitrary_types_allowed": True}
@@ -127,10 +133,11 @@ class CourseAgent(BaseAgent, BaseModel):
     ) -> AsyncGenerator[Event, None]:
     
         cd = course_discovery() 
-        async for event in self.extract_entities.run_async(ctx):
+        extract_entities = getEntityExtractor(ctx.session.state)
+        async for event in extract_entities.run_async(ctx):
             yield event
 
-        entity = json.loads(remove_json_tags( ctx.session.state[ENTITY_STATE_KEY]))
+        entity = json.loads(remove_json_tags( ctx.session.state[EXTRACTED_ENTITY]))
         print(f"Entities extracted are {entity}")
 
         if not entity["program_level"]:
@@ -140,4 +147,3 @@ class CourseAgent(BaseAgent, BaseModel):
             async for event in cd.run_async(ctx):
                 yield event
 
-        print(f"Entities extracted are {ctx.session.state[ENTITY_STATE_KEY]}")
