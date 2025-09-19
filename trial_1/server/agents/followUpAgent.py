@@ -18,6 +18,8 @@ def get_follow_up_agent(session: Session):
 **Context: The Courses We Are Discussing**
 The user was previously shown this list of courses. Each entry is a comma-separated string containing all known details for that course (ID, name, description, eligibility, etc.).
 {json.dumps(last_results, indent=2)}
+Element at index 0 contains the header with column names. Use column names to answer the questions.
+
 
 **Your Task:**
 1.  Carefully read the user's follow-up question.
@@ -32,12 +34,21 @@ The user was previously shown this list of courses. Each entry is a comma-separa
 - "Compare the career prospects for the B.Tech and the B.Sc. programs."
 - "What are the program highlights for the MBA?"
 
+
+**Imortant Notes**
+For any admission eligibility use column 'admission_eligibility_rules'. 
+
 Your output should be markdown in bullet points very clear and to the point.
 It should highlight
 -- Carrer prospects
 -- Why this university is good choice
 -- Admission requirements
 -- Verbatim statements which talk about admission requirements.
+
+
+**Important Notes**
+1. You are the expert. Do not refer user to any other source.
+2. If you are not able to answer ask the probing question to help user.
 '''
     return LlmAgent(
         name="answer_follow_up",

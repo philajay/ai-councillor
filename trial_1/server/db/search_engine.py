@@ -110,8 +110,13 @@ def find_by_discovery(query_text:str, program_level:str):
                 ORDER BY similarity DESC LIMIT 10''',
                 (query_embedding,)
             )
-            results = [",".join(map(str, row)) for row in cur.fetchall()]
-            return results if results else ["No relevant courses found."]
+            rows = cur.fetchall()
+            if not rows:
+                return ["No relevant courses found."]
+            header = ",".join([desc[0] for desc in cur.description])
+            results = [header]
+            results.extend([",".join(map(str, row)) for row in rows])
+            return results
         except Exception as e:
             print(f"An error occurred during discovery search: {e}")
             return [f"Error during search: {e}"]
@@ -160,8 +165,10 @@ def find_by_eligibility(criteria:dict) -> list:
     with conn.cursor() as cur:
         # Start with a base query that joins the tables
         query = """
-            SELECT DISTINCT c.id, c.course_name, c.course_description, 
-            c.career_prospects, c.program_highlights, er.qualification,
+            SELECT DISTINCT c.course_name, c.course_description, 
+                c.career_prospects, c.program_highlights, 
+                c.admission_eligibility_rules, c.admission_test_requirement, c.lateral_entry,
+            er.qualification,
             er.min_percentage, er.accepted_specializations, er.required_subjects,
             er.notes
             FROM courses c
@@ -205,8 +212,13 @@ def find_by_eligibility(criteria:dict) -> list:
 
         try:
             cur.execute(query, params)
-            results = [",".join(map(str, row)) for row in cur.fetchall()]
-            return results if results else ["No courses found matching your specific eligibility criteria."]
+            rows = cur.fetchall()
+            if not rows:
+                return ["No courses found matching your specific eligibility criteria."]
+            header = ",".join([desc[0] for desc in cur.description])
+            results = [header]
+            results.extend([",".join(map(str, row)) for row in rows])
+            return results
         except Exception as e:
             print(f"An error occurred during eligibility search: {e}")
             return [f"Error during search: {e}"]
@@ -242,8 +254,13 @@ def get_course_details_by_id(course_id: int):
                 LEFT JOIN eligibility_rules er ON c.id = er.course_id
                 WHERE c.id = %s;
             """, (course_id,))
-            results = [",".join(map(str, row)) for row in cur.fetchall()]
-            return results if results else [f"No course found with ID: {course_id}"]
+            rows = cur.fetchall()
+            if not rows:
+                return [f"No course found with ID: {course_id}"]
+            header = ",".join([desc[0] for desc in cur.description])
+            results = [header]
+            results.extend([",".join(map(str, row)) for row in rows])
+            return results
         except Exception as e:
             print(f"An error occurred during course detail retrieval: {e}")
             return [f"Error retrieving course details: {e}"]

@@ -64,3 +64,4 @@ def remove_json_tags(llm_output_str: str) -> str:
 EXTRACTED_ENTITY = "extracted_entity"
 DB_RESULTS = "db_results"
 GIST_OUTPUT_KEY = "turn_gist"
+NEXT_AGENT = "next_agent"
