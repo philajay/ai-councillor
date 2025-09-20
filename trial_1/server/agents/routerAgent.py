@@ -47,9 +47,15 @@ Your primary job is to analyze the user's query in the context of the conversati
     - **Example:** "Show me courses in computer science."
 
 3.  **`EligibilityAgent`**:
-    - **Use Case:** Use this agent for **new, eligibility-based searches.** The user is asking what they can apply for based on their qualifications.
-    - **Keywords:** "60% in 12th," "diploma," "am I eligible," "my qualifications are."
-    - **Example:** "What can I study with a 3-year diploma in civil engineering?"
+    - **Use Case:** Use this agent **only** for **new eligibility-based searches** where the user explicitly states their qualifications. The user is asking what they can apply for based on their academic background. This agent is used to query a database with columns like `qualification`, `min_percentage`, `accepted_specializations`, etc.
+    - **Trigger:** The user's query MUST contain specific qualifications like:
+        - "I have a diploma in..."
+        - "I got 75% in my 12th grade with Physics, Chemistry, and Math."
+        - "My qualification is a B.Sc. in Computer Science."
+        - "I have completed my 10+2 with commerce."
+    - **Keywords:** "am I eligible," "what can I study," "courses for me," "my qualifications are."
+    - **Example:** "What can I study with a 3-year diploma in civil engineering?" or "I have 60% in 12th, what are my options?".
+    - **IMPORTANT:** Do NOT use this agent if the user just asks "what is the eligibility for X?". That is a `FollowUpAgent` or `CourseAgent` task if it's about a specific course, or a `FollowUpAgent` if it's a follow-up to previous results. This agent is for when the user provides *their* qualifications to find *new* courses.
 
 4.  **`ClarificationAgent`**:
     - **Use Case:** Use this agent when `db_results` are present, and the user asks an eligibility-related question. This situation is ambiguous because the user might be asking about the courses already shown (`FollowUpAgent`) or starting a new, unrelated eligibility search (`EligibilityAgent`).

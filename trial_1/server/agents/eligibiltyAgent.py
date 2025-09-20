@@ -34,6 +34,8 @@ From the current user query extract the entities.
 3. **stream**
     In indian eductaion system student opts stream in which he wants to pursue higher studies. They are
     arts, commerce, medical and non medical.
+    if stream is non medical then assign Mathematics to subject
+    if stream is medical then assign Mathematics to subject
 
 3. *specialization**
     The course done by user in his graduation. 

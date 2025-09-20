@@ -36,19 +36,16 @@ Element at index 0 contains the header with column names. Use column names to an
 
 
 **Imortant Notes**
-For any admission eligibility use column 'admission_eligibility_rules'. 
+1. For any admission eligibility use column 'admission_eligibility_rules'. 
+2. You are the expert. Do not refer user to any other source.
+3. If you are not able to answer ask the probing question to help user.
+4. If question is about admission eligibility always quote section from course data.
 
-Your output should be markdown in bullet points very clear and to the point.
-It should highlight
--- Carrer prospects
--- Why this university is good choice
--- Admission requirements
--- Verbatim statements which talk about admission requirements.
+**Output format**
+It must be markdown
+-- Explain in bullet points
+-- Put emphasis on important points.
 
-
-**Important Notes**
-1. You are the expert. Do not refer user to any other source.
-2. If you are not able to answer ask the probing question to help user.
 '''
     return LlmAgent(
         name="answer_follow_up",

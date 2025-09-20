@@ -179,19 +179,21 @@ def find_by_eligibility(criteria:dict) -> list:
 
         # --- Dynamically build the WHERE clause ---
 
-        if 'qualification' in criteria:
+        if 'qualification' in criteria and criteria['qualification']:
             where_clauses.append("er.qualification = %(qualification)s")
             params['qualification'] = criteria['qualification']
 
-        if 'percentage' in criteria and criteria['percentage'] is not None:
+        if 'percentage' in criteria and criteria['percentage']:
             where_clauses.append("(er.min_percentage <= %(percentage)s OR er.min_percentage IS NULL)")
             params['percentage'] = criteria['percentage']
             
-        if 'subject' in criteria:
+        if 'subject' in criteria and criteria['subject']:
             where_clauses.append("( %(subject)s = ANY(er.required_subjects) OR er.required_subjects IS NULL OR cardinality(er.required_subjects) = 0)")
             params['subject'] = criteria['subject']
+        else:
+            where_clauses.append("(er.required_subjects IS NULL OR cardinality(er.required_subjects) = 0)")
 
-        if 'specialization' in criteria:
+        if 'specialization' in criteria and criteria['specialization']:
             # This clause handles cases where a rule accepts any specialization
             where_clauses.append("""
                 (er.accepted_specializations IS NULL OR 
@@ -213,6 +215,8 @@ def find_by_eligibility(criteria:dict) -> list:
             header = ",".join([desc[0] for desc in cur.description])
             results = [header]
             results.extend([",".join(map(str, row)) for row in rows])
+            s = len(''.join(results))
+            print(f"length of results is {s}")
             return results
         except Exception as e:
             print(f"An error occurred during eligibility search: {e}")
