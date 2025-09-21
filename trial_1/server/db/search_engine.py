@@ -105,6 +105,7 @@ def find_by_discovery(query_text:str, program_level:str):
                 f'''SELECT id, course_name, course_description, 
                 career_prospects, program_highlights, 
                 admission_eligibility_rules, admission_test_requirement, lateral_entry,
+                placements,
                 1 - (course_embedding <=> %s) AS similarity FROM courses 
                 where program_level = '{pl}'
                 ORDER BY similarity DESC LIMIT 10''',
@@ -168,6 +169,7 @@ def find_by_eligibility(criteria:dict) -> list:
             SELECT DISTINCT c.course_name, c.course_description, 
                 c.career_prospects, c.program_highlights, 
                 c.admission_eligibility_rules, c.admission_test_requirement, c.lateral_entry,
+                c.placements,
             er.qualification,
             er.min_percentage, er.accepted_specializations, er.required_subjects,
             er.notes

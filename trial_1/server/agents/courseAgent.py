@@ -18,6 +18,10 @@ def getEntityExtractor(state):
 **Task**
 From the current user query extract the entities. If program_level is not mentioned ask user politely to mention the program_level.
 
+**Context**
+Bsc, BCa, BA etc are all bachelors progman
+MSC Mca etc are all masters programs
+
 You also have access to history of the last entities extracted.
 history: {x}
 
@@ -29,8 +33,8 @@ history: {x}
     **Possible Values**
     It can be either 'ug' or 'pg'
     *Examples
-        a) Show me undergraduat courses
-        b) Show me post graduat courses.
+        a) Show me undergraduate courses
+        b) Show me post graduatd courses.
         c) show me courses. 
     **Note**
     Sometime user will not directly mention 'ug' or 'pg'. They will mention their last qualification from which you need to infer if student is lookig for ug or pf course.
@@ -52,12 +56,14 @@ We will always follow **this Chain of Thoughts:**
     {{
         "program_level": <level>,
         "course_stream_type": <Return if present else return null>
+        "agentId": <Hardcoded 2>
+        "purpose": <Fuuny take on your purpose. Also let user know that it will take time to finish the task so be patient.>
     }}
 
 {{
+    "agentId": <Hardcoded 2>
     "program_level": <level>,
     "course_stream_type": <Return if present else return null>
-    "needs_clarification": <True if program_level is missing>
     "clarification_question": <Question to get the program_level>
 }}
 

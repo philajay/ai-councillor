@@ -71,8 +71,10 @@ Your primary job is to analyze the user's query in the context of the conversati
 
 output format:
 {{
+    "agentId": <Send 1 as hardcoded value>
     "agent": <choosen agent>,
     "explanation": <Clear chain of thought as to why this agent was choosen>
+    "purpose": <Clearly explain the purpose of agent to layman in a funny way. For Example "Im assigning the course agent to find suitable course for you. So hold your horses...". Also let user know that it will take time to finish the task so be patient. >
 }}
 '''
     return instruction
@@ -105,6 +107,7 @@ class RouterAgent(BaseAgent, BaseModel):
     courseAgent: CourseAgent = Field(default_factory=CourseAgent)
     eligibilityAgent: EligibilityAgent = Field(default_factory=EligibilityAgent)
     followUpAgent: FollowUpAgent = Field(default_factory=FollowUpAgent)
+    suggestedQuestion: SuggestedQuestion = Field(default_factory=SuggestedQuestion)
 
     def __init__(self, **data):
         BaseModel.__init__(self, **data)
@@ -136,17 +139,19 @@ class RouterAgent(BaseAgent, BaseModel):
                 yield event
         elif next_agent == "ClarificationAgent":
             yield Event(
-                author = "ClarificationAgent",
+                author = "  ",
+                invocation_id =  str(uuid.uuid1()),
+                content =  {"parts": [{"text": "Are you asking about the eligibility for the courses we just discussed, or are you starting a new search for courses based on your eligibility?"}]},
+                partial =  True,
+            )
+            yield Event(
+                author = "  ",
                 invocation_id =  str(uuid.uuid1()),
                 content =  {"parts": [{"text": "Are you asking about the eligibility for the courses we just discussed, or are you starting a new search for courses based on your eligibility?"}]},
                 partial =  False,
                 turn_complete =  True
             )
-        # else:
-        #     yield Event(
-        #         type="output",
-        #         data={
-        #             "content": "I'm not sure how to handle that. Please try again."
-        #         },
-        #     )
+        
+        async for event in self.suggestedQuestion.run_async(ctx):
+            yield event
         

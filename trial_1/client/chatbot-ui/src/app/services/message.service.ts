@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { WebsocketService } from './websocket.service';
+import { Subject } from 'rxjs';
 
 export interface Message {
   text: string;
@@ -15,6 +16,7 @@ export class MessageService {
   messages: Message[] = [
     { text: 'Hello! How can I help you today?', sender: 'bot' }
   ];
+  messagesUpdated = new Subject<void>();
   private isNewMessageStream = true;
 
   constructor(private websocketService: WebsocketService) {
@@ -25,6 +27,7 @@ export class MessageService {
 
   addMessage(text: string, sender: 'user' | 'bot') {
     this.messages.push({ text, sender });
+    this.messagesUpdated.next();
     if (sender === 'user') {
       this.isNewMessageStream = true;
     }
@@ -38,8 +41,13 @@ export class MessageService {
           try{
             lastMessage.json = JSON.parse(lastMessage.text);
             lastMessage.isJson = true;
+            this.messages.pop();
+            this.addMessageBasedOnAgent(lastMessage.json)
           }catch(e){
             lastMessage.isJson = false;
+          }
+          finally {
+
           }
         }
       return;
@@ -61,6 +69,16 @@ export class MessageService {
           }
         }
       }
+      this.messagesUpdated.next();
+    }
+  }
+
+  private addMessageBasedOnAgent(jsonData:any){
+    if (jsonData.agentId == 2 && jsonData.clarification_question){
+      this.addMessage(jsonData.clarification_question, "bot");
+    }
+    else if(jsonData.agentId){
+      this.addMessage(jsonData.purpose, "bot");
     }
   }
 }

@@ -46,11 +46,13 @@ From the current user query extract the entities.
         
 Expected output:
 {{
+    "agentId": 3
     "qualification": <>,
     "subject": <Return if present else return null>
     "specialization": <>
     "percentage": <>
     "stream":<>
+    "purpose": <Funny take on your purpose and what are you doing. Also let user know that it will take time to finish the task so be patient.>
 }}
 
 '''

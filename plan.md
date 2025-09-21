@@ -19,7 +19,7 @@ The system is composed of three main components:
 
 ## Phase 1: The Foundation (Database Setup & Data Population)
 
-**Objective:** Prepare the database schema, load all course data from `step5.json`, and generate all necessary vector embeddings for search and normalization.
+**Objective:** Prepare the database schema, load all course data from `step7.json`, and generate all necessary vector embeddings for search and normalization.
 
 **Script:** `populate_database.py`
 
@@ -48,6 +48,7 @@ CREATE TABLE courses (
     program_highlights TEXT,
     career_prospects TEXT,
     fees_inr INTEGER,
+    placements TEXT,
     course_embedding VECTOR(384) -- For semantic "discovery" search
 );
 
@@ -89,13 +90,13 @@ CREATE INDEX ON courses USING ivfflat (course_embedding vector_cosine_ops) WITH 
     *   Establish a connection to the PostgreSQL database.
     *   Execute the schema setup SQL from step 1.2.
 2.  **Data Ingestion:**
-    *   Read and parse the `data/step5.json` file.
+    *   Read and parse the `data/step7.json` file.
     *   Initialize empty sets to collect unique terms: `unique_subjects = set()`, `unique_qualifications = set()`, `unique_specializations = set()`.
 3.  **Processing Loop:**
     *   Iterate through each `course` object in the JSON data.
-    *   **Create Course Document:** Concatenate the text from `source_course_name`, `summary`, `career_prospects`, `why_us`, and `alternate_names` into a single, comprehensive text document.
+    *   **Create Course Document:** Concatenate the text from `source_course_name`, `summary`, `career_prospects`, `why_us`, `placements`, and `alternate_names` into a single, comprehensive text document.
     *   **Generate Course Embedding:** Use the loaded model to convert this document into a `course_embedding` vector.
-    *   **Insert Course:** `INSERT` the course data (name, stream, etc.) and the `course_embedding` into the `courses` table. Use `RETURNING id` to get the `course_id` for the new entry.
+    *   **Insert Course:** `INSERT` the course data (name, stream, placements, etc.) and the `course_embedding` into the `courses` table. Use `RETURNING id` to get the `course_id` for the new entry.
     *   **Process Eligibility Rules:** For each `rule` in the course's `eligibility_rules` array:
         *   `INSERT` the rule's data into the `eligibility_rules` table, linking it with the `course_id`.
         *   Add the rule's `qualification` to the `unique_qualifications` set.

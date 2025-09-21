@@ -65,6 +65,7 @@ def setup_database_schema(conn):
                 admission_eligibility_rules TEXT,
                 admission_test_requirement JSONB,
                 lateral_entry BOOLEAN DEFAULT FALSE,
+                placements TEXT,
                 course_embedding VECTOR(384)
             );
         """)
@@ -128,7 +129,7 @@ def populate_data(conn, model):
     
     # Correct the path to step6.json relative to the script's location
     script_dir = os.path.dirname(__file__) # Gets the directory where the script is located
-    json_path = os.path.join(script_dir, '..', 'data', 'step6.json') # Go up one level, then into data/
+    json_path = os.path.join(script_dir, '..', 'data', 'step7.json') # Go up one level, then into data/
 
     with open(json_path, 'r') as f:
         data = json.load(f)
@@ -149,6 +150,9 @@ def populate_data(conn, model):
         if isinstance(alt_names, str):
             alt_names = [name.strip() for name in alt_names.split(',')]
 
+        # Convert placements dict to a string for embedding
+        placements_text = json.dumps(course.get('placements')) if course.get('placements') else ''
+
         doc = " ".join(filter(None, [
             course.get('source_course_name', ''),
             " ".join(alt_names),
@@ -157,6 +161,7 @@ def populate_data(conn, model):
             course.get('summary', ''),
             course.get('why_us', ''),
             course.get('career_prospects', ''),
+            placements_text,
         ]))
         
         program_level = get_program_level(course.get('source_course_name', ''), course.get('course_tag_text', ''))
@@ -177,6 +182,7 @@ def populate_data(conn, model):
             'admission_rules': course.get('eligibility_criteria'),
             'admission_test_req': course.get('admission_test_requirement_json'),
             'lateral_entry': lateral_entry_bool,
+            'placements': json.dumps(course.get('placements')) if course.get('placements') else None,
             'doc': doc
         })
 
@@ -203,7 +209,7 @@ def populate_data(conn, model):
                 c['name'], c['alt_names'], c['stream'], c['category'], 
                 c['program_level'], c['desc'], c['highlights'], c['careers'], 
                 c['fees'], c['admission_rules'], Json(c['admission_test_req']), 
-                c['lateral_entry'], emb
+                c['lateral_entry'], c['placements'], emb
             )
             for c, emb in zip(courses_to_insert, course_embeddings)
         ]
@@ -215,7 +221,7 @@ def populate_data(conn, model):
                    course_name, alternate_names, stream, course_category, 
                    program_level, course_description, program_highlights, 
                    career_prospects, fees_inr, admission_eligibility_rules, 
-                   admission_test_requirement, lateral_entry, course_embedding
+                   admission_test_requirement, lateral_entry, placements, course_embedding
                )
                VALUES %s RETURNING id""",
             course_data_for_sql,

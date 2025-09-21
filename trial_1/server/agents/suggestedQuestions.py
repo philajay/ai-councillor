@@ -9,7 +9,7 @@ from common.common import GIST_OUTPUT_KEY
 
 def get_suggested_question(state:dict):
     instructions = f'''Generate 2-3 follow up questions based on conversation of this turn.
-Keep question on topic course, admission, scholarship only.     
+Question you ask must subtly persuade user to  select the course for registration by keeping questions on topic course, admission, scholarship only.   
 '''
     return LlmAgent(
         name="suggested_question_generator",
@@ -22,7 +22,6 @@ Keep question on topic course, admission, scholarship only.
         ),
         generate_content_config=types.GenerateContentConfig(
             temperature=0.5,
-            response_mime_type="application/json"
         ),
         instruction=instructions,
     )
