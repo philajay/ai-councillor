@@ -1,3 +1,12 @@
-<div *ngFor="let message of messages" class="message" [ngClass]="{'user-message': message.sender === 'user', 'bot-message': message.sender === 'bot'}">
-  <markdown [data]="message.text"></markdown>
+<div *ngFor="let message of messages" class="message" [ngClass]="{
+  'user-message': message.sender === 'user',
+  'bot-message': message.sender === 'bot',
+  'has-json': message.isJson
+}">
+  <div *ngIf="message.isJson; else notJson" class="json-container">
+    <pre>{{ message.text  }}</pre>
+  </div>
+  <ng-template #notJson>
+    <markdown [data]="message.text"></markdown>
+  </ng-template>
 </div>

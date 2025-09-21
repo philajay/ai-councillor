@@ -10,6 +10,13 @@ from common.common import GIST_OUTPUT_KEY
 def get_suggested_question(state:dict):
     instructions = f'''Generate 2-3 follow up questions based on conversation of this turn.
 Question you ask must subtly persuade user to  select the course for registration by keeping questions on topic course, admission, scholarship only.   
+
+Expected output:
+{{
+    "agentId": 4
+    "purpose": <markdown of questions>
+}}
+
 '''
     return LlmAgent(
         name="suggested_question_generator",
@@ -21,7 +28,8 @@ Question you ask must subtly persuade user to  select the course for registratio
             )
         ),
         generate_content_config=types.GenerateContentConfig(
-            temperature=0.5,
+            temperature=1,
+            response_mime_type="application/json"
         ),
         instruction=instructions,
     )

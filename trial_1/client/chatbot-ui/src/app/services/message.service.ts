@@ -39,7 +39,8 @@ export class MessageService {
       const lastMessage = this.messages[this.messages.length - 1];
         if (lastMessage && lastMessage.sender === 'bot' ) {
           try{
-            lastMessage.json = JSON.parse(lastMessage.text);
+            const cleanedJson = this.cleanJsonString(lastMessage.text);
+            lastMessage.json = JSON.parse(cleanedJson);
             lastMessage.isJson = true;
             this.messages.pop();
             this.addMessageBasedOnAgent(lastMessage.json)
@@ -62,7 +63,8 @@ export class MessageService {
         if (lastMessage && lastMessage.sender === 'bot' && event.text) {
           lastMessage.text += event.text;
           try{
-            lastMessage.json = JSON.parse(lastMessage.text);
+            const cleanedJson = this.cleanJsonString(lastMessage.text);
+            lastMessage.json = JSON.parse(cleanedJson);
             lastMessage.isJson = true;
           }catch(e){
             lastMessage.isJson = false;
@@ -74,11 +76,23 @@ export class MessageService {
   }
 
   private addMessageBasedOnAgent(jsonData:any){
+    let message = {
+      sender: "bot",
+      isJson: true,
+      text: ''
+    } as Message
     if (jsonData.agentId == 2 && jsonData.clarification_question){
-      this.addMessage(jsonData.clarification_question, "bot");
+      //this.addMessage(jsonData.clarification_question, "bot");
+      message.text  = jsonData.clarification_question
     }
     else if(jsonData.agentId){
-      this.addMessage(jsonData.purpose, "bot");
+      message.text  = jsonData.purpose
     }
+
+    this.messages.push(message)
+  }
+
+  private cleanJsonString(jsonString: string): string {
+    return jsonString.replace(/```json\n|```/g, '').trim();
   }
 }

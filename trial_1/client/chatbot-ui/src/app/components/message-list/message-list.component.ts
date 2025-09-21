@@ -14,7 +14,6 @@ import { Subscription } from 'rxjs';
 export class MessageListComponent implements OnInit, AfterViewChecked, OnDestroy {
   messages: Message[] = [];
   private shouldScroll = false;
-  private messagesSubscription: Subscription;
 
   constructor(
     private messageService: MessageService,
@@ -23,9 +22,6 @@ export class MessageListComponent implements OnInit, AfterViewChecked, OnDestroy
 
   ngOnInit(): void {
     this.messages = this.messageService.messages;
-    this.messagesSubscription = this.messageService.messagesUpdated.subscribe(() => {
-      this.shouldScroll = true;
-    });
   }
 
   ngAfterViewChecked(): void {
@@ -36,9 +32,7 @@ export class MessageListComponent implements OnInit, AfterViewChecked, OnDestroy
   }
 
   ngOnDestroy(): void {
-    if (this.messagesSubscription) {
-      this.messagesSubscription.unsubscribe();
-    }
+    
   }
 
   private scrollToBottom(): void {
