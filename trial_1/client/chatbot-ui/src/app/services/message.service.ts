@@ -12,9 +12,16 @@ export interface Message {
 @Injectable({
   providedIn: 'root'
 })
+
 export class MessageService {
+  _message = `I'm here to help you navigate the exciting world of our university's courses and programs. My goal is to provide you with quick, accurate, and easily accessible information, acting as your personal guide to academic offerings and administrative processes.
+<br>
+1.  I have done my 12th in arts with 60%. What courses am I eligible for?<br>
+2.  Tell me about the Bachelor of Science in Computer Science program?<br>
+3.  Tell me about placements in BCA Program.`
+
   messages: Message[] = [
-    { text: 'Hello! How can I help you today?', sender: 'bot' }
+    { text: this._message, sender: 'bot' }
   ];
   messagesUpdated = new Subject<void>();
   private isNewMessageStream = true;

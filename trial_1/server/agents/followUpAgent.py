@@ -49,7 +49,7 @@ It must be markdown
 '''
     return LlmAgent(
         name="answer_follow_up",
-        model="gemini-1.5-flash",
+        model="gemini-2.5-flash-lite",
         planner=BuiltInPlanner(
             thinking_config=types.ThinkingConfig(
                 include_thoughts=False,

@@ -55,6 +55,8 @@ class AgentSession:
 
 
     async def handle_connection(self, client_websocket:WebSocket):
+        prompt_count = 0
+        candidaye_count = 0
         while True:
             try:
                 message_json = await client_websocket.receive_text()
@@ -65,6 +67,13 @@ class AgentSession:
                 # Key Concept: run_async executes the agent logic and yields Events.
                 # We iterate through events to find the final answer.
                 async for event in self.runner.run_async(user_id=self.user_id, session_id=self.session.id, new_message=content):
+
+                    try:
+                        candidaye_count += event.usage_metadata.candidates_token_count
+                        prompt_count += event.usage_metadata.prompt_token_count
+                    except:
+                        pass
+
                     if event.error_code:
                         print(f'Failing with {event.error_code}')
                         await client_websocket.send_text(json.dumps({
@@ -123,6 +132,8 @@ class AgentSession:
                                 "agent": event.author
                             }))
 
+                    print(f"Candidate count is {candidaye_count}")
+                    print(f"prompt_count is {prompt_count}")
             except Exception as e:
                 print(f"Caught exception in handle_connection: {e}")
                 #print stack trace
