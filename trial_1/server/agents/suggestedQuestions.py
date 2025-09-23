@@ -5,7 +5,7 @@ from google.adk.events import Event
 from google.adk.planners import BuiltInPlanner
 from google.genai import types
 from pydantic import BaseModel, Field
-from common.common import GIST_OUTPUT_KEY
+from common.common import GIST_OUTPUT_KEY, SHOW_SUGGESTED_QUESTIONS
 
 def get_suggested_question(state:dict):
     instructions = f'''Generate 2-3 follow up questions based on conversation of this turn.
@@ -20,7 +20,7 @@ Expected output:
 '''
     return LlmAgent(
         name="suggested_question_generator",
-        model="gemini-2.5-flash",
+        model="gemini-2.0-flash-lite",
         planner=BuiltInPlanner(
             thinking_config=types.ThinkingConfig(
                 include_thoughts=False,
@@ -46,6 +46,10 @@ class SuggestedQuestion(BaseAgent, BaseModel):
     async def _run_async_impl(
         self, ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
+        
+        if not ctx.session.state.get(SHOW_SUGGESTED_QUESTIONS, False):
+            return
+
         # This agent is designed to be called with specific inputs,
         # so its own run implementation is minimal.
         # The actual logic is in the get_gist_agent function.

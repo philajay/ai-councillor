@@ -11,7 +11,9 @@ export class WebsocketService {
   public messages$ = this.messagesSubject.asObservable();
 
   constructor() {
-    this.socket$ = webSocket('ws://localhost:8080/bot');
+    //https://ai-assistant-bot-183228620742.us-central1.run.app
+    this.socket$ = webSocket('wss://ai-assistant-bot-183228620742.us-central1.run.app/bot');
+    //this.socket$ = webSocket('ws://localhost:8080/bot');
     this.socket$.subscribe({
       next: (msg) => this.messagesSubject.next(msg),
       error: (err) => console.error(err),

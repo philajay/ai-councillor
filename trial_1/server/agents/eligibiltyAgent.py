@@ -9,7 +9,7 @@ import json
 from db.search_engine import find_by_discovery, modify_course_result, find_by_eligibility
 from common.common import remove_json_tags
 from google.adk.agents.readonly_context import ReadonlyContext
-from common.common import EXTRACTED_ENTITY, DB_RESULTS, GIST_OUTPUT_KEY
+from common.common import EXTRACTED_ENTITY, DB_RESULTS, GIST_OUTPUT_KEY, update_session_state, SHOW_SUGGESTED_QUESTIONS
 
 
 def getEntityExtractor():
@@ -90,7 +90,7 @@ You have access to the following tool:
                          'percentage', 'stream', 'subject', 'specialization'.
 
 Instructions:
-1) Group the results logically for easy scanning.
+1) Categorize the response based on course types and provide bullet points for carrer prospect, eligibility and placements data
 2) Always end the response explaing why CGC is good choice for future.
 
 '''
@@ -137,7 +137,7 @@ class EligibilityAgent(BaseAgent, BaseModel):
         entity = json.loads(remove_json_tags( ctx.session.state[EXTRACTED_ENTITY]))
         print(f"Entities extracted are {entity}")
 
-
+        await update_session_state(SHOW_SUGGESTED_QUESTIONS, True, ctx.session, ctx.session_service)
         er = eligibility()
         async for event in er.run_async(ctx):
             yield event

@@ -2,7 +2,6 @@ import re
 import json
 
 
-
 def remove_json_tags(llm_output_str: str) -> str:
     """
     Cleans a string from an LLM to extract a valid JSON object.
@@ -65,3 +64,26 @@ EXTRACTED_ENTITY = "extracted_entity"
 DB_RESULTS = "db_results"
 GIST_OUTPUT_KEY = "turn_gist"
 NEXT_AGENT = "next_agent"
+SHOW_SUGGESTED_QUESTIONS = "show_suggested_questions"
+
+
+async def update_session_state(key, value, session, session_service):
+    from google.adk.events import Event, EventActions
+    import time
+    current_time = time.time()
+    state_changes = {
+        key: value
+    }
+
+    # --- Create Event with Actions ---
+    actions_with_update = EventActions(state_delta=state_changes)
+    # This event might represent an internal system action, not just an agent response
+    system_event = Event(
+        invocation_id="session_update",
+        author="system", # Or 'agent', 'tool' etc.
+        actions=actions_with_update,
+        timestamp=current_time
+    )
+
+    # --- Append the Event (This updates the state) ---
+    await session_service.append_event(session, system_event)

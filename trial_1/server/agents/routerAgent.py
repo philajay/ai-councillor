@@ -125,15 +125,20 @@ class RouterAgent(BaseAgent, BaseModel):
         next_agent = ctx.session.state[NEXT_AGENT]
         next_agent = json.loads(remove_json_tags(next_agent))["agent"]
         
+        show_suggested_questions = False
+
         if next_agent == "FollowUpAgent":
             print("FollowUpAgent CALLED")
+            show_suggested_questions = True
             async for event in self.followUpAgent.run_async(ctx):
                 yield event
         elif next_agent == "CourseAgent":
+            show_suggested_questions = True
             print("CourseAgent CALLED")
             async for event in self.courseAgent.run_async(ctx):
                 yield event
         elif next_agent == "EligibilityAgent":
+            show_suggested_questions = True
             print("EligibilityAgent CALLED")
             async for event in self.eligibilityAgent.run_async(ctx):
                 yield event
@@ -151,7 +156,7 @@ class RouterAgent(BaseAgent, BaseModel):
                 partial =  False,
                 turn_complete =  True
             )
-        
-        async for event in self.suggestedQuestion.run_async(ctx):
-            yield event
+        if show_suggested_questions == True:
+            async for event in self.suggestedQuestion.run_async(ctx):
+                yield event
         

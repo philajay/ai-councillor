@@ -1,6 +1,5 @@
 import psycopg2
 from pgvector.psycopg2 import register_vector
-from sentence_transformers import SentenceTransformer
 
 
 import google.genai as genai
@@ -9,19 +8,30 @@ from google.adk.tools import ToolContext
 from google.adk.tools.base_tool import BaseTool
 from typing import Optional, Dict
 from copy import deepcopy
-
+import os
 # --- Database Configuration ---
 # It's recommended to use environment variables for these in a real application
-DB_NAME = "chatbot"
+DB_NAME = "postgres"
 DB_USER = "postgres"
-DB_PASS = "1234"
-DB_HOST = "localhost"
+DB_PASS = os.environ['DB_PASS']
+DB_HOST = os.environ['DB_HOST']
 DB_PORT = "5432"
 
 
-import os
-MODEL_NAME = os.path.join('/Users/ajay/2.0/cu/scraper/models', 'all-MiniLM-L6-v2')
-model = SentenceTransformer(MODEL_NAME)
+model = None
+def getModel():
+    global model
+    from sentence_transformers import SentenceTransformer
+    import os
+    # Get the absolute path to the directory of the current script
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # The model is in the 'models' directory, a sibling to the 'db' directory
+    model_path = os.path.join(script_dir, '..', 'models', 'all-MiniLM-L6-v2')
+    # Normalize the path to resolve '..' components
+    MODEL_NAME = os.path.normpath(model_path)
+    if not model:
+        model = SentenceTransformer(MODEL_NAME)
+    return model
 
 def normalize_term(term, canonical_table, conn):
     """
@@ -42,7 +52,7 @@ def normalize_term(term, canonical_table, conn):
     
     with conn.cursor() as cur:
         try:
-            term_embedding = model.encode(term)
+            term_embedding = getModel().encode(term)
             
             # Dynamically get the column name from the table name
             column_name = canonical_table.split('_')[1][:-1] # subjects -> subject
@@ -97,7 +107,7 @@ def find_by_discovery(query_text:str, program_level:str):
     with conn.cursor() as cur:
         try:
             # Generate embedding for the user's query
-            query_embedding = model.encode(query_text)
+            query_embedding = getModel().encode(query_text)
             
             pl = program_level.upper()
             # Execute the vector search query
@@ -108,7 +118,7 @@ def find_by_discovery(query_text:str, program_level:str):
                 placements,
                 1 - (course_embedding <=> %s) AS similarity FROM courses 
                 where program_level = '{pl}'
-                ORDER BY similarity DESC LIMIT 10''',
+                ORDER BY similarity DESC ''',
                 (query_embedding,)
             )
             rows = cur.fetchall()

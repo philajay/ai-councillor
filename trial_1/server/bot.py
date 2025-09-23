@@ -1,29 +1,12 @@
 from fastapi import APIRouter, WebSocket
 import json
-from google.adk.agents import Agent
 from google.genai import types
-from google.adk.events import Event, EventActions
-from google.adk.sessions.base_session_service import BaseSessionService
-from google.adk.sessions.session import Session
 import asyncio
-from agents.controller import Controller
-from agents.routerAgent import RouterAgent
-
-
-from google.genai.types import (
-    Part,
-)
-from google.adk.runners import InMemoryRunner
 
 APP_NAME = "bot"
 
 
-
-
-
 router = APIRouter()
-
-
 
 class AgentSession:
     def __init__(self, user_id, is_audio=False):
@@ -36,6 +19,9 @@ class AgentSession:
 
     async def start(self):
         """Starts an agent session"""
+        from agents.routerAgent import RouterAgent
+        from google.adk.runners import InMemoryRunner
+
 
         # Create a Runner
         self.runner = InMemoryRunner(
@@ -55,6 +41,9 @@ class AgentSession:
 
 
     async def handle_connection(self, client_websocket:WebSocket):
+        from google.genai.types import (
+            Part,
+        )
         prompt_count = 0
         candidaye_count = 0
         while True:

@@ -9,7 +9,7 @@ import json
 from db.search_engine import find_by_discovery, modify_course_result
 from common.common import remove_json_tags
 from google.adk.agents.readonly_context import ReadonlyContext
-from common.common import EXTRACTED_ENTITY, DB_RESULTS
+from common.common import EXTRACTED_ENTITY, DB_RESULTS, update_session_state, SHOW_SUGGESTED_QUESTIONS
 
 
 def getEntityExtractor(state):
@@ -19,7 +19,7 @@ def getEntityExtractor(state):
 From the current user query extract the entities. If program_level is not mentioned ask user politely to mention the program_level.
 
 **Context**
-Bsc, BCa, BA etc are all bachelors progman
+Bsc, BCa, BA etc are all bachelors prog man
 MSC Mca etc are all masters programs
 
 You also have access to history of the last entities extracted.
@@ -99,7 +99,7 @@ You have access to the following tool:
 1.  **`find_by_discovery(filters: list)`**: This tool returns the courses based on user query and program_level entity.
 
 Instructions:
-1) Group the results logically for easy scanning.
+1) Categorize the response based on course types and provide bullet points for carrer prospect, eligibility and placements data 
 2) Always end the response explaing why CGC is good choice for future.
 '''
 
@@ -150,6 +150,7 @@ class CourseAgent(BaseAgent, BaseModel):
         if not entity["program_level"]:
             return
 
+        await update_session_state(SHOW_SUGGESTED_QUESTIONS, True, ctx.session, ctx.session_service)
         if  entity["program_level"]:
             async for event in cd.run_async(ctx):
                 yield event
