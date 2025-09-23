@@ -70,7 +70,7 @@ We will always follow **this Chain of Thoughts:**
 '''
     return LlmAgent(
         name="extract_order_entity",
-        model="gemini-2.5-flash-lite",
+        model="gemini-2.5-flash",
         planner=BuiltInPlanner(
             thinking_config=types.ThinkingConfig(
                 include_thoughts=False,
@@ -106,7 +106,7 @@ Instructions:
 def course_discovery():
     return LlmAgent(
         name="get_course_info",
-        model="gemini-2.5-flash-lite",
+        model="gemini-2.5-flash",
         planner=BuiltInPlanner(
             thinking_config=types.ThinkingConfig(
                 include_thoughts=False,

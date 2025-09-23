@@ -18,20 +18,37 @@ DB_HOST = os.environ['DB_HOST']
 DB_PORT = "5432"
 
 
+import asyncio
+import threading
+
 model = None
+model_lock = threading.Lock()
+
 def getModel():
     global model
-    from sentence_transformers import SentenceTransformer
-    import os
-    # Get the absolute path to the directory of the current script
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    # The model is in the 'models' directory, a sibling to the 'db' directory
-    model_path = os.path.join(script_dir, '..', 'models', 'all-MiniLM-L6-v2')
-    # Normalize the path to resolve '..' components
-    MODEL_NAME = os.path.normpath(model_path)
-    if not model:
-        model = SentenceTransformer(MODEL_NAME)
+    if model:
+        return model
+    
+    with model_lock:
+        if model:
+            return model
+            
+        from sentence_transformers import SentenceTransformer
+        import os
+        # Get the absolute path to the directory of the current script
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        # The model is in the 'models' directory, a sibling to the 'db' directory
+        model_path = os.path.join(script_dir, '..', 'models', 'all-MiniLM-L6-v2')
+        # Normalize the path to resolve '..' components
+        MODEL_NAME = os.path.normpath(model_path)
+        model = SentenceTransformer(MODEL_NAME, device='cpu')
+        print("********** Model loaded ************")
     return model
+
+async def load_model_async():
+    """Asynchronously loads the sentence transformer model."""
+    loop = asyncio.get_event_loop()
+    await loop.run_in_executor(None, getModel)
 
 def normalize_term(term, canonical_table, conn):
     """

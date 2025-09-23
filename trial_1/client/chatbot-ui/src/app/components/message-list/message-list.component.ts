@@ -14,6 +14,7 @@ import { Subscription } from 'rxjs';
 export class MessageListComponent implements OnInit, AfterViewChecked, OnDestroy {
   messages: Message[] = [];
   private shouldScroll = false;
+  private subscription!: Subscription;
 
   constructor(
     private messageService: MessageService,
@@ -21,6 +22,10 @@ export class MessageListComponent implements OnInit, AfterViewChecked, OnDestroy
   ) {}
 
   ngOnInit(): void {
+    this.subscription = this.messageService.messagesUpdated.subscribe(() => {
+      this.messages = this.messageService.messages;
+      this.shouldScroll = true;
+    });
     this.messages = this.messageService.messages;
   }
 
@@ -32,12 +37,18 @@ export class MessageListComponent implements OnInit, AfterViewChecked, OnDestroy
   }
 
   ngOnDestroy(): void {
-    
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   private scrollToBottom(): void {
     try {
-      this.el.nativeElement.scrollTop = this.el.nativeElement.scrollHeight;
+      this.el.nativeElement.scroll({
+        top: this.el.nativeElement.scrollHeight,
+        left: 0,
+        behavior: 'smooth'
+      });
     } catch (err) {
       console.error('Could not scroll to bottom:', err);
     }

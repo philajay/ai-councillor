@@ -135,6 +135,12 @@ class AgentSession:
                 continue
 
 
+@router.on_event("startup")
+async def load_model():
+    from db.search_engine import load_model_async
+    """Loads the model at startup"""
+    asyncio.create_task(load_model_async())
+
 @router.websocket("/bot")
 async def websocket_endpoint(websocket: WebSocket):
     try:
@@ -143,10 +149,7 @@ async def websocket_endpoint(websocket: WebSocket):
         agent_session = AgentSession(user_id, False)
         await agent_session.start()
 
-        tasks = [asyncio.create_task(agent_session.handle_connection(websocket))]
-        d, b = await asyncio.wait(tasks, return_when=asyncio.FIRST_EXCEPTION)
-        print(d)
-        print(b)
+        await agent_session.handle_connection(websocket)
 
         # Disconnected
         print(f"Client #{user_id} disconnected")
