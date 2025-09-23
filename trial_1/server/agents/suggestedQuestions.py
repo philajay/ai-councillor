@@ -8,7 +8,10 @@ from pydantic import BaseModel, Field
 from common.common import GIST_OUTPUT_KEY, SHOW_SUGGESTED_QUESTIONS
 
 def get_suggested_question(state:dict):
-    instructions = f'''Generate 2-3 follow up questions based on conversation of this turn.
+    gist = state.get(GIST_OUTPUT_KEY, '')
+
+    instructions = f'''Generate 2-3 follow up questions based on 
+GIST: {gist}
 Question you ask must subtly persuade user to  select the course for registration by keeping questions on topic course, admission, scholarship only.   
 
 Expected output:
@@ -32,6 +35,7 @@ Expected output:
             response_mime_type="application/json"
         ),
         instruction=instructions,
+        include_contents='none'
     )
 
 class SuggestedQuestion(BaseAgent, BaseModel):

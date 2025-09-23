@@ -9,7 +9,7 @@ import json
 from db.search_engine import find_by_discovery, modify_course_result
 from common.common import remove_json_tags
 from google.adk.agents.readonly_context import ReadonlyContext
-from common.common import EXTRACTED_ENTITY, DB_RESULTS, update_session_state, SHOW_SUGGESTED_QUESTIONS
+from common.common import GIST_OUTPUT_KEY, EXTRACTED_ENTITY, DB_RESULTS, update_session_state, SHOW_SUGGESTED_QUESTIONS
 
 
 def getEntityExtractor(state):
@@ -138,7 +138,7 @@ class CourseAgent(BaseAgent, BaseModel):
     async def _run_async_impl(
         self, ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
-    
+
         cd = course_discovery() 
         extract_entities = getEntityExtractor(ctx.session.state)
         async for event in extract_entities.run_async(ctx):
@@ -153,5 +153,7 @@ class CourseAgent(BaseAgent, BaseModel):
         await update_session_state(SHOW_SUGGESTED_QUESTIONS, True, ctx.session, ctx.session_service)
         if  entity["program_level"]:
             async for event in cd.run_async(ctx):
+                if event.is_final_response():
+                    await update_session_state(GIST_OUTPUT_KEY, event.content.parts[0].text, ctx.session, ctx.session_service)
                 yield event
 

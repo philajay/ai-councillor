@@ -26,18 +26,60 @@ def getInstructions(context: ReadonlyContext):
     ee = context.state.get(EXTRACTED_ENTITY, {})
     dr = context.state.get(DB_RESULTS, [])
     gist = context.state.get(GIST_OUTPUT_KEY, '')
-    instruction =  f'''You are an expert conversational router for an education consultancy.
+
+    if len(dr) == 0:
+        instruction =  f'''You are an expert conversational router for an education consultancy.
 Your primary job is to analyze the user's query in the context of the conversation and delegate it to the correct specialist agent.
 
 **Conversational Context:**
 - **Last Gist:** {gist}
-- **Last Database Results (`db_results`):** {dr}
+- **Extracted Entity:++ {ee}
+
+**Your Specialist Agents:**
+
+
+1.  **`CourseAgent`**:
+    - **Use Case:** Use this agent for **new, general discovery searches** about courses. This is for when the user starts a new topic or asks a broad question.
+    - **Keywords:** "show me," "tell me about," "what courses," "B.Tech," "MBA."
+    - **Example:** "Show me courses in computer science."
+
+2.  **`EligibilityAgent`**:
+    - **Use Case:** Use this agent **only** for **new eligibility-based searches** where the user explicitly states their qualifications. The user is asking what they can apply for based on their academic background. This agent is used to query a database with columns like `qualification`, `min_percentage`, `accepted_specializations`, etc.
+    - **Trigger:** The user's query MUST contain specific qualifications like:
+        - "I have a diploma in..."
+        - "I got 75% in my 12th grade with Physics, Chemistry, and Math."
+        - "My qualification is a B.Sc. in Computer Science."
+        - "I have completed my 10+2 with commerce."
+    - **Keywords:** "am I eligible," "what can I study," "courses for me," "my qualifications are."
+    - **Example:** "What can I study with a 3-year diploma in civil engineering?" or "I have 60% in 12th, what are my options?".
+    - **IMPORTANT:** Do NOT use this agent if the user just asks "what is the eligibility for X?". That is a `FollowUpAgent` or `CourseAgent` task if it's about a specific course, or a `FollowUpAgent` if it's a follow-up to previous results. This agent is for when the user provides *their* qualifications to find *new* courses.
+
+
+**Your Decision Process:**
+1.  Look at the user's query.
+2.  Otherwise, decide if it's a new discovery search (`CourseAgent`) or a new eligibility search (`EligibilityAgent`).
+3.  Delegate to the chosen agent.
+
+output format:
+{{
+    "agentId": <Send 1 as hardcoded value>
+    "agent": <choosen agent>,
+    "explanation": <Clear chain of thought as to why this agent was choosen>
+    "purpose": <Clearly explain the purpose of agent to layman in a funny way. For Example "Im assigning the course agent to find suitable course for you. So hold your horses...". Also let user know that it will take time to finish the task so be patient. >
+}}
+'''
+    else:
+        instruction =  f'''You are an expert conversational router for an education consultancy.
+Your primary job is to analyze the user's query in the context of the conversation and delegate it to the correct specialist agent.
+
+**Conversational Context:**
+- **Last Gist:** {gist}
 - **Extracted Entity:++ {ee}
 
 **Your Specialist Agents:**
 
 1.  **`FollowUpAgent`**:
-    - **Use Case:** Use this agent if `db_results` are present AND the user's query is a **follow-up question** about those results.
+    - **Use Case:** Use this agent if `gist` is present AND the user's query is a **follow-up question** about those results.
     - **Keywords:** "tell me more," "what about the second one," "compare them," "what is the eligibility," "fees for that."
     - **Example:** If the last turn showed a list of B.Tech programs and the user now asks, "What are the career prospects for them?", you MUST use this agent.
 
@@ -94,7 +136,8 @@ def get_next_agent():
                 generate_content_config=types.GenerateContentConfig(
                     temperature=1
                 ),
-                output_key = NEXT_AGENT
+                output_key = NEXT_AGENT,
+                include_contents='none'
             )
     return agent
 
