@@ -45,10 +45,12 @@ def getModel():
         print("********** Model loaded ************")
     return model
 
-async def load_model_async():
+async def load_model_async(app_state):
     """Asynchronously loads the sentence transformer model."""
     loop = asyncio.get_event_loop()
     await loop.run_in_executor(None, getModel)
+    app_state.is_model_loaded = True
+    print("********** Model loading complete. Bot is ready. ************")
 
 def normalize_term(term, canonical_table, conn):
     """

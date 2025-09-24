@@ -2,11 +2,15 @@ from fastapi import APIRouter, WebSocket
 import json
 from google.genai import types
 import asyncio
-
 APP_NAME = "bot"
 
 
 router = APIRouter()
+
+class AppState:
+    is_model_loaded = False
+
+app_state = AppState()
 
 class AgentSession:
     def __init__(self, user_id, is_audio=False):
@@ -136,15 +140,30 @@ class AgentSession:
 
 
 @router.on_event("startup")
-async def load_model():
+async def startup_event():
     from db.search_engine import load_model_async
+    print("Going to load model in background")
     """Loads the model at startup"""
-    asyncio.create_task(load_model_async())
+    asyncio.create_task(load_model_async(app_state))
 
 @router.websocket("/bot")
 async def websocket_endpoint(websocket: WebSocket):
+    
     try:
         await websocket.accept()
+
+        if not app_state.is_model_loaded:
+            await websocket.send_text(json.dumps({
+                "text": "The bot is warming up. Please wait a moment...",
+                "agent": "system"
+            }))
+            while not app_state.is_model_loaded:
+                await asyncio.sleep(1)
+            await websocket.send_text(json.dumps({
+                "text": "The bot is ready. How can I help you?",
+                "agent": "system"
+            }))
+
         user_id="John Doe"
         agent_session = AgentSession(user_id, False)
         await agent_session.start()
