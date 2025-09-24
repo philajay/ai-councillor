@@ -1,13 +1,15 @@
 import { Component, OnInit, ElementRef, AfterViewChecked, OnDestroy } from '@angular/core';
-import { Message, MessageService } from '../../services/message.service';
 import { CommonModule } from '@angular/common';
+import { Message, MessageService } from '../../services/message.service';
 import { MarkdownComponent } from 'ngx-markdown';
 import { Subscription } from 'rxjs';
+import { CourseChipsComponent } from '../course-chips/course-chips.component';
+import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-message-list',
   standalone: true,
-  imports: [CommonModule, MarkdownComponent],
+  imports: [CommonModule, MarkdownComponent, CourseChipsComponent],
   templateUrl: './message-list.component.html',
   styleUrls: ['./message-list.component.css']
 })
@@ -18,7 +20,8 @@ export class MessageListComponent implements OnInit, AfterViewChecked, OnDestroy
 
   constructor(
     private messageService: MessageService,
-    private el: ElementRef
+    private el: ElementRef,
+    private websocketService: WebsocketService 
   ) {}
 
   ngOnInit(): void {
@@ -52,5 +55,11 @@ export class MessageListComponent implements OnInit, AfterViewChecked, OnDestroy
     } catch (err) {
       console.error('Could not scroll to bottom:', err);
     }
+  }
+
+  onCourseSelected(course: any) {
+    let newMessage = `I would like to pursue ${course}`
+    this.messageService.addMessage(newMessage, 'user');
+    this.websocketService.sendMessage({ text: newMessage });
   }
 }

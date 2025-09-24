@@ -1,5 +1,8 @@
 import re
 import json
+from typing import Optional, Dict
+from google.adk.tools import ToolContext
+
 
 
 def remove_json_tags(llm_output_str: str) -> str:
@@ -87,3 +90,16 @@ async def update_session_state(key, value, session, session_service):
 
     # --- Append the Event (This updates the state) ---
     await session_service.append_event(session, system_event)
+
+def set_state_after_tool_call(
+        tool:BaseExceptionGroup, args:Dict[str, any], tool_context:ToolContext, 
+        tool_response: Dict
+    ) -> Optional[Dict]:
+
+        try:
+            # Add it to state so that we can reterive it to send to client in live_adk
+            tool_context.state["results"] = tool_response 
+            return tool_response
+        except:
+            return None
+        

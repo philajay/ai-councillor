@@ -6,10 +6,10 @@ from google.adk.planners import BuiltInPlanner
 from google.genai import types
 from pydantic import BaseModel, Field
 import json
-from db.search_engine import find_by_discovery, modify_course_result, find_by_eligibility
+from db.search_engine import find_by_eligibility
 from common.common import remove_json_tags
 from google.adk.agents.readonly_context import ReadonlyContext
-from common.common import EXTRACTED_ENTITY, DB_RESULTS, GIST_OUTPUT_KEY, update_session_state, SHOW_SUGGESTED_QUESTIONS
+from common.common import set_state_after_tool_call, EXTRACTED_ENTITY, DB_RESULTS, GIST_OUTPUT_KEY
 
 
 def getEntityExtractor():
@@ -89,10 +89,7 @@ You have access to the following tool:
     criteria (dict): A dictionary with keys 'qualification', 
                          'percentage', 'stream', 'subject', 'specialization'.
 
-Instructions:
-1) Categorize the response based on course types and provide bullet points for carrer prospect, eligibility and placements data
-2) Always end the response explaing why CGC is good choice for future.
-
+                         
 '''
 
 
@@ -111,6 +108,7 @@ def eligibility():
         ),
         instruction=eligibility_instruction,
         tools=[find_by_eligibility],
+        after_tool_callback=set_state_after_tool_call,
         #after_tool_callback=modify_course_result,
         output_key=DB_RESULTS
     )
@@ -137,7 +135,6 @@ class EligibilityAgent(BaseAgent, BaseModel):
         entity = json.loads(remove_json_tags( ctx.session.state[EXTRACTED_ENTITY]))
         print(f"Entities extracted are {entity}")
 
-        await update_session_state(SHOW_SUGGESTED_QUESTIONS, True, ctx.session, ctx.session_service)
         er = eligibility()
         async for event in er.run_async(ctx):
             yield event

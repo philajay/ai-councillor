@@ -1,12 +1,18 @@
-<div *ngFor="let message of messages" class="message" [ngClass]="{
-  'user-message': message.sender === 'user',
-  'bot-message': message.sender === 'bot',
-  'has-json': message.isJson
-}">
-  <div *ngIf="message.isJson; else notJson" class="json-container">
-    <pre>{{ message.text  }}</pre>
+@for (message of messages; track message) {
+  <div class="message" [ngClass]="{
+    'user-message': message.sender === 'user',
+    'bot-message': message.sender === 'bot',
+    'has-json': message.isJson
+  }">
+    @if (message.isJson) {
+      <div class="json-container">
+        <pre>{{ message.text }}</pre>
+      </div>
+    } @else {
+      <markdown [data]="message.text"></markdown>
+    }
+    @if (message.isComponent && message.component === 'course-chips') {
+      <app-course-chips [courses]="message.componentData" (courseSelected)="onCourseSelected($event)"></app-course-chips>
+    }
   </div>
-  <ng-template #notJson>
-    <markdown [data]="message.text"></markdown>
-  </ng-template>
-</div>
+}

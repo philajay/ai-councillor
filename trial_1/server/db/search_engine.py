@@ -11,10 +11,10 @@ from copy import deepcopy
 import os
 # --- Database Configuration ---
 # It's recommended to use environment variables for these in a real application
-DB_NAME = "postgres"
+DB_NAME = "chatbot"
 DB_USER = "postgres"
-DB_PASS = os.environ['DB_PASS']
-DB_HOST = os.environ['DB_HOST']
+DB_PASS = '1234'
+DB_HOST = 'localhost'
 DB_PORT = "5432"
 
 
@@ -52,15 +52,13 @@ async def load_model_async(app_state):
     app_state.is_model_loaded = True
     print("********** Model loading complete. Bot is ready. ************")
 
-def normalize_term(term, canonical_table, conn):
+def normalize_term(term: str, term_type: str, conn) -> str:
     """
     Finds the closest canonical term for a given user term using vector search.
     
     Args:
         term (str): The user-provided term (e.g., "maths").
-        canonical_table (str): The name of the canonical table to search 
-                               (e.g., "canonical_subjects").
-        model: The loaded sentence transformer model.
+        term_type (str): The type of term to search for (e.g., "subject", "qualification").
         conn: An active database connection.
         
     Returns:
@@ -73,20 +71,21 @@ def normalize_term(term, canonical_table, conn):
         try:
             term_embedding = getModel().encode(term)
             
-            # Dynamically get the column name from the table name
-            column_name = canonical_table.split('_')[1][:-1] # subjects -> subject
-            
             cur.execute(
-                f"SELECT {column_name} FROM {canonical_table} ORDER BY embedding <=> %s LIMIT 1",
-                (term_embedding,)
+                """
+                SELECT term 
+                FROM canonical_terms 
+                WHERE term_type = %s 
+                ORDER BY embedding <=> %s 
+                LIMIT 1
+                """,
+                (term_type, term_embedding)
             )
             result = cur.fetchone()
             return result[0] if result else term # Return original term if no match
         except Exception as e:
-            print(f"Error normalizing term '{term}' in table '{canonical_table}': {e}")
+            print(f"Error normalizing term '{term}' of type '{term_type}': {e}")
             return term # Fallback to original term on error
-
-
 
 
 def get_db_connection():
@@ -158,20 +157,21 @@ def find_by_discovery(query_text:str, program_level:str):
 
 def normalize_criteria(llm_output, conn):
     criteria = {}
-    if 'qualification' in llm_output:
-            criteria['qualification'] = normalize_term(llm_output['qualification'], 'canonical_qualifications',conn)
-    if 'subject' in llm_output:
-        criteria['subject'] = normalize_term(llm_output['subject'], 'canonical_subjects', conn)
-    if 'specialization' in llm_output:
-        criteria['specialization'] = normalize_term(llm_output['specialization'], 'canonical_specializations',  conn)
+    if 'qualification' in llm_output and llm_output['qualification']:
+        criteria['qualification'] = normalize_term(llm_output['qualification'], 'qualification', conn)
+    if 'subject' in llm_output and llm_output['subject']:
+        criteria['subject'] = normalize_term(llm_output['subject'], 'subject', conn)
+    if 'specialization' in llm_output and llm_output['specialization']:
+        criteria['specialization'] = normalize_term(llm_output['specialization'], 'specialization', conn)
+    if 'stream' in llm_output and llm_output['stream']:
+        criteria['stream'] = normalize_term(llm_output['stream'], 'stream', conn)
+        
     if 'percentage' in llm_output:
         # Clean percentage value
         try:
             criteria['percentage'] = int(str(llm_output['percentage']).replace('%', ''))
         except (ValueError, TypeError):
             criteria['percentage'] = None
-    if 'stream' in llm_output:
-        criteria['stream'] = llm_output['stream']
 
     return criteria
 
@@ -195,13 +195,7 @@ def find_by_eligibility(criteria:dict) -> list:
     with conn.cursor() as cur:
         # Start with a base query that joins the tables
         query = """
-            SELECT DISTINCT c.course_name, c.course_description, 
-                c.career_prospects, c.program_highlights, 
-                c.admission_eligibility_rules, c.admission_test_requirement, c.lateral_entry,
-                c.placements,
-            er.qualification,
-            er.min_percentage, er.accepted_specializations, er.required_subjects,
-            er.notes
+            SELECT DISTINCT c.course_category
             FROM courses c
             JOIN eligibility_rules er ON c.id = er.course_id
         """
@@ -236,15 +230,14 @@ def find_by_eligibility(criteria:dict) -> list:
         if where_clauses:
             query += " WHERE " + " AND ".join(where_clauses)
         
-        query += " ORDER BY c.course_name;"
+        query += " ORDER BY c.course_category;"
 
         try:
             cur.execute(query, params)
             rows = cur.fetchall()
             if not rows:
                 return ["No courses found matching your specific eligibility criteria."]
-            header = ",".join([desc[0] for desc in cur.description])
-            results = [header]
+            results = []
             results.extend([",".join(map(str, row)) for row in rows])
             s = len(''.join(results))
             print(f"length of results is {s}")

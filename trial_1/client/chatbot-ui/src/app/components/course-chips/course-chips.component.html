@@ -1,0 +1,7 @@
+<mat-chip-listbox aria-label="Course selection" (change)="onChipSelectionChange($event)">
+  @for (course of courses; track course) {
+    <mat-chip-option [value]="course">
+      {{course}}
+    </mat-chip-option>
+  }
+</mat-chip-listbox>

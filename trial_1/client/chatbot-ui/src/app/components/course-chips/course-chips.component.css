@@ -1,0 +1,35 @@
+mat-chip-listbox {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px; /* Slightly increased gap for better spacing */
+  margin: 10px 0;
+  justify-content: flex-start; /* Align chips to the start */
+}
+
+mat-chip-option {
+  background-color: #e3f2fd; /* A light, friendly blue */
+  color: #0d47a1; /* A dark, readable blue for the text */
+  border-radius: 20px; /* A more rounded, pill-like shape */
+  padding: 10px 16px; /* More padding for a better touch target */
+  cursor: pointer;
+  transition: all 0.3s ease; /* Smooth transition for all properties */
+  border: none; /* Remove the default border */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* A subtle shadow for depth */
+  font-weight: 500; /* Medium font weight for better readability */
+}
+
+mat-chip-option:hover {
+  background-color: #bbdefb; /* A slightly darker blue on hover */
+  transform: translateY(-2px); /* Lift the chip on hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* A more pronounced shadow on hover */
+}
+
+mat-chip-option.mat-mdc-chip-selected {
+  background-color: #0d47a1; /* A deep blue for the selected state */
+  color: #ffffff; /* White text for contrast */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* A slightly stronger shadow when selected */
+}
+
+mat-chip-option.mat-mdc-chip-selected:hover {
+  background-color: #1565c0; /* A slightly lighter shade of the selected blue on hover */
+}
