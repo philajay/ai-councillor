@@ -136,7 +136,7 @@ def find_by_discovery(query_text:str, program_level:str):
                 placements,
                 1 - (course_embedding <=> %s) AS similarity FROM courses 
                 where program_level = '{pl}'
-                ORDER BY similarity DESC ''',
+                ORDER BY similarity DESC LIMIT 5''',
                 (query_embedding,)
             )
             rows = cur.fetchall()
@@ -205,8 +205,14 @@ def find_by_eligibility(criteria:dict) -> list:
         # --- Dynamically build the WHERE clause ---
 
         if 'qualification' in criteria and criteria['qualification']:
-            where_clauses.append("er.qualification = %(qualification)s")
-            params['qualification'] = criteria['qualification']
+            addGraduation = ["Diploma", "10+2"]
+            if not criteria['qualification'] in addGraduation:
+                where_clauses.append("(er.qualification = %(qualification)s or er.qualification = 'Graduate')")     
+                params['qualification'] = criteria['qualification']
+            else:
+                where_clauses.append("er.qualification = %(qualification)s")
+                params['qualification'] = criteria['qualification']
+            
 
         if 'percentage' in criteria and criteria['percentage']:
             where_clauses.append("(er.min_percentage <= %(percentage)s OR er.min_percentage IS NULL)")

@@ -9,7 +9,7 @@ import json
 from db.search_engine import find_by_eligibility
 from common.common import remove_json_tags
 from google.adk.agents.readonly_context import ReadonlyContext
-from common.common import set_state_after_tool_call, EXTRACTED_ENTITY, DB_RESULTS, GIST_OUTPUT_KEY
+from common.common import set_state_after_tool_call, EXTRACTED_ENTITY, DB_RESULTS, GIST_OUTPUT_KEY, remove_json_tags
 
 
 def getEntityExtractor():
@@ -35,7 +35,7 @@ From the current user query extract the entities.
     In indian eductaion system student opts stream in which he wants to pursue higher studies. They are
     arts, commerce, medical and non medical.
     if stream is non medical then assign Mathematics to subject
-    if stream is medical then assign Mathematics to subject
+    if stream is medical then assign Biology to subject
 
 3. *specialization**
     The course done by user in his graduation. 
@@ -74,8 +74,13 @@ Expected output:
     )
 
 
+
+
+
+
 def eligibility_instruction(context: ReadonlyContext):
     entity = context.state[EXTRACTED_ENTITY]
+
     gist = context.state.get(GIST_OUTPUT_KEY, '')
     print(f"gist --> {gist}")
     return f'''You are and expert education consultant.

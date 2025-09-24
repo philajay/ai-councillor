@@ -98,9 +98,8 @@ class AgentSession:
                     if part.function_response:
                         print(f'[Function Called]: {part.function_response.name}')
                         s = await self.runner.session_service.get_session(app_name=APP_NAME, user_id= self.user_id, session_id= self.session_id)
-                        results = s.state["results"]
                         if part.function_response.name == 'find_by_eligibility':
-                            #client_response = result.get("results", {})
+                            results = s.state["results"]
                             await client_websocket.send_text(json.dumps({
                                                     "action": "functionCall",
                                                     "name": 'find_by_eligibility',
