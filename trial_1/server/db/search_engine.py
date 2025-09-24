@@ -157,17 +157,22 @@ def find_by_discovery(query_text:str, program_level:str):
 
 def normalize_criteria(llm_output, conn):
     criteria = {}
-    if 'qualification' in llm_output and llm_output['qualification']:
+    if llm_output.get('qualification'):
         criteria['qualification'] = normalize_term(llm_output['qualification'], 'qualification', conn)
-    if 'subject' in llm_output and llm_output['subject']:
-        criteria['subject'] = normalize_term(llm_output['subject'], 'subject', conn)
-    if 'specialization' in llm_output and llm_output['specialization']:
+    
+    # Handle a list of subjects for subset matching, with a fallback for a single subject.
+    if llm_output.get('subjects') and isinstance(llm_output.get('subjects'), list):
+        normalized_subjects = [normalize_term(s, 'subject', conn) for s in llm_output['subjects']]
+        criteria['subjects'] = normalized_subjects
+    elif llm_output.get('subject'): # Fallback for a single subject
+        criteria['subjects'] = [normalize_term(llm_output['subject'], 'subject', conn)]
+
+    if llm_output.get('specialization'):
         criteria['specialization'] = normalize_term(llm_output['specialization'], 'specialization', conn)
-    if 'stream' in llm_output and llm_output['stream']:
+    if llm_output.get('stream'):
         criteria['stream'] = normalize_term(llm_output['stream'], 'stream', conn)
         
     if 'percentage' in llm_output:
-        # Clean percentage value
         try:
             criteria['percentage'] = int(str(llm_output['percentage']).replace('%', ''))
         except (ValueError, TypeError):
@@ -181,7 +186,7 @@ def find_by_eligibility(criteria:dict) -> list:
     
     Args:
         criteria (dict): A dictionary with keys 'qualification', 
-                         'percentage', 'stream', 'subject', 'specialization'.
+                         'percentage', 'stream', 'subjects' (list), 'specialization'.
     
     Returns:
         list: A list of course names that match the criteria.
@@ -218,10 +223,13 @@ def find_by_eligibility(criteria:dict) -> list:
             where_clauses.append("(er.min_percentage <= %(percentage)s OR er.min_percentage IS NULL)")
             params['percentage'] = criteria['percentage']
             
-        if 'subject' in criteria and criteria['subject']:
-            where_clauses.append("( %(subject)s = ANY(er.required_subjects) OR er.required_subjects IS NULL OR cardinality(er.required_subjects) = 0)")
-            params['subject'] = criteria['subject']
+        # Use subset matching for subjects. The course's required subjects must be
+        # a subset of (be contained by) the subjects the student has taken.
+        if 'subjects' in criteria and criteria['subjects']:
+            where_clauses.append("(er.required_subjects @> %(subjects)s OR er.required_subjects IS NULL OR cardinality(er.required_subjects) = 0)")
+            params['subjects'] = criteria['subjects']
         else:
+            # If no student subjects are provided, only match courses that have no subject requirements.
             where_clauses.append("(er.required_subjects IS NULL OR cardinality(er.required_subjects) = 0)")
 
         if 'specialization' in criteria and criteria['specialization']:

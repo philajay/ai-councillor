@@ -34,8 +34,8 @@ From the current user query extract the entities.
 3. **stream**
     In indian eductaion system student opts stream in which he wants to pursue higher studies. They are
     arts, commerce, medical and non medical.
-    if stream is non medical then assign Mathematics to subject
-    if stream is medical then assign Biology to subject
+    if stream is non medical then assign [Physics, Mathematics] to subject
+    if stream is medical then assign [Physics, Biology] to subject
 
 3. *specialization**
     The course done by user in his graduation. 
@@ -48,7 +48,7 @@ Expected output:
 {{
     "agentId": 3
     "qualification": <>,
-    "subject": <Return if present else return null>
+    "subject": [<Return if present else return null>]
     "specialization": <>
     "percentage": <>
     "stream":<>
