@@ -9,7 +9,7 @@ import json
 from db.search_engine import find_by_eligibility
 from common.common import remove_json_tags
 from google.adk.agents.readonly_context import ReadonlyContext
-from common.common import set_state_after_tool_call, EXTRACTED_ENTITY, DB_RESULTS, GIST_OUTPUT_KEY, remove_json_tags
+from common.common import set_state_after_tool_call, EXTRACTED_ENTITY, LLM_PROCESSED_DB_RESULTS, GIST_OUTPUT_KEY, remove_json_tags
 
 
 def getEntityExtractor():
@@ -115,7 +115,7 @@ def eligibility():
         tools=[find_by_eligibility],
         after_tool_callback=set_state_after_tool_call,
         #after_tool_callback=modify_course_result,
-        output_key=DB_RESULTS
+        output_key=LLM_PROCESSED_DB_RESULTS
     )
 
 

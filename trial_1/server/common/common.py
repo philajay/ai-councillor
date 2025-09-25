@@ -64,10 +64,12 @@ def remove_json_tags(llm_output_str: str) -> str:
         return '{}' # Return empty JSON if all else fails
     
 EXTRACTED_ENTITY = "extracted_entity"
-DB_RESULTS = "db_results"
+LLM_PROCESSED_DB_RESULTS = "db_results"
 GIST_OUTPUT_KEY = "turn_gist"
 NEXT_AGENT = "next_agent"
 SHOW_SUGGESTED_QUESTIONS = "show_suggested_questions"
+LAST_DB_RESULTS = "last_db_results"
+
 
 
 async def update_session_state(key, value, session, session_service):

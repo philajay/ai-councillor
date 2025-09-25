@@ -16,7 +16,7 @@ from .courseAgent import CourseAgent
 from .eligibiltyAgent import EligibilityAgent
 from .followUpAgent import FollowUpAgent
 
-from common.common import EXTRACTED_ENTITY, DB_RESULTS, GIST_OUTPUT_KEY, NEXT_AGENT
+from common.common import EXTRACTED_ENTITY, LLM_PROCESSED_DB_RESULTS, GIST_OUTPUT_KEY, NEXT_AGENT, LAST_DB_RESULTS
 from .gistAgent import GistAgent
 from .suggestedQuestions import SuggestedQuestion
 from google.adk.agents.readonly_context import ReadonlyContext
@@ -24,7 +24,7 @@ from google.adk.agents.readonly_context import ReadonlyContext
 
 def getInstructions(context: ReadonlyContext):
     ee = context.state.get(EXTRACTED_ENTITY, {})
-    dr = context.state.get(DB_RESULTS, [])
+    dr = context.state.get(LAST_DB_RESULTS, [])
     gist = context.state.get(GIST_OUTPUT_KEY, '')
 
     if len(dr) == 0:

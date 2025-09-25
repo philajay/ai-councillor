@@ -106,13 +106,14 @@ def get_db_connection():
         return None
 
 
-def find_by_discovery(query_text:str, program_level:str):
+def find_by_discovery(query_text: str, program_level: str, course_stream_type: str = None):
     """
     Finds courses by semantic similarity to a query text.
-    
+
     Args:
         query_text (str): The user's natural language query.
-        program_leve (str): level for which course is being didcovered. Must be either ug or pg
+        program_level (str): level for which course is being discovered. Must be either ug or pg
+        course_stream_type (str, optional): The program type user is searching for, e.g., BE/Btech, bsc. Defaults to None.
     Returns:
         list: A ranked list of the most relevant course names.
     """
@@ -120,31 +121,42 @@ def find_by_discovery(query_text:str, program_level:str):
     if not conn:
         return ["Error: Could not connect to the database."]
 
-    pl = program_level.upper()
-
     with conn.cursor() as cur:
         try:
             # Generate embedding for the user's query
             query_embedding = getModel().encode(query_text)
-            
-            pl = program_level.upper()
-            # Execute the vector search query
-            cur.execute(
-                f'''SELECT id, course_name, course_description, 
-                career_prospects, program_highlights, 
-                admission_eligibility_rules, admission_test_requirement, lateral_entry,
-                placements,
-                1 - (course_embedding <=> %s) AS similarity FROM courses 
-                where program_level = '{pl}'
-                ORDER BY similarity DESC LIMIT 5''',
-                (query_embedding,)
-            )
+
+            # Base query and parameters
+            query = """
+                SELECT id, course_name, course_description,
+                       career_prospects, program_highlights,
+                       admission_eligibility_rules, admission_test_requirement, lateral_entry,
+                       placements,
+                       1 - (course_embedding <=> %s) AS similarity
+                FROM courses
+                WHERE program_level = %s
+            """
+            params = [query_embedding, program_level.upper()]
+
+            # Conditionally add the course_category filter
+            if course_stream_type:
+                query += " AND course_category = %s"
+                params.append(course_stream_type)
+
+            # Add ordering and limit
+            query += " ORDER BY similarity DESC"
+
+            # Execute the query
+            cur.execute(query, tuple(params))
+
             rows = cur.fetchall()
             if not rows:
                 return ["No relevant courses found."]
-            header = ",".join([desc[0] for desc in cur.description])
+            
+            # Exclude the last column ('similarity') from the header and results
+            header = ",".join([desc[0] for desc in cur.description[:-1]])
             results = [header]
-            results.extend([",".join(map(str, row)) for row in rows])
+            results.extend([",".join(map(str, row[:-1])) for row in rows])
             return results
         except Exception as e:
             print(f"An error occurred during discovery search: {e}")

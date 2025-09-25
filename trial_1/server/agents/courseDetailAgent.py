@@ -8,13 +8,13 @@ import json
 from google.adk.agents.readonly_context import ReadonlyContext
 from google.adk.sessions import Session
 from google.genai import types
-from common.common import DB_RESULTS
+from common.common import LLM_PROCESSED_DB_RESULTS
 from db.search_engine import get_course_details_by_id, modify_course_result
 
 
 def get_course_detail_agent(session: Session):
     # Retrieve the cached results from the session state
-    last_results = session.state.get(DB_RESULTS, [])
+    last_results = session.state.get(LLM_PROCESSED_DB_RESULTS, [])
 
     instructions = f'''You are an expert education consultant.
 Your task is to provide detailed information about a specific course that the user is asking about.

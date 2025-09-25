@@ -9,7 +9,7 @@ import json
 from db.search_engine import find_by_discovery, modify_course_result
 from common.common import remove_json_tags
 from google.adk.agents.readonly_context import ReadonlyContext
-from common.common import GIST_OUTPUT_KEY, EXTRACTED_ENTITY, DB_RESULTS, update_session_state, SHOW_SUGGESTED_QUESTIONS
+from common.common import GIST_OUTPUT_KEY, EXTRACTED_ENTITY, LAST_DB_RESULTS , update_session_state, SHOW_SUGGESTED_QUESTIONS, LLM_PROCESSED_DB_RESULTS
 
 
 def getEntityExtractor(state):
@@ -88,7 +88,7 @@ We will always follow **this Chain of Thoughts:**
 
 
 def course_discovery_instruction(context: ReadonlyContext):
-    entity = context.state.get(DB_RESULTS, {})
+    entity = context.state.get(EXTRACTED_ENTITY, {})
     return f'''You are and expert education consultant.
 **Task**
 Answer the question using the data obtained by tool find_by_discovery.
@@ -96,14 +96,19 @@ Answer the question using the data obtained by tool find_by_discovery.
 Extracted Entities: {entity}
 
 You have access to the following tool:
-1.  **`find_by_discovery(filters: list)`**: This tool returns the courses based on user query and program_level entity.
+1.  **`find_by_discovery(filters: list)`**: This tool returns the courses based on user query, program_level and course_stream_type entity.
 
 Instructions:
 1) Call the tool and that is it.
+2) If the we do not find information user is looking then inform user that we are going to show him courses in which he might be interested.
+2) You are part of chain of agents. Next agent is supposed to get more details. 
+    a) Give your brief synopsis about courses
+    b) end by saying details are following
+
 '''
 
 def json_formatter_agent(state):
-    entity = state.get(DB_RESULTS, {})
+    entity = state.get(LAST_DB_RESULTS, {})
     instructions = f'''You are an expert JSON formatter.
 **Task**
 Your task is to convert the given raw data into a structured JSON format. You must adhere to the specified JSON structure without any deviation.
@@ -117,8 +122,15 @@ You must return a JSON array, where each object in the array represents a course
     {{
         "id": "<course Id>",
         "name": "<course name>",
-        "careerProspects": "<Career prospects for the course>",
-        "eligibility": "<Eligibility criteria for the course>",
+        "summary": <>
+        "careerProspects": {{
+            "summary": <Brief summary of carrer prospects>,
+            "careers"; [array of careers]
+        }},
+        "eligibility": [{{
+            title: <title of eligibility>
+            detail: <This is most important part of data. Be very thorough and explain it in detail using markdown. Highlight important parts.>
+        }}],
         "placements": {{
             "highestPackage": <>,
             "placement_offers": <>,
@@ -133,6 +145,7 @@ You must return a JSON array, where each object in the array represents a course
 3.  Populate the values for these keys from the corresponding fields in the raw data.
 4.  Ensure the final output is a single JSON array containing all the course objects.
 5.  Do not include any additional text, explanations, or markdown formatting in your response. The output must be only the JSON array.
+6.  Summary of course should be very concise and short one line.
 '''
     return LlmAgent(
         name="json_formatter",
@@ -148,7 +161,7 @@ You must return a JSON array, where each object in the array represents a course
             response_mime_type="application/json"
         ),
         instruction=instructions,
-        output_key=GIST_OUTPUT_KEY
+        output_key=LLM_PROCESSED_DB_RESULTS
     )
 
 
@@ -167,8 +180,8 @@ def course_discovery():
         ),
         instruction=course_discovery_instruction,
         tools=[find_by_discovery],
-        #after_tool_callback=modify_course_result,
-        output_key=DB_RESULTS
+        after_tool_callback=modify_course_result,
+        output_key=LLM_PROCESSED_DB_RESULTS
     )
 
 

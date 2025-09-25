@@ -7,11 +7,11 @@ from pydantic import BaseModel, Field
 import json
 from google.adk.sessions import Session
 from google.genai import types
-from common.common import DB_RESULTS
+from common.common import LLM_PROCESSED_DB_RESULTS
 
 def get_follow_up_agent(session: Session):
     # Retrieve the cached results from the session state
-    last_results = session.state.get(DB_RESULTS, [])
+    last_results = session.state.get(LLM_PROCESSED_DB_RESULTS, [])
 
     instructions = f'''You are an expert education consultant. Your job is to answer follow-up questions based on a list of courses that have already been shown to the user.
 
