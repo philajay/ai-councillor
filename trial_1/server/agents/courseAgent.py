@@ -19,8 +19,8 @@ def getEntityExtractor(state):
 From the current user query extract the entities. If program_level is not mentioned ask user politely to mention the program_level.
 
 **Context**
-Bsc, BCa, BA etc are all bachelors prog man
-MSC Mca etc are all masters programs
+Bsc, BCa, BA etc are all bachelors prog. So their program level is 'ug'
+MSC Mca etc are all masters programs . So their program level is 'pg'
 
 You also have access to history of the last entities extracted.
 history: {x}
@@ -30,6 +30,7 @@ history: {x}
 
 1. **program_level**
     program level for which user is exploring courses. 
+    All courses which are bachelors like bcs , bcom etc are ug courses
     **Possible Values**
     It can be either 'ug' or 'pg'
     *Examples
@@ -52,6 +53,13 @@ If program_level is not mentioned ask user politry about the program_level.
 
 We will always follow **this Chain of Thoughts:**
 1) if program_level is missing, ask user politely about program_level.
+{{
+    "agentId": <Hardcoded 2>
+    "program_level": <level>,
+    "course_stream_type": <Return if present else return null>
+    "clarification_question": <Question to get the program_level>
+}}
+
 2) if program_level is present return json 
     {{
         "program_level": <level>,
@@ -60,12 +68,7 @@ We will always follow **this Chain of Thoughts:**
         "purpose": <Fuuny take on your purpose. Also let user know that it will take time to finish the task so be patient.>
     }}
 
-{{
-    "agentId": <Hardcoded 2>
-    "program_level": <level>,
-    "course_stream_type": <Return if present else return null>
-    "clarification_question": <Question to get the program_level>
-}}
+
 
 '''
     return LlmAgent(
@@ -96,7 +99,13 @@ Answer the question using the data obtained by tool find_by_discovery.
 Extracted Entities: {entity}
 
 You have access to the following tool:
-1.  **`find_by_discovery(filters: list)`**: This tool returns the courses based on user query, program_level and course_stream_type entity.
+1.  **`find_by_discovery(filters: list)`**: 
+    Arguments:
+    query_text (str): The user's natural language query.
+    program_level (str): level for which course is being discovered. Must be either ug or pg
+    course_stream_type (str, optional): The program type user is searching for, e.g., BE/Btech, bsc. Defaults to None.
+
+    This tool returns the courses based on user query, program_level and course_stream_type entity.
 
 Instructions:
 1) Call the tool and that is it.
@@ -149,7 +158,7 @@ You must return a JSON array, where each object in the array represents a course
 '''
     return LlmAgent(
         name="json_formatter",
-        model="gemini-2.5-flash",
+        model="gemini-2.5-flash-lite",
         planner=BuiltInPlanner(
             thinking_config=types.ThinkingConfig(
                 include_thoughts=False,
@@ -181,7 +190,8 @@ def course_discovery():
         instruction=course_discovery_instruction,
         tools=[find_by_discovery],
         after_tool_callback=modify_course_result,
-        output_key=LLM_PROCESSED_DB_RESULTS
+        output_key=LLM_PROCESSED_DB_RESULTS,
+        include_contents='none'
     )
 
 

@@ -106,7 +106,7 @@ def get_db_connection():
         return None
 
 
-def find_by_discovery(query_text: str, program_level: str, course_stream_type: str = None):
+def find_by_discovery(query_text: str, program_level: str, course_stream_type: str):
     """
     Finds courses by semantic similarity to a query text.
 
@@ -194,7 +194,7 @@ def normalize_criteria(llm_output, conn):
 
 def find_by_eligibility(criteria:dict) -> list:
     """
-    Finds courses based on a structured criteria dictionary.
+    Finds courses based on a structured criteria dictionary using the new schema.
     
     Args:
         criteria (dict): A dictionary with keys 'qualification', 
@@ -210,7 +210,6 @@ def find_by_eligibility(criteria:dict) -> list:
     criteria = normalize_criteria(criteria, conn)
 
     with conn.cursor() as cur:
-        # Start with a base query that joins the tables
         query = """
             SELECT DISTINCT c.course_category
             FROM courses c
@@ -218,8 +217,6 @@ def find_by_eligibility(criteria:dict) -> list:
         """
         where_clauses = []
         params = {}
-
-        # --- Dynamically build the WHERE clause ---
 
         if 'qualification' in criteria and criteria['qualification']:
             addGraduation = ["Diploma", "10+2"]
@@ -229,28 +226,37 @@ def find_by_eligibility(criteria:dict) -> list:
             else:
                 where_clauses.append("er.qualification = %(qualification)s")
                 params['qualification'] = criteria['qualification']
-            
 
         if 'percentage' in criteria and criteria['percentage']:
             where_clauses.append("(er.min_percentage <= %(percentage)s OR er.min_percentage IS NULL)")
             params['percentage'] = criteria['percentage']
-            
-        # Use subset matching for subjects. The course's required subjects must be
-        # a subset of (be contained by) the subjects the student has taken.
+
+        # Handle subject-based filtering with the new schema
         if 'subjects' in criteria and criteria['subjects']:
-            where_clauses.append("(er.required_subjects @> %(subjects)s OR er.required_subjects IS NULL OR cardinality(er.required_subjects) = 0)")
+            # Student must have all subjects in must_have_subjects
+            where_clauses.append(
+                """(er.must_have_subjects IS NULL OR 
+                    cardinality(er.must_have_subjects) = 0 OR 
+                    er.must_have_subjects @> %(subjects)s)"""
+            )
+            # If can_have_subjects is not empty, student must have at least one of them
+            # where_clauses.append(
+            #     """(er.can_have_subjects IS NULL OR 
+            #         cardinality(er.can_have_subjects) = 0 OR 
+            #         er.can_have_subjects && %(subjects)s)"""
+            # )
             params['subjects'] = criteria['subjects']
         else:
-            # If no student subjects are provided, only match courses that have no subject requirements.
-            where_clauses.append("(er.required_subjects IS NULL OR cardinality(er.required_subjects) = 0)")
+            # If student provides no subjects, only match courses with no subject requirements
+            where_clauses.append("(er.must_have_subjects IS NULL OR cardinality(er.must_have_subjects) = 0)")
+            where_clauses.append("(er.can_have_subjects IS NULL OR cardinality(er.can_have_subjects) = 0)")
 
         if 'specialization' in criteria and criteria['specialization']:
-            # This clause handles cases where a rule accepts any specialization
-            where_clauses.append("""
-                (er.accepted_specializations IS NULL OR 
-                 cardinality(er.accepted_specializations) = 0 OR 
-                 %(specialization)s = ANY(er.accepted_specializations))
-            """)
+            where_clauses.append(
+                """(er.accepted_specializations IS NULL OR 
+                    cardinality(er.accepted_specializations) = 0 OR 
+                    %(specialization)s = ANY(er.accepted_specializations))"""
+            )
             params['specialization'] = criteria['specialization']
 
         if where_clauses:
@@ -263,10 +269,7 @@ def find_by_eligibility(criteria:dict) -> list:
             rows = cur.fetchall()
             if not rows:
                 return ["No courses found matching your specific eligibility criteria."]
-            results = []
-            results.extend([",".join(map(str, row)) for row in rows])
-            s = len(''.join(results))
-            print(f"length of results is {s}")
+            results = [",".join(map(str, row)) for row in rows]
             return results
         except Exception as e:
             print(f"An error occurred during eligibility search: {e}")
@@ -298,7 +301,7 @@ def get_course_details_by_id(course_id: int):
             cur.execute("""
                 SELECT c.id, c.course_name, c.course_description, c.career_prospects,
                        c.program_highlights, er.qualification, er.min_percentage,
-                       er.accepted_specializations, er.required_subjects, er.notes
+                       er.accepted_specializations, er.must_have_subjects, er.can_have_subjects, er.notes
                 FROM courses c
                 LEFT JOIN eligibility_rules er ON c.id = er.course_id
                 WHERE c.id = %s;

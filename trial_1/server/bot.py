@@ -84,7 +84,7 @@ class AgentSession:
                                                 "endOfTurn": True,
                                                 "agent": event.author
                                             }))
-                        print(f"[AGENT TO CLIENT]: {message}")
+                        # print(f"[AGENT TO CLIENT]: {message}")
                         continue
                     
                     # Read the Content and its first Part
@@ -110,11 +110,6 @@ class AgentSession:
 
 
 
-                    if part.function_response:
-                        print(f'[Function Called]: {part.function_response.name}')
-                        #Send the response of function call to user if required
-
-
                     # If it's text and a parial text, send it
                     elif part.text and event.partial:
                         message = {
@@ -122,7 +117,7 @@ class AgentSession:
                             "agent": event.author
                             }
                         await client_websocket.send_text(json.dumps(message))
-                        print(f"[AGENT TO CLIENT PARTIALTEST]: text/plain: {message}")
+                        #print(f"[AGENT TO CLIENT PARTIALTEST]: text/plain: {message}")
 
 
                     # Key Concept: is_final_response() marks the concluding message for the turn.
@@ -135,7 +130,7 @@ class AgentSession:
                                 "agent": event.author
                             }
                             await client_websocket.send_text(json.dumps(message))
-                            print(f"[AGENT TO CLIENT]: text/plain: {message}")
+                            # print(f"[AGENT TO CLIENT]: text/plain: {message}")
                             await client_websocket.send_text(json.dumps({
                                 "endOfTurn": True,
                                 "agent": event.author

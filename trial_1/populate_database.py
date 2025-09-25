@@ -111,7 +111,8 @@ def setup_database_schema(conn):
                 qualification VARCHAR(255) NOT NULL,
                 min_percentage INTEGER,
                 accepted_specializations TEXT[],
-                required_subjects TEXT[],
+                must_have_subjects TEXT[],
+                can_have_subjects TEXT[],
                 is_lateral_entry BOOLEAN DEFAULT FALSE,
                 notes TEXT
             );
@@ -214,7 +215,7 @@ def populate_data(conn, model):
     print("Starting data population...")
     
     script_dir = os.path.dirname(__file__)
-    json_path = os.path.join(script_dir, '..', 'data', 'step7.json')
+    json_path = os.path.join(script_dir, '..', 'data', 'step8.json')
 
     with open(json_path, 'r') as f:
         data = json.load(f)
@@ -259,8 +260,10 @@ def populate_data(conn, model):
         for rule in course.get('eligibility_rules', []):
             if rule.get('qualification'):
                 unique_qualifications.add(rule['qualification'])
-            if rule.get('required_subjects'):
-                unique_subjects.update(rule['required_subjects'])
+            if rule.get('must_have_subjects'):
+                unique_subjects.update(rule['must_have_subjects'])
+            if rule.get('can_have_subjects'):
+                unique_subjects.update(rule['can_have_subjects'])
             if rule.get('accepted_specializations'):
                 specs = [s for s in rule['accepted_specializations'] if s]
                 unique_specializations.update(specs)
@@ -296,14 +299,15 @@ def populate_data(conn, model):
                 for rule in course.get('eligibility_rules', []):
                     rules_to_insert.append((
                         course_id, rule.get('qualification'), rule.get('min_percentage'),
-                        rule.get('accepted_specializations'), rule.get('required_subjects'),
-                        rule.get('is_lateral_entry', False), rule.get('notes')
+                        rule.get('accepted_specializations'), rule.get('must_have_subjects'),
+                        rule.get('can_have_subjects'), rule.get('is_lateral_entry', False), 
+                        rule.get('notes')
                     ))
         
         execute_values(
             cur,
             """INSERT INTO eligibility_rules (course_id, qualification, min_percentage, 
-               accepted_specializations, required_subjects, is_lateral_entry, notes) VALUES %s""",
+               accepted_specializations, must_have_subjects, can_have_subjects, is_lateral_entry, notes) VALUES %s""",
             rules_to_insert
         )
         print(f"Inserted {len(rules_to_insert)} eligibility rules.")

@@ -51,7 +51,7 @@ Your primary job is to analyze the user's query in the context of the conversati
         - "My qualification is a B.Sc. in Computer Science."
         - "I have completed my 10+2 with commerce."
     - **Keywords:** "am I eligible," "what can I study," "courses for me," "my qualifications are."
-    - **Example:** "What can I study with a 3-year diploma in civil engineering?" or "I have 60% in 12th, what are my options?".
+    - **Example:** "What can I study with a 3-year diploma in civil engineering?" or "I have 60% in 12th in arts,  what are my options?".
     - **IMPORTANT:** Do NOT use this agent if the user just asks "what is the eligibility for X?". That is a `FollowUpAgent` or `CourseAgent` task if it's about a specific course, or a `FollowUpAgent` if it's a follow-up to previous results. This agent is for when the user provides *their* qualifications to find *new* courses.
 
 
@@ -90,15 +90,7 @@ Your primary job is to analyze the user's query in the context of the conversati
 
 3.  **`EligibilityAgent`**:
     - **Use Case:** Use this agent **only** for **new eligibility-based searches** where the user explicitly states their qualifications. The user is asking what they can apply for based on their academic background. This agent is used to query a database with columns like `qualification`, `min_percentage`, `accepted_specializations`, etc.
-    - **Trigger:** The user's query MUST contain specific qualifications like:
-        - "I have a diploma in..."
-        - "I got 75% in my 12th grade with Physics, Chemistry, and Math."
-        - "My qualification is a B.Sc. in Computer Science."
-        - "I have completed my 10+2 with commerce."
-    - **Keywords:** "am I eligible," "what can I study," "courses for me," "my qualifications are."
-    - **Example:** "What can I study with a 3-year diploma in civil engineering?" or "I have 60% in 12th, what are my options?".
-    - **IMPORTANT:** Do NOT use this agent if the user just asks "what is the eligibility for X?". That is a `FollowUpAgent` or `CourseAgent` task if it's about a specific course, or a `FollowUpAgent` if it's a follow-up to previous results. This agent is for when the user provides *their* qualifications to find *new* courses.
-
+    Carefully examine the gist and determine if we need to use this agent
 4.  **`ClarificationAgent`**:
     - **Use Case:** Use this agent when `db_results` are present, and the user asks an eligibility-related question. This situation is ambiguous because the user might be asking about the courses already shown (`FollowUpAgent`) or starting a new, unrelated eligibility search (`EligibilityAgent`).
     - **Example:** If the last turn showed a list of B.Tech programs and the user now asks, "What can I study with 60% in 12th?", it's unclear if they mean from the list shown or in general. Use this agent to ask for clarification.
@@ -121,6 +113,126 @@ output format:
 '''
     return instruction
 
+
+def summary_agent():
+    agent = LlmAgent(
+            name="router",
+            model="gemini-2.5-pro",
+            instruction='''You are brain of the system. Your task is to use the current gist, user request and agents available to plan how to fulfill the request. 
+Agents
+1)  Name: course_discovery
+    - **Use Case:** Use this agent for **new, general discovery searches** about courses. This is for when the user starts a new topic or asks a broad question.
+    - **Keywords:** "show me," "tell me about," "what courses," "B.Tech," "MBA."
+    - **Example:** "Show me courses in computer science."
+    - **Entities** Extract the entities to be used by the Agent: 
+        **Context**
+        Bsc, BCa, BA etc are all bachelors prog man
+        MSC Mca etc are all masters programs
+        **Entities to be extracted.**
+
+        a. **program_level**
+            program level for which user is exploring courses. 
+            **Possible Values**
+            It can be either 'ug' or 'pg'
+            *Examples
+                a) Show me undergraduate courses
+                b) Show me post graduatd courses.
+                c) show me courses. 
+            **Note**
+            Sometime user will not directly mention 'ug' or 'pg'. They will mention their last qualification from which you need to infer if student is lookig for ug or pf course.
+            For example user might say I have done my +2. In this case we can infer that user is looking for ug courses.
+
+        b. *course_stream_type**
+            In india there are various types of courses offered based on stream user is pursuing.
+            **Possible Values**
+            It can be either "MCA", "BCA", "BA", "BE/B.Tech", "B.Pharm", "LLB", "BBA/BMS", "BA/BBA LLB", "MBA/PGDM", "B.Com", "D.El.Ed", "ME/M.Tech", "B.Sc"
+        
+        Schema of entity to be passed to agent:
+        {{
+            "program_level": <level>,
+            "course_stream_type": <Return if present else return null>
+            "agentId": <Hardcoded 2>
+            "purpose": <Fuuny take on your purpose. Also let user know that it will take time to finish the task so be patient.>
+        }}
+
+2 Name: EligibilityAgent
+    - **Use Case:** - **Use Case:** Use this agent **only** for **new eligibility-based searches** where the user explicitly states their qualifications. The user is asking what they can apply for based on their academic background. This agent is used to query a database with columns like `qualification`, `min_percentage`, `accepted_specializations`, etc.
+    - **Example:** "What can I study with a 3-year diploma in civil engineering?" or "I have 60% in 12th in arts,  what are my options?".
+    - **Entities** Extract the entities to be used by the Agent: 
+        **Entities to be extracted.**
+
+        a. **qualification**
+            The last qualification user has finished 
+            **Possible Values**
+            "Certificate course", "B.Sc.", "Diploma", "Graduate", "Bachelor's Degree", "B.C.A", "10+2", "M. Sc.", "B.E./B.Tech"
+            *Examples
+                a) Show me undergraduat courses
+                b) Show me post graduat courses.
+                c) show me courses. 
+            **Note**
+
+        b. *subject**
+            The subjects which user has opted in the last qualification
+            
+        c. **stream**
+            In indian eductaion system student opts stream in which he wants to pursue higher studies. They are
+            arts, commerce, medical and non medical.
+            if stream is non medical then assign [Mathematics] to subject
+            if stream is medical then assign [ Biology] to subject
+
+        d. *specialization**
+            The course done by user in his graduation. 
+
+        e.  *percentage**
+            Percentage obtained by user.
+
+        
+        Schema of entity to be passed to agent:
+        {{
+            "agentId": 3
+            "qualification": <>,
+            "stream":<>
+            "subject": [<Only return Subject if you are hundred percent sure>]
+            "specialization": <>
+            "percentage": <>
+            "purpose": <Funny take on your purpose and what are you doing. Also let user know that it will take time to finish the task so be patient.>
+        }}
+
+
+Output Your output should be json as shown below:
+{{
+    "plan" : [
+        {{
+            "agent": <agent name>,
+            "entities": <Entity object required by agent>
+        }}
+    ],
+    "gist": <Overall Essence:
+        A brief, one-to-two sentence overview of the conversation's main purpose and key takeaway.
+        Main Points & Decisions:
+        Use a bulleted list to highlight the most significant topics discussed.
+        Clearly state any final decisions that were made.
+        Key Highlights & Action Items:
+        Identify and list any crucial data points, agreements, or unresolved questions.
+        Enumerate all assigned action items, specifying who is responsible for each if mentioned.
+    >
+
+}}
+''',
+            sub_agents=[],
+            planner=BuiltInPlanner(
+                thinking_config=types.ThinkingConfig(
+                    include_thoughts=False,
+                )
+            ),
+            generate_content_config=types.GenerateContentConfig(
+                temperature=1
+            ),
+            output_key = GIST_OUTPUT_KEY
+        )
+    return agent
+
+
 def get_next_agent():
     agent = LlmAgent(
                 name="router",
@@ -137,7 +249,6 @@ def get_next_agent():
                     temperature=1
                 ),
                 output_key = NEXT_AGENT,
-                include_contents='none'
             )
     return agent
 
@@ -160,8 +271,14 @@ class RouterAgent(BaseAgent, BaseModel):
     async def _run_async_impl(
         self, ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
-        router_agent = get_next_agent()
+        sm = summary_agent()
+        # async for event in sm.run_async(ctx):
+        #     yield event
+        # gist = ctx.session.state[GIST_OUTPUT_KEY]
+        # view = json.loads(remove_json_tags(gist))
+        # print(f"Gist is {view}")
 
+        router_agent = get_next_agent()
         async for event in router_agent.run_async(ctx):
             yield event
 

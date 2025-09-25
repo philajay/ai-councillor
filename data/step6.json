@@ -43,8 +43,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"highest_package\": \"10LPA\",\n  \"placement_offers\": \"10000+\",\n  \"recruiters\": \"1200+\",\n  \"package_offered_by_200_companies\": \"10LPA\",\n  \"recruiting_companies\": []\n}\n```"
+        }
     },
     {
         "source_course_name": "B.Sc. Cyber Security",
@@ -91,8 +90,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"highest_package\": \"33 LPA\",\n  \"placement_offers\": \"10000+\",\n  \"number_of_recruiters\": \"1200+\",\n  \"package_offered_by_companies_range\": \"25-30 LPA\",\n  \"number_of_companies_in_range\": \"200+\",\n  \"recruiting_companies\": [\n    \"Adobe\",\n    \"Amazon\",\n    \"Servicenow\",\n    \"Autodesk\",\n    \"Mu Sigma\",\n    \"NUTANIX\"\n  ]\n}\n```"
+        }
     },
     {
         "source_course_name": "B.Sc. Graphic & Web Designing",
@@ -146,8 +144,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "**Placement Information for B.Sc. Graphic & Web Designing:**\n\n*   **highest_package:** 33LPA\n*   **placement_offers:** 10000+\n*   **number_of_recruiters:** 1200+\n*   **package_offered_by_200_plus_companies:** 25-30LPA\n*   **recruiting_companies:**"
+        }
     },
     {
         "source_course_name": "B.Sc. Multimedia",
@@ -201,8 +198,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"course_name\": \"B.Sc. Multimedia\",\n  \"placement_information\": {\n    \"highest_package\": \"33 LPA\",\n    \"total_placement_offers\": \"10000+\",\n    \"total_recruiters\": \"1200+\",\n    \"package_offered_by_200_plus_companies\": \"25-30 LPA\"\n  },\n  \"recruiting_companies\": [\n    \"Adobe\",\n    \"Amazon\",\n    \"Servicenow\",\n    \"Autodesk\",\n    \"Mu Sigma\",\n    \"NUTANIX\"\n  ]\n}\n```"
+        }
     },
     {
         "source_course_name": "B.Sc. IT (Information Technology)",
@@ -256,8 +252,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"highest_package\": \"33LPA\",\n  \"total_placement_offers\": \"10000+\",\n  \"number_of_recruiters\": \"1200+\",\n  \"package_by_companies\": \"25-30LPA by 200+ Companies\",\n  \"recruiting_companies\": [\n    \"Adobe\",\n    \"Amazon\",\n    \"Servicenow\",\n    \"Autodesk\",\n    \"Mu Sigma\",\n    \"NUTANIX\"\n  ]\n}\n```"
+        }
     },
     {
         "source_course_name": "BCA AI & ML",
@@ -303,8 +298,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "**Placement Information for BCA AI & ML:**\n\n*   **Highest Package Offered:** 33 LPA\n*   **Total Placement Offers:** 10000+\n*   **Number of Recruiters:** 1200+\n*   **Package Offered by 200+ Companies:** 25-30 LPA\n*   **Recruiting Companies (from student placements on BCA AI & ML page):**\n    *   Adobe\n    *   Amazon\n    *   Servicenow\n    *   Autodesk\n    *   Mu Sigma\n    *   NUTANIX"
+        }
     },
     {
         "source_course_name": "BCA Cyber Security",
@@ -350,8 +344,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"highest_package\": \"33LPA\",\n  \"number_of_placement_offers\": \"10000+\",\n  \"number_of_recruiters\": \"1200+\",\n  \"package_offered_by_x_companies\": \"25-30LPA Package Offered by 200+ Companies\",\n  \"recruiting_companies\": []\n}\n```"
+        }
     },
     {
         "source_course_name": "Bachelor of Computer Application (BCA)",
@@ -397,8 +390,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"highest_package\": \"33LPA\",\n  \"total_placement_offers\": \"10000+\",\n  \"total_recruiters\": \"1200+\",\n  \"package_offered_by_companies\": \"25-30LPA by 200+ Companies\",\n  \"recruiting_companies\": [\n    \"Adobe\",\n    \"Amazon\",\n    \"Servicenow\",\n    \"Autodesk\",\n    \"Mu Sigma\",\n    \"NUTANIX\"\n  ]\n}\n```"
+        }
     },
     {
         "source_course_name": "Master of Computer Application (MCA)",
@@ -474,8 +466,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "**Placement Information for Master of Computer Application (MCA):**\n\n*   Highest Package Offered: 33 LPA\n*   Total Placement Offers: 10000+\n*   Number of Recruiters: 1200+\n*   Package Offered by 200+ Companies: 25-30 LPA\n\n**Recruiting Companies:**\nBased on student placement testimonials, the following companies have recruited from the university:\n*   Adobe\n*   Amazon\n*   Servicenow\n*   Autodesk\n*   Mu Sigma\n*   NUTANIX"
+        }
     },
     {
         "source_course_name": "B.Tech. CSE with AI & ML (Artificial Intelligence & Machine Learning)",
@@ -538,8 +529,7 @@
                 ],
                 "notes": "Score in the specified test is also considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"placement_information\": {\n    \"highest_package\": \"1 Cr PA\",\n    \"total_placement_offers\": \"10000+\",\n    \"number_of_recruiters\": \"1200+\",\n    \"package_breakdown\": [\n      \"50 LPA offered by 9+ Companies\",\n      \"25-30 LPA offered by 200+ Companies\",\n      \"10 LPA offered by 500+ Companies\"\n    ]\n  },\n  \"recruiting_companies\": [\n    \"Adobe\",\n    \"Amazon\",\n    \"Servicenow\",\n    \"Autodesk\",\n    \"Mu Sigma\",\n    \"NUTANIX\"\n  ]\n}\n```"
+        }
     },
     {
         "source_course_name": "B.Tech. CSE with AI & DS (Artificial Intelligence & Data Science)",
@@ -602,8 +592,7 @@
                 ],
                 "notes": "Score in the specified test is also considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"placement_information\": {\n    \"highest_package\": \"1 Cr PA\",\n    \"number_of_placement_offers\": \"10000+\",\n    \"number_of_recruiters\": \"1200+\",\n    \"package_distribution\": [\n      \"50 LPA by 9+ Companies\",\n      \"25-30 LPA by 200+ Companies\",\n      \"10 LPA by 500+ Companies\"\n    ],\n    \"recruiting_companies\": [\n      \"Adobe\",\n      \"Amazon\",\n      \"Servicenow\",\n      \"Autodesk\",\n      \"Mu Sigma\",\n      \"NUTANIX\"\n    ]\n  }\n}\n```"
+        }
     },
     {
         "source_course_name": "B.Tech. CSE with Block Chain Technology",
@@ -666,8 +655,7 @@
                 ],
                 "notes": "Score in the specified test is also considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"highest_package\": \"1 Cr PA\",\n  \"number_of_placement_offers\": \"10000+\",\n  \"number_of_recruiters\": \"1200+\",\n  \"package_distribution\": [\n    \"50 LPA by 9+ Companies\",\n    \"25-30 LPA by 200+ Companies\",\n    \"10 LPA by 500+ Companies\"\n  ],\n  \"recruiting_companies\": [\n    \"Adobe\",\n    \"Amazon\",\n    \"Servicenow\",\n    \"Autodesk\",\n    \"Mu Sigma\",\n    \"NUTANIX\"\n  ]\n}\n```"
+        }
     },
     {
         "source_course_name": "B.Tech. CE (Civil Engineering)",
@@ -744,8 +732,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"highest_package\": \"1 Cr PA\",\n  \"placement_offers\": \"10000+\",\n  \"recruiters_count\": \"1200+\",\n  \"packages_offered\": [\n    \"50 LPA by 9+ Companies\",\n    \"25-30 LPA by 200+ Companies\",\n    \"10 LPA by 500+ Companies\"\n  ],\n  \"recruiting_companies\": []\n}\n```"
+        }
     },
     {
         "source_course_name": "B.Tech. CSE with Cyber Security",
@@ -808,8 +795,7 @@
                 ],
                 "notes": "Score in the specified test is also considered for scholarship eligibility."
             }
-        },
-        "placements": "Placement Information for B.Tech. CSE with Cyber Security:\n*   Highest Package: 1 Cr PA\n*   Total Placement Offers: 10,000+\n*   Total Recruiters: 1,200+\n*   Package Offered by 9+ Companies: 50 LPA\n*   Package Offered by 200+ Companies: 25-30 LPA\n*   Package Offered by 500+ Companies: 10 LPA\n*   The program offers top-notch placements in leading MNCs.\n*   Career Prospects: Cybersecurity Analyst, Security Consultant, Cybersecurity Manager, Network Engineer, Ethical Hacker, Information Security Engineer, Incident Responder, Security Software Developer.\n\nrecruiting_companies:"
+        }
     },
     {
         "source_course_name": "B.Tech. CSE with Data Science",
@@ -872,8 +858,7 @@
                 ],
                 "notes": "Score in the specified test is also considered for scholarship eligibility."
             }
-        },
-        "placements": "**Placement Information for B.Tech. CSE with Data Science:**\nHighest Package: 1 Cr PA\nTotal Placement Offers: 10000+\nTotal Recruiters: 1200+\nPackage offered by 9+ companies: 50 LPA\nPackage offered by 200+ companies: 25-30 LPA\nPackage offered by 500+ companies: 10 LPA\n\n**Recruiting Companies:**\nMicrosoft, Amazon, IBM, Infosys"
+        }
     },
     {
         "source_course_name": "B.Tech. CSE with Internet of Things",
@@ -936,8 +921,7 @@
                 ],
                 "notes": "Score in the specified test is also considered for scholarship eligibility."
             }
-        },
-        "placements": "Placement Information for B.Tech. CSE with Internet of Things:\n\n*   **Highest Package**: 1 Cr PA\n*   **Placement Offers**: 10000+\n*   **Total Recruiters**: 1200+\n*   **Package Offered by 9+ Companies**: 50 LPA\n*   **Package Offered by 200+ Companies**: 25-30 LPA\n*   **Package Offered by 500+ Companies**: 10 LPA\n*   **Career Prospects**: IoT Developers, Cybersecurity Analysts, Data Scientists, Security Analyst, Security Engineer, Security Architect, Malware Analyst, Software Developer, Cryptographer, Security Consultant, Cryptanalyst.\n*   **Recruiting Companies**: Adobe, Amazon, Servicenow, Autodesk, Mu Sigma, NUTANIX."
+        }
     },
     {
         "source_course_name": "B.Tech. CSE (Computer Science and Engineering)",
@@ -999,8 +983,7 @@
                 ],
                 "notes": "Score in the specified test is also considered for scholarship eligibility."
             }
-        },
-        "placements": "Placement Information for B.Tech. CSE (Computer Science and Engineering):\n\n**highest_package:** 1 cr PA\n**total_placement_offers:** 10000+\n**number_of_recruiters:** 1200+\n**package_offered_by_9_companies:** 50 LPA\n**package_offered_by_200_companies:** 25-30 LPA\n**package_offered_by_500_companies:** 10 LPA\n**recruiting_companies:** Microsoft, Amazon, IBM, Infosys, Adobe, Servicenow, Autodesk, Mu Sigma, NUTANIX"
+        }
     },
     {
         "source_course_name": "B.Tech in Electronics and Communication Engineering (ECE)",
@@ -1061,8 +1044,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "Placement Information:\n*   Highest Package: 1 Cr PA\n*   Total Placement Offers: 10000+\n*   Total Recruiters: 1200+\n*   Package Offered by 9+ Companies: 50 LPA\n*   Package Offered by 200+ Companies: 25-30 LPA\n*   Package Offered by 500+ Companies: 10 LPA\n\nRecruiting Companies:\nAdobe, Amazon, Servicenow, Autodesk, Mu Sigma, NUTANIX\n\nCareer Prospects:\nB.Tech ECE graduates can pursue roles such as VLSI design engineers, embedded systems engineers, telecommunications specialists, robotics engineers, Network Engineer, Telecom Engineer, Broadcast Engineer, Electronics Engineer, RF Engineer, Signal Engineer, VLSI Engineer, Embedded Developer in sectors like aerospace, automotive, telecommunications, and consumer electronics."
+        }
     },
     {
         "source_course_name": "B.Tech. Electrical Engineering (EE)",
@@ -1123,8 +1105,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "**Placement Information for B.Tech. Electrical Engineering (EE)**\n\n*   **Highest Package:** 1 Cr PA\n*   **Placement Offers:** 10000+\n*   **Recruiters:** 1200+\n*   **Package Offered by 9+ Companies:** 50 LPA\n*   **Package Offered by 200+ Companies:** 25-30 LPA\n*   **Package Offered by 500+ Companies:** 10 LPA\n*   **Recruiting Companies:**"
+        }
     },
     {
         "source_course_name": "B.Tech. Electronics & Telecommunication Engineering (ETE)",
@@ -1185,8 +1166,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"placement_information\": {\n    \"highest_package\": \"1 cr PA\",\n    \"total_placement_offers\": \"10000+\",\n    \"total_recruiters\": \"1200+\",\n    \"package_breakdown\": [\n      {\n        \"package\": \"50 LPA\",\n        \"companies_count\": \"9+\"\n      },\n      {\n        \"package\": \"25-30 LPA\",\n        \"companies_count\": \"200+\"\n      },\n      {\n        \"package\": \"10 LPA\",\n        \"companies_count\": \"500+\"\n      }\n    ],\n    \"recruiting_companies\": [\n      \"Adobe\",\n      \"Amazon\",\n      \"Servicenow\",\n      \"Autodesk\",\n      \"Mu Sigma\",\n      \"NUTANIX\"\n    ]\n  }\n}\n```"
+        }
     },
     {
         "source_course_name": "B.Tech. Mechanical Engineering",
@@ -1246,8 +1226,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "**placement_information:**\n*   **highest_package:** 1 Cr PA\n*   **total_placement_offers:** 10000+\n*   **total_recruiters:** 1200+\n*   **package_by_9+_companies:** 50 LPA\n*   **package_by_200+_companies:** 25-30 LPA\n*   **package_by_500+_companies:** 10 LPA\n*   **placement_assistance:** 100% placement assistance\n*   **recruiting_companies:** The markdown mentions \"Top-Notch Placements in Leading MNCs\" and \"1200+ Top Recruiters\" but does not explicitly list the names of companies that recruit specifically for the B.Tech. Mechanical Engineering course."
+        }
     },
     {
         "source_course_name": "B.Tech. CSE with Robotics & AI (Artificial Intelligence)",
@@ -1310,8 +1289,7 @@
                 ],
                 "notes": "Score in the specified test is also considered for scholarship eligibility."
             }
-        },
-        "placements": "Placement Information for B.Tech. CSE with Robotics & AI (Artificial Intelligence):\n\n*   **Highest Package:** 1 Cr PA\n*   **Total Placement Offers:** 10000+\n*   **Number of Recruiters:** 1200+\n*   **Packages Offered:**\n    *   50 LPA by 9+ Companies\n    *   25-30 LPA by 200+ Companies\n    *   10 LPA by 500+ Companies\n*   **Recruiting Companies:** Adobe, Amazon, Servicenow, Autodesk, Mu Sigma, NUTANIX"
+        }
     },
     {
         "source_course_name": "M.Tech. Civil Engineering",
@@ -1364,8 +1342,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "Placement Information:\n- Total Placement Offers: 10000+\n- Total Recruiters: 1200+\n- Highest Package: 1 Cr PA\n- Package Offered by Companies:\n    - 50 LPA by 9+ Companies\n    - 25-30 LPA by 200+ Companies\n    - 10 LPA by 500+ Companies\n- Recruiting Companies:"
+        }
     },
     {
         "source_course_name": "M.Tech. CSE Specialization in AI & DS (Artificial Intelligence & Data Science)",
@@ -1450,8 +1427,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"highest_package\": \"1 Cr PA\",\n  \"placement_offers\": \"10000+\",\n  \"total_recruiters\": \"1200+\",\n  \"package_distribution\": [\n    {\n      \"amount\": \"50 LPA\",\n      \"companies_count\": \"9+\"\n    },\n    {\n      \"amount\": \"25-30 LPA\",\n      \"companies_count\": \"200+\"\n    },\n    {\n      \"amount\": \"10 LPA\",\n      \"companies_count\": \"500+\"\n    }\n  ],\n  \"recruiting_companies\": [\n    \"Adobe\",\n    \"Amazon\",\n    \"Servicenow\",\n    \"Autodesk\",\n    \"Mu Sigma\",\n    \"NUTANIX\"\n  ]\n}\n```"
+        }
     },
     {
         "source_course_name": "M.Tech. CSE Specialization in AI & ML (Artificial Intelligence and Machine Learning)",
@@ -1536,8 +1512,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"highest_package\": \"1 Cr PA\",\n  \"placement_offers\": \"10000+\",\n  \"number_of_recruiters\": \"1200+\",\n  \"package_breakdown\": [\n    \"50 LPA by 9+ Companies\",\n    \"25-30 LPA by 200+ Companies\",\n    \"10 LPA by 500+ Companies\"\n  ],\n  \"career_prospects\": [\n    \"Machine Learning Engineer\",\n    \"Data Scientistist\",\n    \"Robotics Engineer\",\n    \"AI Product Manager\",\n    \"AI Research Scientist\",\n    \"NLP Engineer\",\n    \"Computer Vision Engineer\",\n    \"Deep Learning Master\"\n  ],\n  \"recruiting_companies\": [\n    \"Adobe\",\n    \"Amazon\",\n    \"Servicenow\",\n    \"Autodesk\",\n    \"Mu Sigma\",\n    \"NUTANIX\"\n  ]\n}\n```"
+        }
     },
     {
         "source_course_name": "M.Tech. Computer Science & Engineering",
@@ -1619,8 +1594,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "**Placement Information for M.Tech. Computer Science & Engineering:**\n\n**highest_package**: 1crPA\n**total_placement_offers**: 10000+\n**total_recruiters**: 1200+\n**package_details**:\n*   50LPA Package Offered by 9+ Companies\n*   25-30LPA Package Offered by 200+ Companies\n*   10LPA Package Offered by 500+ Companies\n**recruiting_companies**: Adobe, Amazon, Servicenow, Autodesk, Mu Sigma, NUTANIX"
+        }
     },
     {
         "source_course_name": "M.Tech. Electronics and Communication Engineering",
@@ -1682,8 +1656,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "Placement Information for M.Tech. Electronics and Communication Engineering:\n\n*   **Highest Package:** 1 Cr PA\n*   **Total Placement Offers:** 10000+\n*   **Total Recruiters:** 1200+\n*   **Package Offered by 9+ Companies:** 50 LPA\n*   **Package Offered by 200+ Companies:** 25-30 LPA\n*   **Package Offered by 500+ Companies:** 10 LPA\n*   **Specific opportunities for M.Tech. ECE:** Top Placement Opportunities with Leading Tech Giants & Core Electronics Companies.\n\n**recruiting_companies:**\nAdobe, Amazon, Servicenow, Autodesk, Mu Sigma, NUTANIX"
+        }
     },
     {
         "source_course_name": "M.Tech. Mechanical Engineering",
@@ -1737,8 +1710,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"highest_package\": \"1 cr PA\",\n  \"total_placement_offers\": \"10000+\",\n  \"total_recruiters\": \"1200+\",\n  \"package_by_companies\": [\n    {\n      \"amount\": \"50 LPA\",\n      \"number_of_companies\": \"9+\"\n    },\n    {\n      \"amount\": \"25-30 LPA\",\n      \"number_of_companies\": \"200+\"\n    },\n    {\n      \"amount\": \"10 LPA\",\n      \"number_of_companies\": \"500+\"\n    }\n  ],\n  \"recruiting_companies\": \"\"\n}\n```"
+        }
     },
     {
         "source_course_name": "B.Sc. Fashion Designing",
@@ -1783,8 +1755,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"highest_package\": \"9 LPA\",\n  \"placement_offers\": \"10000+\",\n  \"number_of_recruiters\": \"1200+\",\n  \"package_offered_by_x_companies\": \"10 LPA by 500+ Companies\",\n  \"recruiting_companies\": \"\"\n}\n```"
+        }
     },
     {
         "source_course_name": "B.A. (Journalism & Mass Communication)",
@@ -1830,8 +1801,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"highest_package\": \"9.6LPA\",\n  \"total_placement_offers\": \"10000+\",\n  \"total_recruiters\": \"1200+\",\n  \"package_offered_by_x_companies\": \"10LPA (by 500+ Companies)\",\n  \"recruiting_companies\": \"\"\n}\n```"
+        }
     },
     {
         "source_course_name": "B.Com LL.B. Integrated",
@@ -1871,8 +1841,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"highest_package\": \"53 LPA\",\n  \"total_placement_offers\": \"10000+\",\n  \"total_recruiters\": \"1200+\",\n  \"packages_by_company_count\": [\n    {\n      \"package\": \"50 LPA\",\n      \"company_count\": \"9+\"\n    },\n    {\n      \"package\": \"25-30 LPA\",\n      \"company_count\": \"200+\"\n    },\n    {\n      \"package\": \"10 LPA\",\n      \"company_count\": \"500+\"\n    }\n  ],\n  \"recruiting_companies\": []\n}\n```"
+        }
     },
     {
         "source_course_name": "B.A. LL.B. Integrated",
@@ -1918,8 +1887,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"placement_offers\": \"10000+\",\n  \"highest_package\": \"53LPA\",\n  \"recruiters_count\": \"1200+\",\n  \"package_by_companies_25_30_LPA\": \"200+ Companies\",\n  \"package_by_companies_10_LPA\": \"500+ Companies\",\n  \"recruiting_companies\": \"\"\n}\n```"
+        }
     },
     {
         "source_course_name": "B.B.A LL.B. Integrated",
@@ -1965,8 +1933,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"highest_package\": \"53LPA\",\n  \"placement_offers\": \"10000+\",\n  \"number_of_recruiters\": \"1200+\",\n  \"other_package_details\": [\n    \"50LPA Package Offered by 9+ Companies\",\n    \"25-30LPA Package Offered by 200+ Companies\",\n    \"10LPA Package Offered by 500+ Companies\"\n  ],\n  \"recruiting_companies\": []\n}\n```"
+        }
     },
     {
         "source_course_name": "LL.B. (Bachelor of Law)",
@@ -2012,8 +1979,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"highest_package\": \"53LPA\",\n  \"placement_offers\": \"10000+\",\n  \"recruiters_count\": \"1200+\",\n  \"companies_offering_50LPA_package\": \"9+\",\n  \"companies_offering_25-30LPA_package\": \"200+\",\n  \"companies_offering_10LPA_package\": \"500+\",\n  \"recruiting_companies\": \"\"\n}\n```"
+        }
     },
     {
         "source_course_name": "BBA Business Analytics",
@@ -2059,8 +2025,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"highest_package_offered\": \"27 LPA\",\n  \"total_placement_offers\": \"10000+\",\n  \"total_recruiters\": \"1200+\",\n  \"other_package_information\": \"25-30 LPA package offered by 200+ companies\",\n  \"recruiting_companies\": [\n    \"Adobe\",\n    \"Amazon\",\n    \"Servicenow\",\n    \"Autodesk\",\n    \"Mu Sigma\",\n    \"NUTANIX\"\n  ]\n}\n```"
+        }
     },
     {
         "source_course_name": "BBA Digital Marketing",
@@ -2106,8 +2071,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"highest_package\": \"27 LPA\",\n  \"placement_offers\": \"10000+\",\n  \"number_of_recruiters\": \"1200+\",\n  \"package_offered_by_companies\": \"25-30 LPA by 200+ Companies\",\n  \"recruiting_companies\": \"\"\n}\n```"
+        }
     },
     {
         "source_course_name": "BBA (Bachelor of Business Administration)",
@@ -2153,8 +2117,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"highest_package\": \"27LPA\",\n  \"average_package\": \"\",\n  \"placement_percentage\": \"\",\n  \"number_of_offers\": \"10000+\",\n  \"number_of_recruiters\": \"1200+\",\n  \"recruiting_companies\": [\n    \"Adobe\",\n    \"Amazon\",\n    \"Servicenow\",\n    \"Autodesk\",\n    \"Mu Sigma\",\n    \"NUTANIX\"\n  ]\n}\n```"
+        }
     },
     {
         "source_course_name": "MBA in Digital Marketing",
@@ -2179,7 +2142,7 @@
         "target_file": "/Users/ajay/2.0/cu/scraper/markdown/management_mba-digital-marketing.md",
         "eligibility_rules": [
             {
-                "qualification": "Graduate",
+                "qualification": "Bachelor's Degree",
                 "min_percentage": 50,
                 "accepted_specializations": null,
                 "required_subjects": null,
@@ -2200,8 +2163,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"highest_package\": \"27 LPA\",\n  \"total_placement_offers\": \"10000+\",\n  \"total_recruiters\": \"1200+\",\n  \"other_package_details\": \"25-30 LPA Package Offered by 200+ Companies\",\n  \"recruiting_companies\": [\n    \"Adobe\",\n    \"Amazon\",\n    \"Servicenow\",\n    \"Autodesk\",\n    \"Mu Sigma\",\n    \"NUTANIX\"\n  ]\n}\n```"
+        }
     },
     {
         "source_course_name": "MBA (FinTech)",
@@ -2247,8 +2209,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "**placement_information:**\n*   **highest_package:** 27LPA\n*   **placement_offers:** 10000+\n*   **recruiting_companies_count:** 1200+\n*   **other_placement_details:** Package Offered by 200+ Companies: 25-30LPA\n*   **recruiting_companies:**"
+        }
     },
     {
         "source_course_name": "MBA",
@@ -2273,7 +2234,7 @@
         "target_file": "/Users/ajay/2.0/cu/scraper/markdown/management_mba-iimp.md",
         "eligibility_rules": [
             {
-                "qualification": "Graduate",
+                "qualification": "Bachelor's Degree",
                 "min_percentage": 50,
                 "accepted_specializations": null,
                 "required_subjects": null,
@@ -2294,8 +2255,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"highest_package\": \"27 LPA\",\n  \"number_of_placement_offers\": \"10000+\",\n  \"number_of_recruiters\": \"1200+\",\n  \"other_package_info\": \"25-30 LPA Package Offered by 200+ Companies\",\n  \"recruiting_companies\": [\n    \"Adobe\",\n    \"Amazon\",\n    \"Servicenow\",\n    \"Autodesk\",\n    \"Mu Sigma\",\n    \"NUTANIX\"\n  ]\n}\n```"
+        }
     },
     {
         "source_course_name": "MBA in Business Analytics",
@@ -2341,8 +2301,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "**Placement Information for MBA in Business Analytics:**\n\nHighest Package Offered: 27 LPA\nTotal Placement Offers: 10000+\nNumber of Recruiters: 1200+\nPackage Offered by 200+ Companies: 25-30 LPA\nrecruiting_companies: \nCareer Prospects: Data Scientist, Business Intelligence Analyst, Data Analyst, Business Analyst, Decision Scientist, Analytics Manager, Predictive Modeler, Data Mining Specialist"
+        }
     },
     {
         "source_course_name": "MBA in Finance",
@@ -2367,7 +2326,7 @@
         "target_file": "/Users/ajay/2.0/cu/scraper/markdown/management_mba-in-finance.md",
         "eligibility_rules": [
             {
-                "qualification": "Graduate",
+                "qualification": "Bachelor's Degree",
                 "min_percentage": 50,
                 "accepted_specializations": null,
                 "required_subjects": null,
@@ -2388,8 +2347,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"highest_package\": \"27 LPA\",\n  \"total_placement_offers\": \"10000+\",\n  \"total_recruiters\": \"1200+\",\n  \"package_by_200_plus_companies\": \"25-30 LPA\",\n  \"recruiting_companies\": \"\"\n}\n```"
+        }
     },
     {
         "source_course_name": "MBA (Human Resource Management)",
@@ -2414,7 +2372,7 @@
         "target_file": "/Users/ajay/2.0/cu/scraper/markdown/management_mba-in-human-resource-management.md",
         "eligibility_rules": [
             {
-                "qualification": "Graduate",
+                "qualification": "Bachelor's Degree",
                 "min_percentage": 50,
                 "accepted_specializations": null,
                 "required_subjects": null,
@@ -2435,8 +2393,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "Placement Information for MBA (Human Resource Management):\n*   **highest_package**: 27LPA\n*   **placement_offers**: 10000+\n*   **number_of_recruiters**: 1200+\n*   **package_offered_by_200_plus_companies**: 25-30LPA\n*   **recruiting_companies**:"
+        }
     },
     {
         "source_course_name": "MBA (Marketing)",
@@ -2461,7 +2418,7 @@
         "target_file": "/Users/ajay/2.0/cu/scraper/markdown/management_mba-in-marketing.md",
         "eligibility_rules": [
             {
-                "qualification": "Graduate",
+                "qualification": "Bachelor's Degree",
                 "min_percentage": 50,
                 "accepted_specializations": null,
                 "required_subjects": null,
@@ -2482,8 +2439,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"placement_offers\": \"10000+\",\n  \"highest_package\": \"27LPA\",\n  \"recruiters_count\": \"1200+\",\n  \"package_offered_by_companies\": \"25-30LPA by 200+ Companies\",\n  \"recruiting_companies\": \"\"\n}\n```"
+        }
     },
     {
         "source_course_name": "MBA in Operations Management",
@@ -2508,7 +2464,7 @@
         "target_file": "/Users/ajay/2.0/cu/scraper/markdown/management_mba-in-operations-management.md",
         "eligibility_rules": [
             {
-                "qualification": "Graduate",
+                "qualification": "Bachelor's Degree",
                 "min_percentage": 50,
                 "accepted_specializations": null,
                 "required_subjects": null,
@@ -2529,8 +2485,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "**Placement Information for MBA in Operations Management:**\n\n*   **highest_package**: 27LPA\n*   **total_placement_offers**: 10000+\n*   **total_recruiters**: 1200+\n*   **package_offered_by_200_companies**: 25-30LPA\n*   **recruiting_companies**:"
+        }
     },
     {
         "source_course_name": "Bachelor of Optometry (B.Optometry)",
@@ -2592,8 +2547,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"highest_package\": \"15 LPA\",\n  \"placement_offers\": \"10000+\",\n  \"number_of_recruiters\": \"1200+\",\n  \"average_package_by_companies\": \"10 LPA (offered by 500+ companies)\",\n  \"career_prospects\": [\n    \"Optometrists (in hospitals, clinics, or private practices)\",\n    \"Optometry Researcher\",\n    \"Sports Vision Consultant\",\n    \"LASIK assistant\",\n    \"Ocular prosthetics specialist\",\n    \"Ophthalmic Assistant\",\n    \"Professor\",\n    \"Orthoptist specialist\",\n    \"Examiner\"\n  ],\n  \"recruiting_companies\": \"\"\n}\n```"
+        }
     },
     {
         "source_course_name": "B.Sc. Forensic Science",
@@ -2639,8 +2593,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"placement_information\": {\n    \"highest_package_offered\": \"15LPA\",\n    \"total_placement_offers\": \"10000+\",\n    \"total_recruiters\": \"1200+\",\n    \"package_offered_by_500_companies\": \"10LPA\",\n    \"placement_areas\": [\n      \"law enforcement agencies\",\n      \"investigating agencies\"\n    ],\n    \"career_roles\": [\n      \"Cyber Forensic Expert\",\n      \"Forensic Psychologist\",\n      \"Crime Scene Investigator\",\n      \"Forensic Scientist\",\n      \"Forensic Toxicologist\",\n      \"Forensic DNA Analyst\"\n    ],\n    \"types_of_employers\": [\n      \"private companies (e.g., security firms, detective agencies)\",\n      \"government organizations (e.g., police, CBI)\"\n    ]\n  },\n  \"recruiting_companies\": []\n}\n```"
+        }
     },
     {
         "source_course_name": "B.Sc. Bio Technology",
@@ -2686,8 +2639,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```\n{\n  \"highest_package\": \"15 LPA\",\n  \"total_placement_offers\": \"10000+\",\n  \"total_recruiters\": \"1200+\",\n  \"other_package_info\": \"10 LPA Package Offered by 500+ Companies\",\n  \"placement_areas\": \"leading healthcare institutions, and wellness centers\",\n  \"recruiting_companies\": \"\"\n}\n```"
+        }
     },
     {
         "source_course_name": "B.Sc. (Hons.) Nutrition & Dietetics",
@@ -2732,8 +2684,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"highest_package\": \"15 LPA\",\n  \"total_placement_offers\": \"10000+\",\n  \"total_recruiters\": \"1200+\",\n  \"additional_package_info\": \"10 LPA Package Offered by 500+ Companies\",\n  \"recruiting_companies\": []\n}\n```"
+        }
     },
     {
         "source_course_name": "B.Sc. Medical Lab Science",
@@ -2779,8 +2730,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "**Placement Information for B.Sc. Medical Lab Science:**\n\n*   **highest_package:** 15 LPA\n*   **average_package:** 10 LPA (offered by 500+ companies)\n*   **placement_offers:** 10000+\n*   **total_recruiters:** 1200+\n*   **recruiting_companies:** []\n*   **career_prospects:** Microbiologist, Pathology Lab Assistant, Cytotechnologist, Medical Lab Supervisor, Medical Laboratory Technologist, Blood Bank Technologist, Clinical Laboratory Scientist, Clinical Research Coordinator.\n*   **additional_placement_info:** Placement in leading healthcare institutions and wellness centers. Career opportunities span healthcare, research, diagnostics, and public health, including roles in hospitals, diagnostic centers, research institutions, and pharmaceutical companies."
+        }
     },
     {
         "source_course_name": "B.Sc. Medical Technology Anesthesia & Operation Theatre",
@@ -2826,8 +2776,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"highest_package\": \"15 LPA\",\n  \"placement_offers\": \"10000+\",\n  \"number_of_recruiters\": \"1200+\",\n  \"other_package_details\": \"10 LPA Package Offered by 500+ Companies\",\n  \"recruiting_companies\": \"\"\n}\n```"
+        }
     },
     {
         "source_course_name": "B.Sc. Radiology & Imaging Technology",
@@ -2873,8 +2822,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "placement_information:\nHighest Package Offered: 15 LPA\nPlacement Offers: 10000+\nRecruiters: 1200+\nPackage Offered by 500+ Companies: 10 LPA\nrecruiting_companies: \nThe provided markdown content does not list specific recruiting companies for the B.Sc. Radiology & Imaging Technology course. It mentions general placement statistics for the university."
+        }
     },
     {
         "source_course_name": "B. Pharmacy (Bachelor of Pharmacy)",
@@ -2903,7 +2851,7 @@
                 "min_percentage": null,
                 "accepted_specializations": null,
                 "required_subjects": [
-                    "Biology"
+                    "English"
                 ],
                 "is_lateral_entry": false,
                 "notes": "from a recognised board"
@@ -2922,8 +2870,7 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"placement_offers\": \"10000+\",\n  \"number_of_recruiters\": \"1200+\",\n  \"highest_package\": \"53 LPA\",\n  \"other_package_details\": [\n    \"50 LPA by 9+ Companies\",\n    \"25-30 LPA by 200+ Companies\",\n    \"10 LPA by 500+ Companies\"\n  ],\n  \"recruiting_companies\": []\n}\n```"
+        }
     },
     {
         "source_course_name": "D. Pharmacy (Diploma in Pharmacy)",
@@ -2951,7 +2898,7 @@
                 "min_percentage": null,
                 "accepted_specializations": null,
                 "required_subjects": [
-                    "Biology"
+                    "English"
                 ],
                 "is_lateral_entry": false,
                 "notes": "from a recognised board"
@@ -2970,7 +2917,6 @@
                 ],
                 "notes": "Score in the specified test is considered for scholarship eligibility."
             }
-        },
-        "placements": "```json\n{\n  \"highest_package\": \"53 LPA\",\n  \"placement_offers\": \"10000+\",\n  \"number_of_recruiters\": \"1200+\",\n  \"other_package_details\": [\n    \"50LPA Package Offered by 9+ Companies\",\n    \"25-30LPA Package Offered by 200+ Companies\",\n    \"10LPA Package Offered by 500+ Companies\"\n  ],\n  \"recruiting_companies\": \"\"\n}\n```"
+        }
     }
 ]

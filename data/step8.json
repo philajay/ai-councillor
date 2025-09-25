@@ -25,9 +25,10 @@
                 "qualification": "10+2",
                 "min_percentage": 33,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "From Punjab National Board or any other recognised board. Applicable for commerce students."
+                "notes": "From Punjab National Board or any other recognised board. Applicable for commerce students.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -71,11 +72,12 @@
                 "qualification": "10+2",
                 "min_percentage": 50,
                 "accepted_specializations": null,
-                "required_subjects": [
+                "is_lateral_entry": false,
+                "notes": "45% marks for candidates belonging to the Reserved Category.",
+                "must_have_subjects": [
                     "Mathematics"
                 ],
-                "is_lateral_entry": false,
-                "notes": "45% marks for candidates belonging to the Reserved Category."
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -120,17 +122,19 @@
                 "qualification": "10+2",
                 "min_percentage": null,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": null
+                "notes": null,
+                "must_have_subjects": [],
+                "can_have_subjects": []
             },
             {
                 "qualification": "Diploma",
                 "min_percentage": null,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Must have passed Matriculation examination. Diploma must be a three-year diploma from Punjab State Board of Technical Education & Industrial Training, Chandigarh, or any other recognized State Board of Technical Education, or Sant Longowal Institute of Engineering & Technology, Longowal."
+                "notes": "Must have passed Matriculation examination. Diploma must be a three-year diploma from Punjab State Board of Technical Education & Industrial Training, Chandigarh, or any other recognized State Board of Technical Education, or Sant Longowal Institute of Engineering & Technology, Longowal.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -175,17 +179,19 @@
                 "qualification": "10+2",
                 "min_percentage": null,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Or its equivalent examination conducted by a recognized Board/University/Council."
+                "notes": "Or its equivalent examination conducted by a recognized Board/University/Council.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             },
             {
                 "qualification": "Diploma",
                 "min_percentage": null,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Must have passed Matriculation examination AND completed a three-year Diploma in any trade from the Punjab State Board of Technical Education & Industrial Training, Chandigarh, or an equivalent examination from any other recognized State Board of Technical Education, or Sant Longowal Institute of Engineering & Technology, Longowal."
+                "notes": "Must have passed Matriculation examination AND completed a three-year Diploma in any trade from the Punjab State Board of Technical Education & Industrial Training, Chandigarh, or an equivalent examination from any other recognized State Board of Technical Education, or Sant Longowal Institute of Engineering & Technology, Longowal.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -230,17 +236,19 @@
                 "qualification": "10+2",
                 "min_percentage": null,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Or its equivalent examination conducted by a recognized Board/University/Council."
+                "notes": "Or its equivalent examination conducted by a recognized Board/University/Council.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             },
             {
                 "qualification": "Diploma",
                 "min_percentage": null,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Must have passed Matriculation examination AND completed a three-year Diploma in any trade from the Punjab State Board of Technical Education & Industrial Training, Chandigarh, or an equivalent from any other recognized State Board of Technical Education, or Sant Longowal Institute of Engineering & Technology, Longowal."
+                "notes": "Must have passed Matriculation examination AND completed a three-year Diploma in any trade from the Punjab State Board of Technical Education & Industrial Training, Chandigarh, or an equivalent from any other recognized State Board of Technical Education, or Sant Longowal Institute of Engineering & Technology, Longowal.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -285,9 +293,10 @@
                 "qualification": "10+2",
                 "min_percentage": 50,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Passed from a Board recognised or established by Central/State Government and member of Council of School Education (COBSE). 45% marks for SC/ST category."
+                "notes": "Passed from a Board recognised or established by Central/State Government and member of Council of School Education (COBSE). 45% marks for SC/ST category.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -332,9 +341,10 @@
                 "qualification": "10+2",
                 "min_percentage": 50,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "45% marks for SC/ST category. From any Board recognised or established by Central / State Government through a legislation and member of Council of School Education (COBSE)."
+                "notes": "45% marks for SC/ST category. From any Board recognised or established by Central / State Government through a legislation and member of Council of School Education (COBSE).",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -379,9 +389,10 @@
                 "qualification": "10+2",
                 "min_percentage": 50,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Must be from any Board recognised or established by Central/State Government and member of Council of School Education (COBSE). 45% marks for SC/ST category."
+                "notes": "Must be from any Board recognised or established by Central/State Government and member of Council of School Education (COBSE). 45% marks for SC/ST category.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -426,9 +437,10 @@
                 "qualification": "B.C.A",
                 "min_percentage": null,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "or an equivalent degree"
+                "notes": "or an equivalent degree",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             },
             {
                 "qualification": "B.Sc.",
@@ -437,9 +449,10 @@
                     "Computer Science",
                     "IT"
                 ],
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "or an equivalent degree"
+                "notes": "or an equivalent degree",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             },
             {
                 "qualification": "B.E./B.Tech",
@@ -448,17 +461,19 @@
                     "CSE",
                     "IT"
                 ],
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "or an equivalent degree"
+                "notes": "or an equivalent degree",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             },
             {
                 "qualification": "Graduate",
                 "min_percentage": null,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Preferably with Mathematics at 10+2 or Graduation level."
+                "notes": "Preferably with Mathematics at 10+2 or Graduation level.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -503,14 +518,17 @@
                 "qualification": "10+2",
                 "min_percentage": 60,
                 "accepted_specializations": null,
-                "required_subjects": [
+                "is_lateral_entry": false,
+                "notes": "Passed from a Board recognized/established by Central/State Government and affiliated with COBSE, New Delhi. 55% marks for candidates belonging to reserved categories.",
+                "must_have_subjects": [
                     "Physics",
-                    "Mathematics",
+                    "Mathematics"
+                ],
+                "can_have_subjects": [
                     "Chemistry",
                     "Computer Science",
                     "Electronics",
                     "Information Technology",
-                    "Biology",
                     "Informatics Practices",
                     "Biotechnology",
                     "Technical Vocational subject",
@@ -518,9 +536,7 @@
                     "Engineering Graphics",
                     "Business Studies",
                     "Entrepreneurship"
-                ],
-                "is_lateral_entry": false,
-                "notes": "Passed from a Board recognized/established by Central/State Government and affiliated with COBSE, New Delhi. 55% marks for candidates belonging to reserved categories."
+                ]
             }
         ],
         "admission_test_requirement_json": {
@@ -567,14 +583,17 @@
                 "qualification": "10+2",
                 "min_percentage": 60,
                 "accepted_specializations": null,
-                "required_subjects": [
+                "is_lateral_entry": false,
+                "notes": "10+2 must be from a Board recognized or established by the Central or State Government and affiliated with COBSE, New Delhi. Must have taken any of the following subjects: Physics, Mathematics, Chemistry, Computer Science, Electronics, Information Technology, Biology, Informatics Practices, Biotechnology, Technical Vocational subject, Agriculture, Engineering Graphics, Business Studies, or Entrepreneurship. 55% marks for candidates belonging to reserved categories.",
+                "must_have_subjects": [
                     "Physics",
-                    "Mathematics",
+                    "Mathematics"
+                ],
+                "can_have_subjects": [
                     "Chemistry",
                     "Computer Science",
                     "Electronics",
                     "Information Technology",
-                    "Biology",
                     "Informatics Practices",
                     "Biotechnology",
                     "Technical Vocational subject",
@@ -582,9 +601,7 @@
                     "Engineering Graphics",
                     "Business Studies",
                     "Entrepreneurship"
-                ],
-                "is_lateral_entry": false,
-                "notes": "10+2 must be from a Board recognized or established by the Central or State Government and affiliated with COBSE, New Delhi. Must have taken any of the following subjects: Physics, Mathematics, Chemistry, Computer Science, Electronics, Information Technology, Biology, Informatics Practices, Biotechnology, Technical Vocational subject, Agriculture, Engineering Graphics, Business Studies, or Entrepreneurship. 55% marks for candidates belonging to reserved categories."
+                ]
             }
         ],
         "admission_test_requirement_json": {
@@ -631,14 +648,17 @@
                 "qualification": "10+2",
                 "min_percentage": 60,
                 "accepted_specializations": null,
-                "required_subjects": [
+                "is_lateral_entry": false,
+                "notes": "Passed from a Board recognized or established by the Central or State Government through legislation and affiliated with the Council of Boards of School Education (COBSE), New Delhi. 55% marks for candidates belonging to reserved categories.",
+                "must_have_subjects": [
                     "Physics",
-                    "Mathematics",
+                    "Mathematics"
+                ],
+                "can_have_subjects": [
                     "Chemistry",
                     "Computer Science",
                     "Electronics",
                     "Information Technology",
-                    "Biology",
                     "Informatics Practices",
                     "Biotechnology",
                     "Technical Vocational subject",
@@ -646,9 +666,7 @@
                     "Engineering Graphics",
                     "Business Studies",
                     "Entrepreneurship"
-                ],
-                "is_lateral_entry": false,
-                "notes": "Passed from a Board recognized or established by the Central or State Government through legislation and affiliated with the Council of Boards of School Education (COBSE), New Delhi. 55% marks for candidates belonging to reserved categories."
+                ]
             }
         ],
         "admission_test_requirement_json": {
@@ -695,14 +713,17 @@
                 "qualification": "10+2",
                 "min_percentage": 45,
                 "accepted_specializations": null,
-                "required_subjects": [
+                "is_lateral_entry": false,
+                "notes": "40% marks for reserved category. Must be from a Board recognized or established by the Central/State Government and a member of COBSE, New Delhi.",
+                "must_have_subjects": [
                     "Physics",
-                    "Mathematics",
+                    "Mathematics"
+                ],
+                "can_have_subjects": [
                     "Chemistry",
                     "Computer Science",
                     "Electronics",
                     "Information Technology",
-                    "Biology",
                     "Informatics Practices",
                     "Biotechnology",
                     "Technical Vocational subject",
@@ -710,25 +731,25 @@
                     "Engineering Graphics",
                     "Business Studies",
                     "Entrepreneurship"
-                ],
-                "is_lateral_entry": false,
-                "notes": "40% marks for reserved category. Must be from a Board recognized or established by the Central/State Government and a member of COBSE, New Delhi."
+                ]
             },
             {
                 "qualification": "Diploma",
                 "min_percentage": 45,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Minimum 3-year Diploma. 40% marks for reserved category. Must be from Punjab State Board of Technical Education & Industrial Training, Chandigarh, or Sant Longowal Institute of Engineering and Technology (SLIET), Longowal, or any other recognized State Board of Technical Education. Subject to vacancies in the First Year, in case the vacancies at lateral entry are exhausted."
+                "notes": "Minimum 3-year Diploma. 40% marks for reserved category. Must be from Punjab State Board of Technical Education & Industrial Training, Chandigarh, or Sant Longowal Institute of Engineering and Technology (SLIET), Longowal, or any other recognized State Board of Technical Education. Subject to vacancies in the First Year, in case the vacancies at lateral entry are exhausted.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             },
             {
                 "qualification": "Certificate course",
                 "min_percentage": null,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Must have passed a two-year certificate course from Sant Longowal Institute of Engineering and Technology (SLIET), Longowal."
+                "notes": "Must have passed a two-year certificate course from Sant Longowal Institute of Engineering and Technology (SLIET), Longowal.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -773,14 +794,17 @@
                 "qualification": "10+2",
                 "min_percentage": 60,
                 "accepted_specializations": null,
-                "required_subjects": [
+                "is_lateral_entry": false,
+                "notes": "Examination from a Board recognized or established by the Central or State Government through legislation and affiliated with COBSE, New Delhi. 55% marks for candidates belonging to reserved categories.",
+                "must_have_subjects": [
                     "Physics",
-                    "Mathematics",
+                    "Mathematics"
+                ],
+                "can_have_subjects": [
                     "Chemistry",
                     "Computer Science",
                     "Electronics",
                     "Information Technology",
-                    "Biology",
                     "Informatics Practices",
                     "Biotechnology",
                     "Technical Vocational subject",
@@ -788,9 +812,7 @@
                     "Engineering Graphics",
                     "Business Studies",
                     "Entrepreneurship"
-                ],
-                "is_lateral_entry": false,
-                "notes": "Examination from a Board recognized or established by the Central or State Government through legislation and affiliated with COBSE, New Delhi. 55% marks for candidates belonging to reserved categories."
+                ]
             }
         ],
         "admission_test_requirement_json": {
@@ -837,14 +859,17 @@
                 "qualification": "10+2",
                 "min_percentage": 60,
                 "accepted_specializations": null,
-                "required_subjects": [
+                "is_lateral_entry": false,
+                "notes": "Candidate must have passed 10+2 with any of the following subjects: Physics, Mathematics, Chemistry, Computer Science, Electronics, Information Technology, Biology, Informatics Practices, Biotechnology, Technical Vocational subject, Agriculture, Engineering Graphics, Business Studies, or Entrepreneurship. 55% marks for candidates belonging to reserved categories.",
+                "must_have_subjects": [
                     "Physics",
-                    "Mathematics",
+                    "Mathematics"
+                ],
+                "can_have_subjects": [
                     "Chemistry",
                     "Computer Science",
                     "Electronics",
                     "Information Technology",
-                    "Biology",
                     "Informatics Practices",
                     "Biotechnology",
                     "Technical Vocational subject",
@@ -852,9 +877,7 @@
                     "Engineering Graphics",
                     "Business Studies",
                     "Entrepreneurship"
-                ],
-                "is_lateral_entry": false,
-                "notes": "Candidate must have passed 10+2 with any of the following subjects: Physics, Mathematics, Chemistry, Computer Science, Electronics, Information Technology, Biology, Informatics Practices, Biotechnology, Technical Vocational subject, Agriculture, Engineering Graphics, Business Studies, or Entrepreneurship. 55% marks for candidates belonging to reserved categories."
+                ]
             }
         ],
         "admission_test_requirement_json": {
@@ -901,14 +924,17 @@
                 "qualification": "10+2",
                 "min_percentage": 60,
                 "accepted_specializations": null,
-                "required_subjects": [
+                "is_lateral_entry": false,
+                "notes": "Passed from a Board recognized or established by the Central or State Government and affiliated with COBSE, New Delhi. 55% marks for candidates belonging to reserved categories.",
+                "must_have_subjects": [
                     "Physics",
-                    "Mathematics",
+                    "Mathematics"
+                ],
+                "can_have_subjects": [
                     "Chemistry",
                     "Computer Science",
                     "Electronics",
                     "Information Technology",
-                    "Biology",
                     "Informatics Practices",
                     "Biotechnology",
                     "Technical Vocational subject",
@@ -916,9 +942,7 @@
                     "Engineering Graphics",
                     "Business Studies",
                     "Entrepreneurship"
-                ],
-                "is_lateral_entry": false,
-                "notes": "Passed from a Board recognized or established by the Central or State Government and affiliated with COBSE, New Delhi. 55% marks for candidates belonging to reserved categories."
+                ]
             }
         ],
         "admission_test_requirement_json": {
@@ -964,14 +988,17 @@
                 "qualification": "10+2",
                 "min_percentage": 60,
                 "accepted_specializations": null,
-                "required_subjects": [
+                "is_lateral_entry": false,
+                "notes": "From a Board recognized or established by the Central or State Government through legislation and affiliated with the Council of Boards of School Education (COBSE), New Delhi. 55% for candidates belonging to reserved categories.",
+                "must_have_subjects": [
                     "Physics",
-                    "Mathematics",
+                    "Mathematics"
+                ],
+                "can_have_subjects": [
                     "Chemistry",
                     "Computer Science",
                     "Electronics",
                     "Information Technology",
-                    "Biology",
                     "Informatics Practices",
                     "Biotechnology",
                     "Technical Vocational subject",
@@ -979,9 +1006,7 @@
                     "Engineering Graphics",
                     "Business Studies",
                     "Entrepreneurship"
-                ],
-                "is_lateral_entry": false,
-                "notes": "From a Board recognized or established by the Central or State Government through legislation and affiliated with the Council of Boards of School Education (COBSE), New Delhi. 55% for candidates belonging to reserved categories."
+                ]
             }
         ],
         "admission_test_requirement_json": {
@@ -1028,14 +1053,17 @@
                 "qualification": "10+2",
                 "min_percentage": 60,
                 "accepted_specializations": null,
-                "required_subjects": [
+                "is_lateral_entry": false,
+                "notes": "From a Board recognized or established by the Central or State Government through legislation and affiliated with the Council of Boards of School Education (COBSE), New Delhi. 55% marks for candidates belonging to reserved categories.",
+                "must_have_subjects": [
                     "Physics",
-                    "Mathematics",
+                    "Mathematics"
+                ],
+                "can_have_subjects": [
                     "Chemistry",
                     "Computer Science",
                     "Electronics",
                     "Information Technology",
-                    "Biology",
                     "Informatics Practices",
                     "Biotechnology",
                     "Technical Vocational subject",
@@ -1043,9 +1071,7 @@
                     "Engineering Graphics",
                     "Business Studies",
                     "Entrepreneurship"
-                ],
-                "is_lateral_entry": false,
-                "notes": "From a Board recognized or established by the Central or State Government through legislation and affiliated with the Council of Boards of School Education (COBSE), New Delhi. 55% marks for candidates belonging to reserved categories."
+                ]
             }
         ],
         "admission_test_requirement_json": {
@@ -1090,14 +1116,17 @@
                 "qualification": "10+2",
                 "min_percentage": 60,
                 "accepted_specializations": null,
-                "required_subjects": [
+                "is_lateral_entry": false,
+                "notes": "Passed from a Board recognized or established by the Central or State Government through legislation and affiliated with the Council of Boards of School Education (COBSE), New Delhi. Must have studied at least one of the following subjects: Physics, Mathematics, Chemistry, Computer Science, Electronics, Information Technology, Biology, Informatics Practices, Biotechnology, Technical Vocational subject, Agriculture, Engineering Graphics, Business Studies, or Entrepreneurship. 55% marks for candidates belonging to reserved categories.",
+                "must_have_subjects": [
                     "Physics",
-                    "Mathematics",
+                    "Mathematics"
+                ],
+                "can_have_subjects": [
                     "Chemistry",
                     "Computer Science",
                     "Electronics",
                     "Information Technology",
-                    "Biology",
                     "Informatics Practices",
                     "Biotechnology",
                     "Technical Vocational subject",
@@ -1105,9 +1134,7 @@
                     "Engineering Graphics",
                     "Business Studies",
                     "Entrepreneurship"
-                ],
-                "is_lateral_entry": false,
-                "notes": "Passed from a Board recognized or established by the Central or State Government through legislation and affiliated with the Council of Boards of School Education (COBSE), New Delhi. Must have studied at least one of the following subjects: Physics, Mathematics, Chemistry, Computer Science, Electronics, Information Technology, Biology, Informatics Practices, Biotechnology, Technical Vocational subject, Agriculture, Engineering Graphics, Business Studies, or Entrepreneurship. 55% marks for candidates belonging to reserved categories."
+                ]
             }
         ],
         "admission_test_requirement_json": {
@@ -1152,14 +1179,17 @@
                 "qualification": "10+2",
                 "min_percentage": 60,
                 "accepted_specializations": null,
-                "required_subjects": [
+                "is_lateral_entry": false,
+                "notes": "Candidates must have passed 10+2 examination from a Board recognized or established by the Central or State Government through legislation and affiliated with the Council of Boards of School Education (COBSE), New Delhi, with any of the following subjects: Physics, Mathematics, Chemistry, Computer Science, Electronics, Information Technology, Biology, Informatics Practices, Biotechnology, Technical Vocational subject, Agriculture, Engineering Graphics, Business Studies, or Entrepreneurship. 55% marks for candidates belonging to reserved categories.",
+                "must_have_subjects": [
                     "Physics",
-                    "Mathematics",
+                    "Mathematics"
+                ],
+                "can_have_subjects": [
                     "Chemistry",
                     "Computer Science",
                     "Electronics",
                     "Information Technology",
-                    "Biology",
                     "Informatics Practices",
                     "Biotechnology",
                     "Technical Vocational subject",
@@ -1167,9 +1197,7 @@
                     "Engineering Graphics",
                     "Business Studies",
                     "Entrepreneurship"
-                ],
-                "is_lateral_entry": false,
-                "notes": "Candidates must have passed 10+2 examination from a Board recognized or established by the Central or State Government through legislation and affiliated with the Council of Boards of School Education (COBSE), New Delhi, with any of the following subjects: Physics, Mathematics, Chemistry, Computer Science, Electronics, Information Technology, Biology, Informatics Practices, Biotechnology, Technical Vocational subject, Agriculture, Engineering Graphics, Business Studies, or Entrepreneurship. 55% marks for candidates belonging to reserved categories."
+                ]
             }
         ],
         "admission_test_requirement_json": {
@@ -1213,14 +1241,17 @@
                 "qualification": "10+2",
                 "min_percentage": 60,
                 "accepted_specializations": null,
-                "required_subjects": [
+                "is_lateral_entry": false,
+                "notes": "Candidates must have passed 10+2 with any of the following subjects: Physics, Mathematics, Chemistry, Computer Science, Electronics, Information Technology, Biology, Informatics Practices, Biotechnology, Technical Vocational subject, Agriculture, Engineering Graphics, Business Studies, or Entrepreneurship. 55% marks for candidates belonging to reserved categories. The 10+2 examination must be from a Board recognized or established by the Central or State Government through legislation and affiliated with the Council of Boards of School Education (COBSE), New Delhi.",
+                "must_have_subjects": [
                     "Physics",
-                    "Mathematics",
+                    "Mathematics"
+                ],
+                "can_have_subjects": [
                     "Chemistry",
                     "Computer Science",
                     "Electronics",
                     "Information Technology",
-                    "Biology",
                     "Informatics Practices",
                     "Biotechnology",
                     "Technical Vocational subject",
@@ -1228,9 +1259,7 @@
                     "Engineering Graphics",
                     "Business Studies",
                     "Entrepreneurship"
-                ],
-                "is_lateral_entry": false,
-                "notes": "Candidates must have passed 10+2 with any of the following subjects: Physics, Mathematics, Chemistry, Computer Science, Electronics, Information Technology, Biology, Informatics Practices, Biotechnology, Technical Vocational subject, Agriculture, Engineering Graphics, Business Studies, or Entrepreneurship. 55% marks for candidates belonging to reserved categories. The 10+2 examination must be from a Board recognized or established by the Central or State Government through legislation and affiliated with the Council of Boards of School Education (COBSE), New Delhi."
+                ]
             }
         ],
         "admission_test_requirement_json": {
@@ -1275,14 +1304,17 @@
                 "qualification": "10+2",
                 "min_percentage": 60,
                 "accepted_specializations": null,
-                "required_subjects": [
+                "is_lateral_entry": false,
+                "notes": "From a Board recognized or established by the Central or State Government through legislation and affiliated with the Council of Boards of School Education (COBSE), New Delhi. 55% marks for candidates belonging to reserved categories.",
+                "must_have_subjects": [
                     "Physics",
-                    "Mathematics",
+                    "Mathematics"
+                ],
+                "can_have_subjects": [
                     "Chemistry",
                     "Computer Science",
                     "Electronics",
                     "Information Technology",
-                    "Biology",
                     "Informatics Practices",
                     "Biotechnology",
                     "Technical Vocational subject",
@@ -1290,9 +1322,7 @@
                     "Engineering Graphics",
                     "Business Studies",
                     "Entrepreneurship"
-                ],
-                "is_lateral_entry": false,
-                "notes": "From a Board recognized or established by the Central or State Government through legislation and affiliated with the Council of Boards of School Education (COBSE), New Delhi. 55% marks for candidates belonging to reserved categories."
+                ]
             }
         ],
         "admission_test_requirement_json": {
@@ -1346,9 +1376,10 @@
                     "Transportation Engineering",
                     "Infrastructure Engineering"
                 ],
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "45% marks for candidates belonging to reserved categories. Must be from a recognized university."
+                "notes": "45% marks for candidates belonging to reserved categories. Must be from a recognized university.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -1405,25 +1436,28 @@
                     "IoT",
                     "Data Science"
                 ],
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "50% for SC/ST category."
+                "notes": "50% for SC/ST category.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             },
             {
                 "qualification": "B.E./B.Tech",
                 "min_percentage": 55,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Must have a Minor Degree in CSE. 50% for SC/ST category."
+                "notes": "Must have a Minor Degree in CSE. 50% for SC/ST category.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             },
             {
                 "qualification": "B.E./B.Tech",
                 "min_percentage": 55,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Must be a relevant/appropriate branch of CSE as mentioned in AICTE regulations. 50% for SC/ST category."
+                "notes": "Must be a relevant/appropriate branch of CSE as mentioned in AICTE regulations. 50% for SC/ST category.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             },
             {
                 "qualification": "B.E./B.Tech",
@@ -1432,9 +1466,10 @@
                     "ECE",
                     "EE"
                 ],
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Must be in circuit branches (e.g., ECE, EE). Two years' experience in IT industry. 50% for SC/ST category."
+                "notes": "Must be in circuit branches (e.g., ECE, EE). Two years' experience in IT industry. 50% for SC/ST category.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -1491,25 +1526,28 @@
                     "IoT",
                     "Data Science"
                 ],
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "50% marks for SC/ST category."
+                "notes": "50% marks for SC/ST category.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             },
             {
                 "qualification": "B.E./B.Tech",
                 "min_percentage": 55,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Must have a Minor Degree in CSE. 50% marks for SC/ST category."
+                "notes": "Must have a Minor Degree in CSE. 50% marks for SC/ST category.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             },
             {
                 "qualification": "B.E./B.Tech",
                 "min_percentage": 55,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Must be in any relevant/appropriate branch of CSE as mentioned in AICTE regulations. 50% marks for SC/ST category."
+                "notes": "Must be in any relevant/appropriate branch of CSE as mentioned in AICTE regulations. 50% marks for SC/ST category.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             },
             {
                 "qualification": "B.E./B.Tech",
@@ -1518,9 +1556,10 @@
                     "ECE",
                     "EE"
                 ],
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Two years' experience in IT industry required. 50% marks for SC/ST category."
+                "notes": "Two years' experience in IT industry required. 50% marks for SC/ST category.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -1577,33 +1616,37 @@
                     "IoT",
                     "Data Science"
                 ],
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "50% marks for SC/ST category."
+                "notes": "50% marks for SC/ST category.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             },
             {
                 "qualification": "B.E./B.Tech",
                 "min_percentage": 55,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Must have a Minor Degree in CSE. 50% marks for SC/ST category."
+                "notes": "Must have a Minor Degree in CSE. 50% marks for SC/ST category.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             },
             {
                 "qualification": "B.E./B.Tech",
                 "min_percentage": 55,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Must be in any relevant/appropriate branch of CSE as mentioned in AICTE regulations from time to time, under \"Major Branches of Engineering / Technology and their relevant / appropriate branch of UG Degree in Engineering / Technology\". 50% marks for SC/ST category."
+                "notes": "Must be in any relevant/appropriate branch of CSE as mentioned in AICTE regulations from time to time, under \"Major Branches of Engineering / Technology and their relevant / appropriate branch of UG Degree in Engineering / Technology\". 50% marks for SC/ST category.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             },
             {
                 "qualification": "B.E./B.Tech",
                 "min_percentage": 55,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Must be from circuit branches (e.g., ECE, EE). Requires two years' experience in IT industry. 50% marks for SC/ST category."
+                "notes": "Must be from circuit branches (e.g., ECE, EE). Requires two years' experience in IT industry. 50% marks for SC/ST category.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -1654,9 +1697,10 @@
                     "Instrumentation & Control",
                     "Electrical & Electronics Engineering"
                 ],
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "50% marks for SC/ST category."
+                "notes": "50% marks for SC/ST category.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             },
             {
                 "qualification": "M. Sc.",
@@ -1664,9 +1708,10 @@
                 "accepted_specializations": [
                     "Physics (with specialization in Electronics)"
                 ],
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "50% marks for SC/ST category."
+                "notes": "50% marks for SC/ST category.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -1719,9 +1764,10 @@
                     "Material Science",
                     "Metallurgy Engineering"
                 ],
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "50% marks for SC/ST category."
+                "notes": "50% marks for SC/ST category.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -1765,9 +1811,10 @@
                 "qualification": "10+2",
                 "min_percentage": null,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "From a recognised board."
+                "notes": "From a recognised board.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -1812,9 +1859,10 @@
                 "qualification": "10+2",
                 "min_percentage": null,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": null
+                "notes": null,
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -1835,7 +1883,7 @@
     },
     {
         "source_course_name": "B.Com LL.B. Integrated",
-        "eligibility_criteria": "Graduate in any discipline with a minimum of 45% marks",
+        "eligibility_criteria": "10+2 in any discipline with a minimum of 45% marks",
         "fees_inr": "",
         "lateral_entry": "No",
         "admission_test_requirement": "Exam CGCUET - for Scholarship Only",
@@ -1850,12 +1898,13 @@
         "target_file": "/Users/ajay/2.0/cu/scraper/markdown/law_b-com-llb.md",
         "eligibility_rules": [
             {
-                "qualification": "Graduate",
+                "qualification": "10+2",
                 "min_percentage": 45,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": null
+                "notes": null,
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -1876,7 +1925,7 @@
     },
     {
         "source_course_name": "B.A. LL.B. Integrated",
-        "eligibility_criteria": "Graduate in any discipline with a minimum of 45% marks",
+        "eligibility_criteria": "10+2 in any discipline with a minimum of 45% marks",
         "fees_inr": "",
         "lateral_entry": "No",
         "admission_test_requirement": "Exam CGCUET - for Scholarship Only",
@@ -1897,12 +1946,13 @@
         "target_file": "/Users/ajay/2.0/cu/scraper/markdown/law_ba-llb.md",
         "eligibility_rules": [
             {
-                "qualification": "Graduate",
+                "qualification": "10+2",
                 "min_percentage": 45,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": null
+                "notes": null,
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -1923,7 +1973,7 @@
     },
     {
         "source_course_name": "B.B.A LL.B. Integrated",
-        "eligibility_criteria": "Graduate in any discipline with a minimum of 45% marks",
+        "eligibility_criteria": "10+2 in any discipline with a minimum of 45% marks",
         "fees_inr": "",
         "lateral_entry": "No",
         "admission_test_requirement": "Exam CGCUET - for Scholarship Only",
@@ -1944,12 +1994,13 @@
         "target_file": "/Users/ajay/2.0/cu/scraper/markdown/law_bba-llb.md",
         "eligibility_rules": [
             {
-                "qualification": "Graduate",
+                "qualification": "10+2",
                 "min_percentage": 45,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": null
+                "notes": null,
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -1994,9 +2045,10 @@
                 "qualification": "Graduate",
                 "min_percentage": 45,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": null
+                "notes": null,
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -2041,9 +2093,10 @@
                 "qualification": "10+2",
                 "min_percentage": 50,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Passed from any Board recognised or established by Central/State Government and member of COBSE. 45% marks for SC/ST category."
+                "notes": "Passed from any Board recognised or established by Central/State Government and member of COBSE. 45% marks for SC/ST category.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -2088,9 +2141,10 @@
                 "qualification": "10+2",
                 "min_percentage": 50,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "45% marks for SC/ST category. Board must be recognized by Central/State Government and member of Council of School Education (COBSE)."
+                "notes": "45% marks for SC/ST category. Board must be recognized by Central/State Government and member of Council of School Education (COBSE).",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -2135,9 +2189,10 @@
                 "qualification": "10+2",
                 "min_percentage": 50,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Must have passed from any Board recognised or established by Central / State Government through a legislation and member of Council of School Education (COBSE). 45% marks for SC/ST category."
+                "notes": "Must have passed from any Board recognised or established by Central / State Government through a legislation and member of Council of School Education (COBSE). 45% marks for SC/ST category.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -2182,9 +2237,10 @@
                 "qualification": "Graduate",
                 "min_percentage": 50,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Degree must be at least three years in duration. 45% marks for reserved category candidates. Degree must be from a university recognized by UGC."
+                "notes": "Degree must be at least three years in duration. 45% marks for reserved category candidates. Degree must be from a university recognized by UGC.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -2229,9 +2285,10 @@
                 "qualification": "Graduate",
                 "min_percentage": 50,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Bachelor's degree of at least three years duration. 45% for reserved category candidates. Degree from a UGC recognized university."
+                "notes": "Bachelor's degree of at least three years duration. 45% for reserved category candidates. Degree from a UGC recognized university.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -2276,9 +2333,10 @@
                 "qualification": "Graduate",
                 "min_percentage": 50,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Degree of at least three years in duration. 45% marks for reserved category candidates. Must be from a UGC recognized university."
+                "notes": "Degree of at least three years in duration. 45% marks for reserved category candidates. Must be from a UGC recognized university.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -2323,9 +2381,10 @@
                 "qualification": "Graduate",
                 "min_percentage": 50,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Bachelor's degree of at least three years in duration. 45% marks for reserved category candidates. Degree must be from a UGC recognized university."
+                "notes": "Bachelor's degree of at least three years in duration. 45% marks for reserved category candidates. Degree must be from a UGC recognized university.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -2370,9 +2429,10 @@
                 "qualification": "Graduate",
                 "min_percentage": 50,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Minimum three years duration. 45% marks for candidates belonging to the reserved category. Degree from a UGC recognized university."
+                "notes": "Minimum three years duration. 45% marks for candidates belonging to the reserved category. Degree from a UGC recognized university.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -2417,9 +2477,10 @@
                 "qualification": "Graduate",
                 "min_percentage": 50,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "At least three years' duration. 45% marks for candidates belonging to the reserved category. From a university recognized by the University Grants Commission (UGC)."
+                "notes": "At least three years' duration. 45% marks for candidates belonging to the reserved category. From a university recognized by the University Grants Commission (UGC).",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -2464,9 +2525,10 @@
                 "qualification": "Graduate",
                 "min_percentage": 50,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Degree must be of at least three years' duration. 45% marks for candidates belonging to reserved categories. Degree from a UGC recognized university."
+                "notes": "Degree must be of at least three years' duration. 45% marks for candidates belonging to reserved categories. Degree from a UGC recognized university.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -2511,9 +2573,10 @@
                 "qualification": "Graduate",
                 "min_percentage": 50,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "Degree must be of at least three years' duration. 45% marks for candidates belonging to the reserved category. From a university recognized by UGC."
+                "notes": "Degree must be of at least three years' duration. 45% marks for candidates belonging to the reserved category. From a university recognized by UGC.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -2558,25 +2621,25 @@
                 "qualification": "10+2",
                 "min_percentage": 50,
                 "accepted_specializations": null,
-                "required_subjects": [
+                "is_lateral_entry": false,
+                "notes": "From a recognised board.",
+                "must_have_subjects": [
                     "Physics",
-                    "Chemistry",
                     "Biology"
                 ],
-                "is_lateral_entry": false,
-                "notes": "From a recognised board."
+                "can_have_subjects": []
             },
             {
                 "qualification": "10+2",
                 "min_percentage": 50,
                 "accepted_specializations": null,
-                "required_subjects": [
+                "is_lateral_entry": false,
+                "notes": "From a recognised board.",
+                "must_have_subjects": [
                     "Physics",
-                    "Chemistry",
                     "Mathematics"
                 ],
-                "is_lateral_entry": false,
-                "notes": "From a recognised board."
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -2621,9 +2684,10 @@
                 "qualification": "10+2",
                 "min_percentage": null,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "From a recognised board."
+                "notes": "From a recognised board.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -2668,9 +2732,10 @@
                 "qualification": "10+2",
                 "min_percentage": null,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "From a recognised board."
+                "notes": "From a recognised board.",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -2714,9 +2779,10 @@
                 "qualification": "10+2",
                 "min_percentage": null,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "From a recognised board"
+                "notes": "From a recognised board",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -2761,9 +2827,10 @@
                 "qualification": "10+2",
                 "min_percentage": null,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "from a recognised board"
+                "notes": "from a recognised board",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -2808,9 +2875,10 @@
                 "qualification": "10+2",
                 "min_percentage": null,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": "from a recognised board"
+                "notes": "from a recognised board",
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -2855,9 +2923,10 @@
                 "qualification": "10+2",
                 "min_percentage": null,
                 "accepted_specializations": null,
-                "required_subjects": null,
                 "is_lateral_entry": false,
-                "notes": null
+                "notes": null,
+                "must_have_subjects": [],
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -2902,11 +2971,12 @@
                 "qualification": "10+2",
                 "min_percentage": null,
                 "accepted_specializations": null,
-                "required_subjects": [
+                "is_lateral_entry": false,
+                "notes": "from a recognised board",
+                "must_have_subjects": [
                     "Biology"
                 ],
-                "is_lateral_entry": false,
-                "notes": "from a recognised board"
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
@@ -2950,11 +3020,12 @@
                 "qualification": "10+2",
                 "min_percentage": null,
                 "accepted_specializations": null,
-                "required_subjects": [
+                "is_lateral_entry": false,
+                "notes": "from a recognised board",
+                "must_have_subjects": [
                     "Biology"
                 ],
-                "is_lateral_entry": false,
-                "notes": "from a recognised board"
+                "can_have_subjects": []
             }
         ],
         "admission_test_requirement_json": {
