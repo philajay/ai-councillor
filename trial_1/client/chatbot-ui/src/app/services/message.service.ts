@@ -115,17 +115,15 @@ export class MessageService {
     };
 
     if (lastMessage.agent == 'json_formatter') {
-      lastMessage.isJson = false
-      if (Array.isArray(jsonData)) {
-        message.text = jsonData
-          .map(
-            (course: any) =>
-              `**Name:** ${course.name}\n\n**Career Prospects:** ${course.careerProspects}\n\n**Eligibility:** ${course.eligibility}`
-          )
-          .join('\n\n---\n\n');
-      } else {
-        message.text = `**Name:** ${jsonData.name}\n\n**Career Prospects:** ${jsonData.careerProspects}\n\n**Eligibility:** ${jsonData.eligibility}`;
-      }
+      this.messages.push({
+        text: '',
+        sender: 'bot',
+        isComponent: true,
+        component: 'course-info',
+        componentData: jsonData,
+      });
+      this.messagesUpdated.next();
+      return;
     } else if (jsonData.agentId === 2 && jsonData.clarification_question) {
       message.text = jsonData.clarification_question;
     } else if (jsonData.agentId) {

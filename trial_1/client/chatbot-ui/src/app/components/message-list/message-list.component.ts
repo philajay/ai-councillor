@@ -4,12 +4,13 @@ import { Message, MessageService } from '../../services/message.service';
 import { MarkdownComponent } from 'ngx-markdown';
 import { Subscription } from 'rxjs';
 import { CourseChipsComponent } from '../course-chips/course-chips.component';
+import { CourseInfoComponent } from '../course-info/course-info.component';
 import { WebsocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-message-list',
   standalone: true,
-  imports: [CommonModule, MarkdownComponent, CourseChipsComponent],
+  imports: [CommonModule, MarkdownComponent, CourseChipsComponent, CourseInfoComponent],
   templateUrl: './message-list.component.html',
   styleUrls: ['./message-list.component.css']
 })
