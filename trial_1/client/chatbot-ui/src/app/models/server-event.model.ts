@@ -5,4 +5,5 @@ export interface ServerEvent {
     text?: string;
     endOfTurn?: boolean;
     results?: any;
+    agent?:string;
   }

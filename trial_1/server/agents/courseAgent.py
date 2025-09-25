@@ -99,14 +99,63 @@ You have access to the following tool:
 1.  **`find_by_discovery(filters: list)`**: This tool returns the courses based on user query and program_level entity.
 
 Instructions:
-1) Categorize the response based on course types and provide bullet points for carrer prospect, eligibility and placements data 
-2) Always end the response explaing why CGC is good choice for future.
+1) Call the tool and that is it.
 '''
+
+def json_formatter_agent(state):
+    entity = state.get(DB_RESULTS, {})
+    instructions = f'''You are an expert JSON formatter.
+**Task**
+Your task is to convert the given raw data into a structured JSON format. You must adhere to the specified JSON structure without any deviation.
+
+**Data to be formatted:**
+{entity}
+
+**JSON Output Format:**
+You must return a JSON array, where each object in the array represents a course and has the following structure:
+[
+    {{
+        "id": "<course Id>",
+        "name": "<course name>",
+        "careerProspects": "<Career prospects for the course>",
+        "eligibility": "<Eligibility criteria for the course>",
+        "placements": {{
+            "highestPackage": <>,
+            "placement_offers": <>,
+            "total_recruiters" : <>
+        }}
+    }}
+]
+
+**Instructions:**
+1.  Iterate through each course in the raw data.
+2.  For each course, create a JSON object with the keys "id", "name", "Career Prospects", "Eligibility", and "placements".
+3.  Populate the values for these keys from the corresponding fields in the raw data.
+4.  Ensure the final output is a single JSON array containing all the course objects.
+5.  Do not include any additional text, explanations, or markdown formatting in your response. The output must be only the JSON array.
+'''
+    return LlmAgent(
+        name="json_formatter",
+        model="gemini-2.5-flash",
+        planner=BuiltInPlanner(
+            thinking_config=types.ThinkingConfig(
+                include_thoughts=False,
+                thinking_budget=0,
+            )
+        ),
+        generate_content_config=types.GenerateContentConfig(
+            temperature=0,
+            response_mime_type="application/json"
+        ),
+        instruction=instructions,
+        output_key=GIST_OUTPUT_KEY
+    )
+
 
 def course_discovery():
     return LlmAgent(
         name="get_course_info",
-        model="gemini-2.5-flash",
+        model="gemini-1.5-flash",
         planner=BuiltInPlanner(
             thinking_config=types.ThinkingConfig(
                 include_thoughts=False,
@@ -153,7 +202,11 @@ class CourseAgent(BaseAgent, BaseModel):
         await update_session_state(SHOW_SUGGESTED_QUESTIONS, True, ctx.session, ctx.session_service)
         if  entity["program_level"]:
             async for event in cd.run_async(ctx):
-                if event.is_final_response():
-                    await update_session_state(GIST_OUTPUT_KEY, event.content.parts[0].text, ctx.session, ctx.session_service)
                 yield event
+            
+            json_formatter = json_formatter_agent(ctx.session.state)
 
+            async for event in json_formatter.run_async(ctx):
+                 if event.is_final_response():
+                    await update_session_state(GIST_OUTPUT_KEY, event.content.parts[0].text, ctx.session, ctx.session_service)
+                 yield event

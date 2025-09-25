@@ -11,6 +11,7 @@ export interface Message {
   isComponent?: boolean;
   component?: string;
   componentData?: any;
+  agent?:any;
 }
 
 @Injectable({
@@ -45,7 +46,7 @@ export class MessageService {
     if (event.action === 'functionCall') {
       this.handleFunctionCall(event);
     } else if (event.endOfTurn) {
-      this.handleEndOfTurn();
+      this.handleEndOfTurn(event.agent || '');
     } else if (event.text) {
       this.handleTextMessage(event.text);
     }
@@ -68,16 +69,17 @@ export class MessageService {
     }
   }
 
-  private handleEndOfTurn() {
+  private handleEndOfTurn(agent:string) {
     this.isNewMessageStream = true;
     const lastMessage = this.messages[this.messages.length - 1];
     if (lastMessage?.sender === 'bot') {
+      lastMessage.agent = agent
       try {
         const cleanedJson = this.cleanJsonString(lastMessage.text);
         lastMessage.json = JSON.parse(cleanedJson);
         lastMessage.isJson = true;
         this.messages.pop();
-        this.addBotMessage(lastMessage.json);
+        this.addBotMessage(lastMessage);
       } catch (e) {
         lastMessage.isJson = false;
       }
@@ -104,22 +106,37 @@ export class MessageService {
     this.messagesUpdated.next();
   }
 
-  private addBotMessage(jsonData: any) {
+  private addBotMessage(lastMessage:any) {
+    let jsonData = lastMessage.json;
     const message: Message = {
       sender: 'bot',
       isJson: true,
       text: ''
     };
 
-    if(jsonData.agentId == "get_eligibility"){
-      return
-    }
-
-    if (jsonData.agentId === 2 && jsonData.clarification_question) {
+    if (lastMessage.agent == 'json_formatter') {
+      lastMessage.isJson = false
+      if (Array.isArray(jsonData)) {
+        message.text = jsonData
+          .map(
+            (course: any) =>
+              `**Name:** ${course.name}\n\n**Career Prospects:** ${course.careerProspects}\n\n**Eligibility:** ${course.eligibility}`
+          )
+          .join('\n\n---\n\n');
+      } else {
+        message.text = `**Name:** ${jsonData.name}\n\n**Career Prospects:** ${jsonData.careerProspects}\n\n**Eligibility:** ${jsonData.eligibility}`;
+      }
+    } else if (jsonData.agentId === 2 && jsonData.clarification_question) {
       message.text = jsonData.clarification_question;
     } else if (jsonData.agentId) {
       message.text = jsonData.purpose;
     }
+
+    if(jsonData.agentId == "get_eligibility"){
+      return
+    }
+
+    
 
     this.messages.push(message);
   }
