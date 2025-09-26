@@ -1,3 +1,4 @@
+import time
 from google.adk.agents import BaseAgent, LlmAgent, InvocationContext
 from collections.abc import AsyncGenerator
 from typing import override
@@ -114,11 +115,7 @@ output format:
     return instruction
 
 
-def summary_agent():
-    agent = LlmAgent(
-            name="router",
-            model="gemini-2.5-pro",
-            instruction='''You are brain of the system. Your task is to use the current gist, user request and agents available to plan how to fulfill the request. 
+brian_instruction = '''You are brain of the system. Your task is to use the current gist, user request and agents available to plan how to fulfill the request. 
 Agents
 1)  Name: course_discovery
     - **Use Case:** Use this agent for **new, general discovery searches** about courses. This is for when the user starts a new topic or asks a broad question.
@@ -217,7 +214,21 @@ Output Your output should be json as shown below:
         Enumerate all assigned action items, specifying who is responsible for each if mentioned.
     >
 
-}}
+}}'''
+
+def summary_agent():
+    agent = LlmAgent(
+            name="router",
+            model="gemini-2.5-pro",
+            instruction='''You are expert in summarizing the conversation. Your task is to generate a concise gist of the entire conversation so far.
+1) Do not in any way try to answer, modify or interpret the user query. Your task is to generate gist of the conversation so far.
+2) The gist should be concise and should capture the essence of the conversation so far.
+3) The gist should be in the bullet points using markdown.
+4) Under no circumstance you should influence the further execution of agents. Make no suggestions or recommendations.
+
+<SpecialCase>
+While create gist differentiate between get_eligibility and 
+</SpecialCase>
 ''',
             sub_agents=[],
             planner=BuiltInPlanner(
@@ -271,16 +282,24 @@ class RouterAgent(BaseAgent, BaseModel):
     async def _run_async_impl(
         self, ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
-        sm = summary_agent()
-        # async for event in sm.run_async(ctx):
-        #     yield event
-        # gist = ctx.session.state[GIST_OUTPUT_KEY]
-        # view = json.loads(remove_json_tags(gist))
-        # print(f"Gist is {view}")
+        total_start_time = time.time()
 
+        # Time summary_agent
+        start_time = time.time()
+        sm = summary_agent()
+        async for event in sm.run_async(ctx):
+            yield event
+        end_time = time.time()
+        print(f"Time taken for summary_agent: {end_time - start_time:.2f} seconds")
+        gist = ctx.session.state.get(GIST_OUTPUT_KEY, '')
+
+        # Time router_agent
+        start_time = time.time()
         router_agent = get_next_agent()
         async for event in router_agent.run_async(ctx):
             yield event
+        end_time = time.time()
+        print(f"Time taken for router_agent (get_next_agent): {end_time - start_time:.2f} seconds")
 
         next_agent = ctx.session.state[NEXT_AGENT]
         next_agent = json.loads(remove_json_tags(next_agent))["agent"]
@@ -290,19 +309,32 @@ class RouterAgent(BaseAgent, BaseModel):
         if next_agent == "FollowUpAgent":
             print("FollowUpAgent CALLED")
             show_suggested_questions = True
+            start_time = time.time()
             async for event in self.followUpAgent.run_async(ctx):
                 yield event
+            end_time = time.time()
+            print(f"Time taken for FollowUpAgent: {end_time - start_time:.2f} seconds")
+
         elif next_agent == "CourseAgent":
             show_suggested_questions = True
             print("CourseAgent CALLED")
+            start_time = time.time()
             async for event in self.courseAgent.run_async(ctx):
                 yield event
+            end_time = time.time()
+            print(f"Time taken for CourseAgent: {end_time - start_time:.2f} seconds")
+
         elif next_agent == "EligibilityAgent":
             show_suggested_questions = True
             print("EligibilityAgent CALLED")
+            start_time = time.time()
             async for event in self.eligibilityAgent.run_async(ctx):
                 yield event
+            end_time = time.time()
+            print(f"Time taken for EligibilityAgent: {end_time - start_time:.2f} seconds")
+
         elif next_agent == "ClarificationAgent":
+            start_time = time.time()
             yield Event(
                 author = "  ",
                 invocation_id =  str(uuid.uuid1()),
@@ -316,7 +348,16 @@ class RouterAgent(BaseAgent, BaseModel):
                 partial =  False,
                 turn_complete =  True
             )
+            end_time = time.time()
+            print(f"Time taken for ClarificationAgent: {end_time - start_time:.2f} seconds")
+
         if show_suggested_questions == True:
+            start_time = time.time()
             async for event in self.suggestedQuestion.run_async(ctx):
                 yield event
+            end_time = time.time()
+            print(f"Time taken for suggestedQuestion agent: {end_time - start_time:.2f} seconds")
+        
+        total_end_time = time.time()
+        print(f"Total time taken for the request: {total_end_time - total_start_time:.2f} seconds")
         

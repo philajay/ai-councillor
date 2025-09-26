@@ -47,15 +47,17 @@ export class MessageListComponent implements OnInit, AfterViewChecked, OnDestroy
   }
 
   private scrollToBottom(): void {
-    try {
-      this.el.nativeElement.scroll({
-        top: this.el.nativeElement.scrollHeight,
-        left: 0,
-        behavior: 'smooth'
-      });
-    } catch (err) {
-      console.error('Could not scroll to bottom:', err);
-    }
+    setTimeout(() => {
+      try {
+        this.el.nativeElement.scroll({
+          top: this.el.nativeElement.scrollHeight,
+          left: 0,
+          behavior: 'smooth'
+        });
+      } catch (err) {
+        console.error('Could not scroll to bottom:', err);
+      }
+    }, 0);
   }
 
   onCourseSelected(course: any) {

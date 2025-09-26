@@ -9,7 +9,7 @@ import json
 from db.search_engine import find_by_discovery, modify_course_result
 from common.common import remove_json_tags
 from google.adk.agents.readonly_context import ReadonlyContext
-from common.common import GIST_OUTPUT_KEY, EXTRACTED_ENTITY, LAST_DB_RESULTS , update_session_state, SHOW_SUGGESTED_QUESTIONS, LLM_PROCESSED_DB_RESULTS
+from common.common import GIST_OUTPUT_KEY, EXTRACTED_ENTITY, LAST_DB_RESULTS , update_session_state, SHOW_SUGGESTED_QUESTIONS, LLM_PROCESSED_DB_RESULTS, set_state_after_tool_call, LAST_CLIENT_MESSAGE
 
 
 def getEntityExtractor(state):
@@ -92,11 +92,12 @@ We will always follow **this Chain of Thoughts:**
 
 def course_discovery_instruction(context: ReadonlyContext):
     entity = context.state.get(EXTRACTED_ENTITY, {})
-    return f'''You are and expert education consultant.
+    instruction =  f'''You are and expert education consultant whoc is expert in interpreting the course details.
 **Task**
-Answer the question using the data obtained by tool find_by_discovery.
+Provide insights to students about courses based on their query. 
 
 Extracted Entities: {entity}
+query_text = {context.state.get(LAST_CLIENT_MESSAGE, "")}
 
 You have access to the following tool:
 1.  **`find_by_discovery(filters: list)`**: 
@@ -107,77 +108,22 @@ You have access to the following tool:
 
     This tool returns the courses based on user query, program_level and course_stream_type entity.
 
-Instructions:
-1) Call the tool and that is it.
-2) If the we do not find information user is looking then inform user that we are going to show him courses in which he might be interested.
-2) You are part of chain of agents. Next agent is supposed to get more details. 
-    a) Give your brief synopsis about courses
-    b) end by saying details are following
+    
+Tool call returns the list of courses to user also which user can see.
+
+**Guidelines**
+Based on query and tool call results provide insights to user about the courses.
+Insights should be relevant to curses and should help user in taking decision.
+
 
 '''
-
-def json_formatter_agent(state):
-    entity = state.get(LAST_DB_RESULTS, {})
-    instructions = f'''You are an expert JSON formatter.
-**Task**
-Your task is to convert the given raw data into a structured JSON format. You must adhere to the specified JSON structure without any deviation.
-
-**Data to be formatted:**
-{entity}
-
-**JSON Output Format:**
-You must return a JSON array, where each object in the array represents a course and has the following structure:
-[
-    {{
-        "id": "<course Id>",
-        "name": "<course name>",
-        "summary": <>
-        "careerProspects": {{
-            "summary": <Brief summary of carrer prospects>,
-            "careers"; [array of careers]
-        }},
-        "eligibility": [{{
-            title: <title of eligibility>
-            detail: <This is most important part of data. Be very thorough and explain it in detail using markdown. Highlight important parts.>
-        }}],
-        "placements": {{
-            "highestPackage": <>,
-            "placement_offers": <>,
-            "total_recruiters" : <>
-        }}
-    }}
-]
-
-**Instructions:**
-1.  Iterate through each course in the raw data.
-2.  For each course, create a JSON object with the keys "id", "name", "Career Prospects", "Eligibility", and "placements".
-3.  Populate the values for these keys from the corresponding fields in the raw data.
-4.  Ensure the final output is a single JSON array containing all the course objects.
-5.  Do not include any additional text, explanations, or markdown formatting in your response. The output must be only the JSON array.
-6.  Summary of course should be very concise and short one line.
-'''
-    return LlmAgent(
-        name="json_formatter",
-        model="gemini-2.5-flash-lite",
-        planner=BuiltInPlanner(
-            thinking_config=types.ThinkingConfig(
-                include_thoughts=False,
-                thinking_budget=0,
-            )
-        ),
-        generate_content_config=types.GenerateContentConfig(
-            temperature=0,
-            response_mime_type="application/json"
-        ),
-        instruction=instructions,
-        output_key=LLM_PROCESSED_DB_RESULTS
-    )
+    return instruction
 
 
 def course_discovery():
     return LlmAgent(
-        name="get_course_info",
-        model="gemini-1.5-flash",
+        name="find_by_discovery",
+        model="gemini-2.0-flash",
         planner=BuiltInPlanner(
             thinking_config=types.ThinkingConfig(
                 include_thoughts=False,
@@ -189,7 +135,7 @@ def course_discovery():
         ),
         instruction=course_discovery_instruction,
         tools=[find_by_discovery],
-        after_tool_callback=modify_course_result,
+        after_tool_callback=set_state_after_tool_call,
         output_key=LLM_PROCESSED_DB_RESULTS,
         include_contents='none'
     )
@@ -227,9 +173,4 @@ class CourseAgent(BaseAgent, BaseModel):
             async for event in cd.run_async(ctx):
                 yield event
             
-            json_formatter = json_formatter_agent(ctx.session.state)
-
-            async for event in json_formatter.run_async(ctx):
-                 if event.is_final_response():
-                    await update_session_state(GIST_OUTPUT_KEY, event.content.parts[0].text, ctx.session, ctx.session_service)
-                 yield event
+           

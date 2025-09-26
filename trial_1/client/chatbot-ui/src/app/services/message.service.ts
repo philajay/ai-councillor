@@ -63,7 +63,36 @@ export class MessageService {
         sender: 'bot',
         isComponent: true,
         component: 'course-chips',
-        componentData: event.results
+        componentData: event.results || [],
+      });
+      this.messagesUpdated.next();
+    }
+
+    if (event.name === 'find_by_discovery') {
+      let componentData =  event.results || [];
+      //remove the first element in array
+      componentData = componentData.slice(1);
+      //component data is array of arrays where we are interested in element at index 1. So we flatten it.
+      componentData = componentData.flatMap((item: any) => {
+        item[1].id = item[0]; //set id of course as first element
+        return item[1];
+      });
+
+      //Strip the summary if more than 200 characters and add "..." at the end
+      componentData = componentData.map((item: any) => {
+        if (item.summary && item.summary.length > 200) {
+          item.summary = item.summary.substring(0, 200) + '...';
+        }
+        return item;
+      });
+      
+
+      this.messages.push({
+        text: '',
+        sender: 'bot',
+        isComponent: true,
+        component: 'course-info',
+        componentData: componentData,
       });
       this.messagesUpdated.next();
     }

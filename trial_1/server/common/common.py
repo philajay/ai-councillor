@@ -69,6 +69,7 @@ GIST_OUTPUT_KEY = "turn_gist"
 NEXT_AGENT = "next_agent"
 SHOW_SUGGESTED_QUESTIONS = "show_suggested_questions"
 LAST_DB_RESULTS = "last_db_results"
+LAST_CLIENT_MESSAGE = "last_client_message"
 
 
 
@@ -100,7 +101,7 @@ def set_state_after_tool_call(
 
         try:
             # Add it to state so that we can reterive it to send to client in live_adk
-            tool_context.state["results"] = tool_response 
+            tool_context.state[LAST_DB_RESULTS] = tool_response 
             return tool_response
         except:
             return None

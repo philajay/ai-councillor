@@ -115,52 +115,48 @@ def find_by_discovery(query_text: str, program_level: str, course_stream_type: s
         program_level (str): level for which course is being discovered. Must be either ug or pg
         course_stream_type (str, optional): The program type user is searching for, e.g., BE/Btech, bsc. Defaults to None.
     Returns:
-        list: A ranked list of the most relevant course names.
+        list: A ranked list of the most relevant courses, as a list of lists.
     """
     conn = get_db_connection()
     if not conn:
-        return ["Error: Could not connect to the database."]
+        return [["Error: Could not connect to the database."]]
 
     with conn.cursor() as cur:
         try:
             # Generate embedding for the user's query
             query_embedding = getModel().encode(query_text)
 
-            # Base query and parameters
-            query = """
-                SELECT id, course_name, course_description,
-                       career_prospects, program_highlights,
-                       admission_eligibility_rules, admission_test_requirement, lateral_entry,
-                       placements,
-                       1 - (course_embedding <=> %s) AS similarity
-                FROM courses
-                WHERE program_level = %s
-            """
+            # Build the inner query
+            inner_query = "SELECT id, structured_data, 1 - (course_embedding <=> %s) AS similarity FROM courses WHERE program_level = %s"
             params = [query_embedding, program_level.upper()]
 
-            # Conditionally add the course_category filter
             if course_stream_type:
-                query += " AND course_category = %s"
+                inner_query += " AND course_category = %s"
                 params.append(course_stream_type)
 
-            # Add ordering and limit
-            query += " ORDER BY similarity DESC"
+            # Wrap the query to filter by similarity
+            outer_query = f"""
+                SELECT id, structured_data, similarity
+                FROM ({inner_query}) AS similarity_query
+                WHERE similarity > 0.25
+                ORDER BY similarity DESC
+            """
 
             # Execute the query
-            cur.execute(query, tuple(params))
+            cur.execute(outer_query, tuple(params))
 
             rows = cur.fetchall()
             if not rows:
-                return ["No relevant courses found."]
+                return []
             
-            # Exclude the last column ('similarity') from the header and results
-            header = ",".join([desc[0] for desc in cur.description[:-1]])
+            # Return a list of lists for robust parsing on the client
+            header = [desc[0] for desc in cur.description[:-1]]
             results = [header]
-            results.extend([",".join(map(str, row[:-1])) for row in rows])
+            results.extend([list(row[:-1]) for row in rows])
             return results
         except Exception as e:
             print(f"An error occurred during discovery search: {e}")
-            return [f"Error during search: {e}"]
+            return [[f"Error during search: {e}"]]
         finally:
             conn.close()
 

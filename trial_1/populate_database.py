@@ -4,6 +4,7 @@ from psycopg2.extras import execute_values, Json
 from sentence_transformers import SentenceTransformer
 from pgvector.psycopg2 import register_vector
 import os
+from concurrent.futures import ProcessPoolExecutor
 
 # --- Database Configuration ---
 DB_NAME = "chatbot"
@@ -101,6 +102,7 @@ def setup_database_schema(conn):
                 admission_test_requirement JSONB,
                 lateral_entry BOOLEAN DEFAULT FALSE,
                 placements TEXT,
+                structured_data JSONB,
                 course_embedding VECTOR(384)
             );
         """)
@@ -159,6 +161,53 @@ def get_program_level(course_name, course_tag):
             return 'UG'
     return 'UG' # Default if no match
 
+def structure_course_data(course_raw):
+    from google import genai
+    client = genai.Client()
+    prompt = f'''You are an expert JSON formatter.
+**Task**
+Your task is to convert the given raw data into a structured JSON format. You must adhere to the specified JSON structure without any deviation.
+
+**Data to be formatted:**
+{course_raw}
+
+**JSON Output Format:**
+    {{
+        "name": "<course name>",
+        "summary": <>
+        "careerProspects": {{
+            "summary": <Brief summary of carrer prospects>,
+            "careers"; [array of careers]
+        }},
+        "eligibility": [{{
+            title: <title of eligibility>
+            detail: <This is most important part of data. Be very thorough and explain it in detail using markdown. Highlight important parts.>
+        }}],
+        "placements": {{
+            "highestPackage": <>,
+            "placement_offers": <>,
+            "total_recruiters" : <>
+        }},
+        "admission_test_requirement_json": <Just copy this field as is from the raw data>,
+        "whyUs": <Very brief summary of why us. Just 1 line in markdown>
+    }}
+
+
+**Instructions:**
+1.  Populate the values for these keys from the corresponding fields in the raw data.
+2. Data to be formatted is the only source of truth for you. Do not include any information not present in the data.
+3.  Do not include any additional text, explanations, or markdown formatting in your response. The output must be only the JSON array.
+4.  Summary of course should be very concise and short one line.
+'''
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt,
+        config= {
+            "response_mime_type": "application/json",
+        }
+    )
+    return json.loads(response.text)
+
 def populate_canonical_and_synonyms(conn, model, synonym_map, term_type):
     """
     Populates the canonical_terms and synonyms tables from a given map.
@@ -213,104 +262,107 @@ def populate_canonical_and_synonyms(conn, model, synonym_map, term_type):
 def populate_data(conn, model):
     """Reads data from JSON, generates embeddings, and populates the database."""
     print("Starting data population...")
-    
+
     script_dir = os.path.dirname(__file__)
     json_path = os.path.join(script_dir, '..', 'data', 'step8.json')
+    with open(json_path, 'r') as f: data = json.load(f)
 
-    with open(json_path, 'r') as f:
-        data = json.load(f)
+    # --- Parallel Data Structuring ---
+    print("Structuring course data in parallel...")
+    with ProcessPoolExecutor() as executor:
+        # We pass the raw course data to the structuring function in parallel
+        structured_data_list = list(executor.map(structure_course_data, data))
+    print("Structuring complete.")
+    # --- End of Parallelization ---
 
-    unique_subjects = set()
-    unique_qualifications = set()
-    unique_specializations = set()
-
-    courses_to_insert = []
+    unique_subjects, unique_qualifications, unique_specializations = set(), set(), set()
+    courses_to_process = []
     
     print(f"Processing {len(data)} courses from JSON file...")
-    for course in data:
+    for i, course in enumerate(data):
         alt_names = course.get('alternate_names', [])
-        if isinstance(alt_names, str):
-            alt_names = [name.strip() for name in alt_names.split(',')]
-
+        if isinstance(alt_names, str): alt_names = [name.strip() for name in alt_names.split(',')]
         placements_text = json.dumps(course.get('placements')) if course.get('placements') else ''
-
-        doc = " ".join(filter(None, [
-            course.get('source_course_name', ''), " ".join(alt_names),
-            course.get('stream_text', ''), course.get('course_tag_text', ''),
-            course.get('summary', ''), course.get('why_us', ''),
-            course.get('career_prospects', ''), placements_text,
-        ]))
+        doc = " ".join(filter(None, [course.get('source_course_name', ''), " ".join(alt_names), course.get('stream_text', ''), course.get('course_tag_text', ''), course.get('career_prospects', ''), placements_text]))
         
-        program_level = get_program_level(course.get('source_course_name', ''), course.get('course_tag_text', ''))
-        lateral_entry_bool = course.get('lateral_entry', 'No').lower() == 'yes'
+        # Use the pre-computed structured data
+        structured_data = structured_data_list[i]
 
-        courses_to_insert.append({
-            'name': course.get('source_course_name'), 'alt_names': alt_names,
+        courses_to_process.append({
+            'raw_data': course, 'name': course.get('source_course_name'), 'alt_names': alt_names,
             'stream': course.get('stream_text'), 'category': course.get('course_tag_text'),
-            'program_level': program_level, 'desc': course.get('summary'),
-            'highlights': course.get('why_us'), 'careers': course.get('career_prospects'),
+            'program_level': get_program_level(course.get('source_course_name', ''), course.get('course_tag_text', '')),
+            'desc': course.get('summary'), 'highlights': course.get('why_us'), 'careers': course.get('career_prospects'),
             'fees': int(course['fees_inr']) if course.get('fees_inr') and course['fees_inr'].isdigit() else None,
             'admission_rules': course.get('eligibility_criteria'),
             'admission_test_req': course.get('admission_test_requirement_json'),
-            'lateral_entry': lateral_entry_bool,
-            'placements': json.dumps(course.get('placements')) if course.get('placements') else None,
-            'doc': doc
+            'lateral_entry': course.get('lateral_entry', 'No').lower() == 'yes',
+            'placements': placements_text, 'doc': doc, 'structured_data': structured_data
         })
-
         for rule in course.get('eligibility_rules', []):
-            if rule.get('qualification'):
-                unique_qualifications.add(rule['qualification'])
-            if rule.get('must_have_subjects'):
-                unique_subjects.update(rule['must_have_subjects'])
-            if rule.get('can_have_subjects'):
-                unique_subjects.update(rule['can_have_subjects'])
-            if rule.get('accepted_specializations'):
-                specs = [s for s in rule['accepted_specializations'] if s]
-                unique_specializations.update(specs)
+            if rule.get('qualification'): unique_qualifications.add(rule['qualification'])
+            if rule.get('must_have_subjects'): unique_subjects.update(rule['must_have_subjects'])
+            if rule.get('can_have_subjects'): unique_subjects.update(rule['can_have_subjects'])
+            if rule.get('accepted_specializations'): unique_specializations.update([s for s in rule['accepted_specializations'] if s])
 
     print("Generating embeddings for courses...")
-    course_docs = [c['doc'] for c in courses_to_insert]
-    course_embeddings = model.encode(course_docs, show_progress_bar=True)
+    course_embeddings = model.encode([c['doc'] for c in courses_to_process], show_progress_bar=True)
 
     with conn.cursor() as cur:
         course_data_for_sql = [
-            (c['name'], c['alt_names'], c['stream'], c['category'], c['program_level'], c['desc'], 
-             c['highlights'], c['careers'], c['fees'], c['admission_rules'], Json(c['admission_test_req']), 
-             c['lateral_entry'], c['placements'], emb)
-            for c, emb in zip(courses_to_insert, course_embeddings)
+            (c['name'], c['alt_names'], c['stream'], c['category'], c['program_level'], c['desc'], c['highlights'], c['careers'], 
+             c['fees'], c['admission_rules'], Json(c['admission_test_req']), c['lateral_entry'], c['placements'], 
+             Json(c['structured_data']), emb)
+            for c, emb in zip(courses_to_process, course_embeddings)
         ]
         
-        inserted_ids = execute_values(
+        inserted_rows = execute_values(
             cur,
             """INSERT INTO courses (course_name, alternate_names, stream, course_category, program_level, 
                    course_description, program_highlights, career_prospects, fees_inr, 
                    admission_eligibility_rules, admission_test_requirement, lateral_entry, 
-                   placements, course_embedding) VALUES %s RETURNING id""",
+                   placements, structured_data, course_embedding) VALUES %s RETURNING id, course_name""",
             course_data_for_sql, fetch=True
         )
-        course_id_map = {courses_to_insert[i]['name']: inserted_id[0] for i, inserted_id in enumerate(inserted_ids)}
+        course_id_map = {name: course_id for course_id, name in inserted_rows}
         print(f"Inserted {len(course_id_map)} courses.")
 
+        # Now, we need to update the 'id' inside the structured_data JSONB column
+        updates_to_perform = []
+        for course_data in courses_to_process:
+            course_name = course_data['name']
+            if course_name in course_id_map:
+                db_id = course_id_map[course_name]
+                updates_to_perform.append((Json(course_data['structured_data']), db_id))
+
+        if updates_to_perform:
+            execute_values(
+                cur,
+                "UPDATE courses SET structured_data = data.structured_data::jsonb FROM (VALUES %s) AS data (structured_data, id) WHERE courses.id = data.id",
+                updates_to_perform
+            )
+            print(f"Updated {len(updates_to_perform)} courses with correct IDs in structured data.")
+
         rules_to_insert = []
-        for course in data:
-            course_name = course.get('source_course_name')
+        for course_data in courses_to_process:
+            course_name = course_data['name']
             if course_name in course_id_map:
                 course_id = course_id_map[course_name]
-                for rule in course.get('eligibility_rules', []):
+                for rule in course_data['raw_data'].get('eligibility_rules', []):
                     rules_to_insert.append((
                         course_id, rule.get('qualification'), rule.get('min_percentage'),
                         rule.get('accepted_specializations'), rule.get('must_have_subjects'),
-                        rule.get('can_have_subjects'), rule.get('is_lateral_entry', False), 
-                        rule.get('notes')
+                        rule.get('can_have_subjects'), rule.get('is_lateral_entry', False), rule.get('notes')
                     ))
         
-        execute_values(
-            cur,
-            """INSERT INTO eligibility_rules (course_id, qualification, min_percentage, 
-               accepted_specializations, must_have_subjects, can_have_subjects, is_lateral_entry, notes) VALUES %s""",
-            rules_to_insert
-        )
-        print(f"Inserted {len(rules_to_insert)} eligibility rules.")
+        if rules_to_insert:
+            execute_values(
+                cur,
+                """INSERT INTO eligibility_rules (course_id, qualification, min_percentage, 
+                   accepted_specializations, must_have_subjects, can_have_subjects, is_lateral_entry, notes) VALUES %s""",
+                rules_to_insert
+            )
+            print(f"Inserted {len(rules_to_insert)} eligibility rules.")
 
     # --- Populate Canonical and Synonym Tables ---
     DEGREE_SYNONYM_MAP = {
