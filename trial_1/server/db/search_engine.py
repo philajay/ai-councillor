@@ -106,14 +106,14 @@ def get_db_connection():
         return None
 
 
-def find_by_discovery(query_text: str, program_level: str, course_stream_type: str):
+def find_by_discovery(query_text: str, program_level: str, course_stream_type: list[str]):
     """
     Finds courses by semantic similarity to a query text.
 
     Args:
         query_text (str): The user's natural language query.
         program_level (str): level for which course is being discovered. Must be either ug or pg
-        course_stream_type (str, optional): The program type user is searching for, e.g., BE/Btech, bsc. Defaults to None.
+        course_stream_type (list[str], optional): A list of program types the user is searching for. Defaults to None.
     Returns:
         list: A ranked list of the most relevant courses, as a list of lists.
     """
@@ -130,8 +130,9 @@ def find_by_discovery(query_text: str, program_level: str, course_stream_type: s
             inner_query = "SELECT id, structured_data, 1 - (course_embedding <=> %s) AS similarity FROM courses WHERE program_level = %s"
             params = [query_embedding, program_level.upper()]
 
-            if course_stream_type:
-                inner_query += " AND course_category = %s"
+            # If course_stream_type is provided and is a non-empty list, add to the query
+            if course_stream_type and isinstance(course_stream_type, list) and len(course_stream_type) > 0:
+                inner_query += " AND course_category = ANY(%s)"
                 params.append(course_stream_type)
 
             # Wrap the query to filter by similarity

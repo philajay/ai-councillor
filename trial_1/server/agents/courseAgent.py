@@ -43,12 +43,16 @@ history: {x}
 
 2. *course_stream_type**
     In india there are various types of courses offered based on stream user is pursuing.
+    **THIS MUST BE A LIST OF STRINGS.**
     **Possible Values**
     It can be either "MCA", "BCA", "BA", "BE/B.Tech", "B.Pharm", "LLB", "BBA/BMS", "BA/BBA LLB", "MBA/PGDM", "B.Com", "D.El.Ed", "ME/M.Tech", "B.Sc"
-    
+    *Examples
+        a) User asks for "engineering and management courses". You should extract ["BE/B.Tech", "BBA/BMS", "MBA/PGDM"].
+        b) User asks for "science courses". You should extract ["B.Sc", "M.Sc"].
         
 **Constraints**
-If program_level is not mentioned ask user politry about the program_level. 
+- If program_level is not mentioned ask user politry about the program_level. 
+- `course_stream_type` must be a JSON array of strings, e.g., `["B.Sc", "BE/B.Tech"]`. If only one is found, it should still be in an array, e.g., `["BCA"]`. If none are found, return an empty array `[]`.
 
 
 We will always follow **this Chain of Thoughts:**
@@ -56,14 +60,14 @@ We will always follow **this Chain of Thoughts:**
 {{
     "agentId": <Hardcoded 2>
     "program_level": <level>,
-    "course_stream_type": <Return if present else return null>
+    "course_stream_type": [],
     "clarification_question": <Question to get the program_level>
 }}
 
 2) if program_level is present return json 
     {{
         "program_level": <level>,
-        "course_stream_type": <Return if present else return null>
+        "course_stream_type": <Return a list of strings here. e.g., ["B.Sc", "B.E./B.Tech"]>
         "agentId": <Hardcoded 2>
         "purpose": <Fuuny take on your purpose. Also let user know that it will take time to finish the task so be patient.>
     }}
