@@ -43,6 +43,7 @@ Your primary job is to analyze the user's query in the context of the conversati
     - **Use Case:** Use this agent for **new, general discovery searches** about courses. This is for when the user starts a new topic or asks a broad question.
     - **Keywords:** "show me," "tell me about," "what courses," "B.Tech," "MBA."
     - **Example:** "Show me courses in computer science."
+    
 
 2.  **`EligibilityAgent`**:
     - **Use Case:** Use this agent **only** for **new eligibility-based searches** where the user explicitly states their qualifications. The user is asking what they can apply for based on their academic background. This agent is used to query a database with columns like `qualification`, `min_percentage`, `accepted_specializations`, etc.
@@ -221,14 +222,56 @@ def summary_agent():
             name="router",
             model="gemini-2.5-pro",
             instruction='''You are expert in summarizing the conversation. Your task is to generate a concise gist of the entire conversation so far.
-1) Do not in any way try to answer, modify or interpret the user query. Your task is to generate gist of the conversation so far.
-2) The gist should be concise and should capture the essence of the conversation so far.
-3) The gist should be in the bullet points using markdown.
-4) Under no circumstance you should influence the further execution of agents. Make no suggestions or recommendations.
 
-<SpecialCase>
-While create gist differentiate between get_eligibility and 
-</SpecialCase>
+There are three agents available in system out of which one will handle the user quesry. Below is the list of agents:
+1.  **`FollowUpAgent`**:
+    - **Use Case:** Use this agent if `gist` is present AND the user's query is a **follow-up question** about those results.
+    - **Keywords:** "tell me more," "what about the second one," "compare them," "what is the eligibility," "fees for that."
+    - **Example:** If the last turn showed a list of B.Tech programs and the user now asks, "What are the career prospects for them?", you MUST use this agent.
+
+2.  **`CourseAgent`**:
+    - **Use Case:** Use this agent for **new, general discovery searches** about courses. This is for when the user starts a new topic or asks a broad question.
+    - **Keywords:** "show me," "tell me about," "what courses," "B.Tech," "MBA."
+    - **Example:** "Show me courses in computer science."
+    - **Output** Provides lists of actual courses details to the user which can be queried upon. For example:
+    [
+        {
+            "course_name": "Bachelor of Technology (B.Tech) in Computer Science and Engineering",
+            "institute_name": "Indian Institute of Technology (IIT) Delhi",
+            ......<other details>
+        }
+    ]
+
+3.  **`EligibilityAgent`**:
+    - **Use Case:** Use this agent **only** for **new eligibility-based searches** where the user explicitly states their qualifications. The user is asking what they can apply for based on their academic background. This agent is used to query a database with columns like `qualification`, `min_percentage`, `accepted_specializations`, etc.
+    - **Output** Provides lists of courses name to the user which allows user to choose from. For example:
+    [
+        "BA",
+        "BSC"
+    ]
+    Note carefully that we cannot call followup agent on this result as it does not contain course details.
+
+4.  **`ClarificationAgent`**:
+    - **Use Case:** Use this agent when `db_results` are present, and the user asks an eligibility-related question. This situation is ambiguous because the user might be asking about the courses already shown (`FollowUpAgent`) or starting a new, unrelated eligibility search (`EligibilityAgent`).
+    - **Example:** If the last turn showed a list of B.Tech programs and the user now asks, "What can I study with 60% in 12th?", it's unclear if they mean from the list shown or in general. Use this agent to ask for clarification.
+
+
+Your output should be in following json format:
+{
+    "gist": <Overall Essence:
+        A brief, one-to-two sentence overview of the conversation's main purpose and key takeaway.
+        Main Points & Decisions:
+        Use a bulleted list to highlight the most significant topics discussed.
+        Clearly state any final decisions that were made.
+        Key Highlights & Action Items:
+        Identify and list any crucial data points, agreements, or unresolved questions.
+        Enumerate all assigned action items, specifying who is responsible for each if mentioned.
+    >, 
+    "agent": <Agent which will handle the user query>,
+    "explanation": <Clear chain of thought as to why this agent was choosen>
+}
+
+
 ''',
             sub_agents=[],
             planner=BuiltInPlanner(
@@ -292,17 +335,21 @@ class RouterAgent(BaseAgent, BaseModel):
         end_time = time.time()
         print(f"Time taken for summary_agent: {end_time - start_time:.2f} seconds")
         gist = ctx.session.state.get(GIST_OUTPUT_KEY, '')
+        obj = json.loads(remove_json_tags(gist))
+        next_agent = obj["agent"]
+
 
         # Time router_agent
-        start_time = time.time()
-        router_agent = get_next_agent()
-        async for event in router_agent.run_async(ctx):
-            yield event
-        end_time = time.time()
-        print(f"Time taken for router_agent (get_next_agent): {end_time - start_time:.2f} seconds")
+        # start_time = time.time()
+        # router_agent = get_next_agent()
+        # async for event in router_agent.run_async(ctx):
+        #     yield event
+        # end_time = time.time()
+        # print(f"Time taken for router_agent (get_next_agent): {end_time - start_time:.2f} seconds")
 
-        next_agent = ctx.session.state[NEXT_AGENT]
-        next_agent = json.loads(remove_json_tags(next_agent))["agent"]
+        # next_agent = ctx.session.state[NEXT_AGENT]
+        # obj = json.loads(remove_json_tags(next_agent))
+        # next_agent = obj["agent"]
         
         show_suggested_questions = False
 
