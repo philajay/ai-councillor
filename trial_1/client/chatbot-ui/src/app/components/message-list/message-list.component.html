@@ -4,12 +4,23 @@
     'bot-message': message.sender === 'bot',
     'has-json': message.isJson
   }">
+    @if (message.isLoading) {
+      <mat-progress-spinner mode="indeterminate" [diameter]="30"></mat-progress-spinner>
+    }
     @if (message.isJson) {
       <div class="json-container">
         <pre>{{ message.text }}</pre>
       </div>
     } @else {
       <markdown [data]="message.text"></markdown>
+    }
+    @if (message.isError) {
+      <div class="error-container">
+        <p class="error-text">{{ message.text }}</p>
+        @if (message.retryable) {
+          <button mat-stroked-button color="warn" (click)="onRetry(message)">Retry</button>
+        }
+      </div>
     }
     @if (message.isComponent && message.component === 'course-chips') {
       <app-course-chips [courses]="message.componentData" (courseSelected)="onCourseSelected($event)"></app-course-chips>

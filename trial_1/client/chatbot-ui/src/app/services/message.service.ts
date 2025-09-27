@@ -11,7 +11,11 @@ export interface Message {
   isComponent?: boolean;
   component?: string;
   componentData?: any;
-  agent?:any;
+  agent?: any;
+  isError?: boolean;
+  retryable?: boolean;
+  originalText?: string;
+  isLoading?: boolean;
 }
 
 @Injectable({
@@ -36,19 +40,49 @@ export class MessageService {
 
   addMessage(text: string, sender: 'user' | 'bot') {
     this.messages.push({ text, sender });
-    this.messagesUpdated.next();
     if (sender === 'user') {
       this.isNewMessageStream = true;
+      this.messages.push({ text: '', sender: 'bot', isLoading: true });
+    }
+    this.messagesUpdated.next();
+  }
+
+  private removeLoadingMessage() {
+    const loadingMessageIndex = this.messages.findIndex(m => m.isLoading);
+    if (loadingMessageIndex !== -1) {
+      this.messages.splice(loadingMessageIndex, 1);
     }
   }
 
-  private handleServerEvent(event: ServerEvent) {
-    if (event.action === 'functionCall') {
+  private handleServerEvent(event: ServerEvent | { error: string; message: string }) {
+    const isMeaningfulEvent = 'error' in event || event.action || event.endOfTurn || event.text;
+
+    if (isMeaningfulEvent) {
+      this.removeLoadingMessage();
+    }
+
+    if ('error' in event) {
+      this.handleErrorEvent(event);
+    } else if (event.action === 'functionCall') {
       this.handleFunctionCall(event);
     } else if (event.endOfTurn) {
       this.handleEndOfTurn(event.agent || '');
     } else if (event.text) {
       this.handleTextMessage(event.text);
+    }
+  }
+
+  private handleErrorEvent(event: { error: string; message: string }) {
+    const lastUserMessage = [...this.messages].reverse().find(m => m.sender === 'user');
+    if (lastUserMessage) {
+      this.messages.push({
+        text: `Sorry, an error occurred: ${event.message}. Please try again.`,
+        sender: 'bot',
+        isError: true,
+        retryable: true,
+        originalText: lastUserMessage.text,
+      });
+      this.messagesUpdated.next();
     }
   }
 
@@ -101,6 +135,7 @@ export class MessageService {
   private handleEndOfTurn(agent:string) {
     this.isNewMessageStream = true;
     const lastMessage = this.messages[this.messages.length - 1];
+
     if (lastMessage?.sender === 'bot') {
       lastMessage.agent = agent
       try {
@@ -157,6 +192,8 @@ export class MessageService {
       message.text = jsonData.clarification_question;
     } else if (jsonData.agentId) {
       message.text = jsonData.purpose;
+    }  else if(lastMessage.agent === "summazier"){
+      message.text = JSON.stringify(jsonData, null, 2);
     }
 
     if(jsonData.agentId == "get_eligibility"){

@@ -205,7 +205,12 @@ Output Your output should be json as shown below:
             "entities": <Entity object required by agent>
         }}
     ],
-    "gist": <Overall Essence:
+    "gist": < Essential Details:
+        You must always keep track of User Profile because it is very important to provide personalized recommendations.
+        1) program_level: ug or pg
+        2) user qualifications: 12th, 12th with arts, 12th in non medical diploma, B.Tech in computer science etc.
+        3) course_stream_type: ["B.Sc", "BE/B.Tech"]
+        Overall Essence:
         A brief, one-to-two sentence overview of the conversation's main purpose and key takeaway.
         Main Points & Decisions:
         Use a bulleted list to highlight the most significant topics discussed.
@@ -219,15 +224,32 @@ Output Your output should be json as shown below:
 
 def summary_agent():
     agent = LlmAgent(
-            name="router",
+            name="summazier",
             model="gemini-2.5-pro",
             instruction='''You are expert in summarizing the conversation. Your task is to generate a concise gist of the entire conversation so far.
 
 There are three agents available in system out of which one will handle the user quesry. Below is the list of agents:
 1.  **`FollowUpAgent`**:
-    - **Use Case:** Use this agent if `gist` is present AND the user's query is a **follow-up question** about those results.
-    - **Keywords:** "tell me more," "what about the second one," "compare them," "what is the eligibility," "fees for that."
-    - **Example:** If the last turn showed a list of B.Tech programs and the user now asks, "What are the career prospects for them?", you MUST use this agent.
+    - **Use Case:** Use this agent if `gist` and `extracted_entity` are present AND the user's query is a **follow-up question** about those results.
+        Use following chain of thoughts to decide if you need to use this agent:
+        1) If uesr query has "new" entity of following type which is not present in extracted_entity then do not use this agent:  
+            a). *course_stream_type**
+                In india there are various types of courses offered based on stream user is pursuing.
+                **THIS MUST BE A LIST OF STRINGS.**
+                **Possible Values**
+                It can be either "MCA", "BCA", "BA", "BE/B.Tech", "B.Pharm", "LLB", "BBA/BMS", "BA/BBA LLB", "MBA/PGDM", "B.Com", "D.El.Ed", "ME/M.Tech", "B.Sc"
+                *Examples
+                    a) User asks for "engineering and management courses". You should extract ["BE/B.Tech", "BBA/BMS", "MBA/PGDM"].
+                    b) User asks for "science courses". You should extract ["B.Sc", "M.Sc"].
+            b. **topic**
+                Subject for which user is looking for courses. Note that there can be None/multiple subjects.
+                **Possible Values**
+                Examples: 
+                a) I want to do course in data science. -> "data science"
+                b) Compaer courses in bsc and bca in air -> "ai"
+                c) I want to do course in data science and ai -> "data science", "ai"
+        2) If uesr query can be answered based on gist and extracted_entity then use this agent.
+
 
 2.  **`CourseAgent`**:
     - **Use Case:** Use this agent for **new, general discovery searches** about courses. This is for when the user starts a new topic or asks a broad question.
@@ -258,20 +280,30 @@ There are three agents available in system out of which one will handle the user
 
 Your output should be in following json format:
 {
-    "gist": <Overall Essence:
+    "gist": <
         A brief, one-to-two sentence overview of the conversation's main purpose and key takeaway.
-        Main Points & Decisions:
-        Use a bulleted list to highlight the most significant topics discussed.
-        Clearly state any final decisions that were made.
-        Key Highlights & Action Items:
-        Identify and list any crucial data points, agreements, or unresolved questions.
-        Enumerate all assigned action items, specifying who is responsible for each if mentioned.
+        Essential Details:
+            You must always keep track of User Profile because it is very important to provide personalized recommendations.
+            1) program_level: ug or pg
+            2) user qualifications: 12th, 12th with arts, 12th in non medical diploma, B.Tech in computer science etc.
+            d) Last extracted entite `extracted_entity` (Its saved in the state with variable `extracted_entity`)  which tells us about the lsat search made by user.  It helps in determining if its a new query or followup query.
+
+        
+        Overall Essence:
+            Main Points & Decisions:
+            Use a bulleted list to highlight the most significant topics discussed.
+            Clearly state any final decisions that were made.
+            Key Highlights & Action Items:
+            Identify and list any crucial data points, agreements, or unresolved questions.
+            Enumerate all assigned action items, specifying who is responsible for each if mentioned.
     >, 
     "agent": <Agent which will handle the user query>,
     "explanation": <Clear chain of thought as to why this agent was choosen>
 }
 
 
+** Things to remember**
+1) Always Keep the result of the eligibility agent in memory as it may be needed in future.
 ''',
             sub_agents=[],
             planner=BuiltInPlanner(
@@ -290,7 +322,7 @@ Your output should be in following json format:
 def get_next_agent():
     agent = LlmAgent(
                 name="router",
-                model="gemini-2.5-flash",
+                model="gemini-2.0-flash",
                 instruction=getInstructions,
                 sub_agents=[],
                 planner=BuiltInPlanner(

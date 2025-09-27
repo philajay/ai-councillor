@@ -40,7 +40,7 @@ Eligibility:
 '''
     return LlmAgent(
         name="present_course_details",
-        model="gemini-2.5-flash",
+        model="gemini-2.0-flash",
         planner=BuiltInPlanner(
             thinking_config=types.ThinkingConfig(
                 include_thoughts=False,

@@ -58,7 +58,7 @@ Expected output:
 '''
     return LlmAgent(
         name="extract_eligibility_entity",
-        model="gemini-2.5-flash-lite",
+        model="gemini-2.0-flash",
         planner=BuiltInPlanner(
             thinking_config=types.ThinkingConfig(
                 include_thoughts=False,
@@ -101,7 +101,7 @@ You have access to the following tool:
 def eligibility():
     return LlmAgent(
         name="get_eligibility",
-        model="gemini-2.5-flash-lite",
+        model="gemini-2.0-flash",
         planner=BuiltInPlanner(
             thinking_config=types.ThinkingConfig(
                 include_thoughts=False,

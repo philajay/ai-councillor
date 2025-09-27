@@ -53,7 +53,7 @@ your output should be json as shown below
 '''
     return LlmAgent(
         name="intent_classifier",
-        model="gemini-2.5-flash-lite",
+        model="gemini-2.0-flash",
         planner=BuiltInPlanner(
             thinking_config=types.ThinkingConfig(
                 include_thoughts=False,

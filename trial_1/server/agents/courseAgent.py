@@ -49,6 +49,13 @@ history: {x}
     *Examples
         a) User asks for "engineering and management courses". You should extract ["BE/B.Tech", "BBA/BMS", "MBA/PGDM"].
         b) User asks for "science courses". You should extract ["B.Sc", "M.Sc"].
+3. **topic**
+    Subject for which user is looking for courses. Note that there can be None/multiple subjects.
+    **Possible Values**
+    Examples: 
+    a) I want to do course in data science. -> "data science"
+    b) Compaer courses in bsc and bca in air -> "ai"
+    c) I want to do course in data science and ai -> "data science", "ai"
         
 **Constraints**
 - If program_level is not mentioned ask user politry about the program_level. 
@@ -61,6 +68,7 @@ We will always follow **this Chain of Thoughts:**
     "agentId": <Hardcoded 2>
     "program_level": <level>,
     "course_stream_type": [],
+    "topic": <string>,
     "clarification_question": <Question to get the program_level>
 }}
 
@@ -68,6 +76,7 @@ We will always follow **this Chain of Thoughts:**
     {{
         "program_level": <level>,
         "course_stream_type": <Return a list of strings here. e.g., ["B.Sc", "B.E./B.Tech"]>
+        "topic": <string>,
         "agentId": <Hardcoded 2>
         "purpose": <Fuuny take on your purpose. Also let user know that it will take time to finish the task so be patient.>
     }}
@@ -77,7 +86,7 @@ We will always follow **this Chain of Thoughts:**
 '''
     return LlmAgent(
         name="extract_order_entity",
-        model="gemini-2.5-flash",
+        model="gemini-2.0-flash",
         planner=BuiltInPlanner(
             thinking_config=types.ThinkingConfig(
                 include_thoughts=False,
@@ -96,12 +105,16 @@ We will always follow **this Chain of Thoughts:**
 
 def course_discovery_instruction(context: ReadonlyContext):
     entity = context.state.get(EXTRACTED_ENTITY, {})
+    x = json.loads(remove_json_tags(entity))
+    topic = x.get("topic", "")
+    if not topic:
+        topic = context.state.get(LAST_CLIENT_MESSAGE, "")
     instruction =  f'''You are and expert education consultant whoc is expert in interpreting the course details.
 **Task**
 Provide insights to students about courses based on their query. 
 
 Extracted Entities: {entity}
-query_text = {context.state.get(LAST_CLIENT_MESSAGE, "")}
+query_text = {topic}
 
 You have access to the following tool:
 1.  **`find_by_discovery(filters: list)`**: 

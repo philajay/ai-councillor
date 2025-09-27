@@ -147,7 +147,8 @@ class AgentSession:
                 traceback.print_exception(e)
 
                 await client_websocket.send_text(json.dumps({
-                    'error': f'exception caught: {e}'
+                    "error": e.__class__.__name__,
+                    "message": str(e)
                 }))
                 continue
 

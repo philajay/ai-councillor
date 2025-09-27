@@ -6,15 +6,26 @@ import { Subscription } from 'rxjs';
 import { CourseChipsComponent } from '../course-chips/course-chips.component';
 import { CourseInfoComponent } from '../course-info/course-info.component';
 import { WebsocketService } from '../../services/websocket.service';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-message-list',
   standalone: true,
-  imports: [CommonModule, MarkdownComponent, CourseChipsComponent, CourseInfoComponent],
+  imports: [
+    CommonModule,
+    MarkdownComponent,
+    CourseChipsComponent,
+    CourseInfoComponent,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+  ],
   templateUrl: './message-list.component.html',
-  styleUrls: ['./message-list.component.css']
+  styleUrls: ['./message-list.component.css'],
 })
-export class MessageListComponent implements OnInit, AfterViewChecked, OnDestroy {
+export class MessageListComponent
+  implements OnInit, AfterViewChecked, OnDestroy
+{
   messages: Message[] = [];
   private shouldScroll = false;
   private subscription!: Subscription;
@@ -22,7 +33,7 @@ export class MessageListComponent implements OnInit, AfterViewChecked, OnDestroy
   constructor(
     private messageService: MessageService,
     private el: ElementRef,
-    private websocketService: WebsocketService 
+    private websocketService: WebsocketService
   ) {}
 
   ngOnInit(): void {
@@ -52,7 +63,7 @@ export class MessageListComponent implements OnInit, AfterViewChecked, OnDestroy
         this.el.nativeElement.scroll({
           top: this.el.nativeElement.scrollHeight,
           left: 0,
-          behavior: 'smooth'
+          behavior: 'smooth',
         });
       } catch (err) {
         console.error('Could not scroll to bottom:', err);
@@ -61,8 +72,15 @@ export class MessageListComponent implements OnInit, AfterViewChecked, OnDestroy
   }
 
   onCourseSelected(course: any) {
-    let newMessage = `I would like to pursue ${course}`
+    let newMessage = `I would like to pursue ${course}`;
     this.messageService.addMessage(newMessage, 'user');
     this.websocketService.sendMessage({ text: newMessage });
+  }
+
+  onRetry(message: Message): void {
+    if (message.originalText) {
+      this.messageService.addMessage(message.originalText, 'user');
+      this.websocketService.sendMessage({ text: message.originalText });
+    }
   }
 }
