@@ -44,3 +44,17 @@ button:disabled {
   background-color: #e0e0e0;
   cursor: not-allowed;
 }
+
+@media (max-width: 768px) {
+  :host {
+    padding: 10px;
+  }
+
+  input {
+    padding: 10px 15px;
+  }
+
+  button {
+    padding: 10px 18px;
+  }
+}

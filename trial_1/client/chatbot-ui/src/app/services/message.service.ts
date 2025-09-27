@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { WebsocketService } from './websocket.service';
-import { Subject } from 'rxjs';
+import { Subject, BehaviorSubject } from 'rxjs';
 import { ServerEvent } from '../models/server-event.model';
 
 export interface Message {
@@ -32,16 +32,22 @@ export class MessageService {
   messagesUpdated = new Subject<void>();
   private isNewMessageStream = true;
 
+  private courseChipsSubject = new BehaviorSubject<string[] | null>(null);
+  public courseChips$ = this.courseChipsSubject.asObservable();
+
   constructor(private websocketService: WebsocketService) {
     this.websocketService.messages$.subscribe(event => {
       this.handleServerEvent(event);
     });
   }
 
-  addMessage(text: string, sender: 'user' | 'bot') {
+  addMessage(text: string, sender: 'user' | 'bot', options: { clearChips?: boolean } = {}) {
     this.messages.push({ text, sender });
     if (sender === 'user') {
       this.isNewMessageStream = true;
+      if (options.clearChips) {
+        this.courseChipsSubject.next(null); // Clear chips only when specified
+      }
       this.messages.push({ text: '', sender: 'bot', isLoading: true });
     }
     this.messagesUpdated.next();
@@ -88,18 +94,7 @@ export class MessageService {
 
   private handleFunctionCall(event: ServerEvent) {
     if (event.name === 'find_by_eligibility') {
-      this.messages.push({
-        text: 'Please select one of the following courses:',
-        sender: 'bot'
-      });
-      this.messages.push({
-        text: '',
-        sender: 'bot',
-        isComponent: true,
-        component: 'course-chips',
-        componentData: event.results || [],
-      });
-      this.messagesUpdated.next();
+      this.courseChipsSubject.next(event.results as string[]);
     }
 
     if (event.name === 'find_by_discovery') {

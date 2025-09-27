@@ -6,15 +6,15 @@
 
 <mat-accordion multi="true">
   @for (course of courses; track course.id; let i = $index) {
-    <mat-expansion-panel class="course-expansion-panel">
+    <mat-expansion-panel class="course-expansion-panel" [expanded]="i === 0">
       <mat-expansion-panel-header>
-        <mat-panel-title>
-          <span class="course-index">{{ i + 1 }}.</span>
-          {{ course.name }}
-        </mat-panel-title>
-        <mat-panel-description>
-          {{ course.summary }}
-        </mat-panel-description>
+        <div class="icon-container">
+          <mat-icon>school</mat-icon> <!-- Placeholder icon -->
+        </div>
+        <div class="course-header-text">
+          <div class="course-name">{{ course.name }}</div>
+          <div class="course-summary-text">{{ course.summary }}</div>
+        </div>
       </mat-expansion-panel-header>
 
       <div class="course-details-container">

@@ -1,1 +1,11 @@
-<app-chat-window></app-chat-window>
+<div class="chat-container">
+  <app-message-list></app-message-list>
+  <div class="form-container">
+    @if (coursesForChips$ | async; as courses) {
+      @if(courses && courses.length > 0) {
+        <app-course-chips [courses]="courses" (courseSelected)="onCourseSelected($event)"></app-course-chips>
+      }
+    }
+    <app-message-form></app-message-form>
+  </div>
+</div>

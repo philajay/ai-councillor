@@ -1,18 +1,25 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { MatChipsModule, MatChipListboxChange } from '@angular/material/chips';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-course-chips',
+  standalone: true,
+  imports: [CommonModule, MatIconModule],
   templateUrl: './course-chips.component.html',
   styleUrls: ['./course-chips.component.css'],
-  standalone: true,
-  imports: [MatChipsModule]
 })
 export class CourseChipsComponent {
   @Input() courses: string[] = [];
   @Output() courseSelected = new EventEmitter<string>();
 
-  onChipSelectionChange(event: MatChipListboxChange) {
-    this.courseSelected.emit(event.value);
+  isExpanded = true;
+
+  onChipClick(course: string): void {
+    this.courseSelected.emit(course);
+  }
+
+  toggle(): void {
+    this.isExpanded = !this.isExpanded;
   }
 }

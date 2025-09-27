@@ -11,70 +11,69 @@
   text-align: center;
 }
 
-.course-index {
-  margin-right: 8px;
-  color: #64748b; /* Grayish Blue */
-}
-
 .course-expansion-panel {
   background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px !important;
+  border: 1px solid #f3f4f6; /* Lighter border */
+  border-radius: 16px !important;
   margin-bottom: 1rem !important;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07), 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
   overflow: hidden;
 }
 
-/* Remove the default padding from the panel body */
 :host ::ng-deep .mat-expansion-panel-body {
   padding: 0 !important;
 }
 
-/* Style the header content to stack title and description */
-:host ::ng-deep .mat-expansion-panel-header .mat-content {
-  flex-direction: column;
-  align-items: flex-start;
-}
-
 .mat-expansion-panel-header {
-  font-size: 1rem;
-  min-height: 100px; /* Increased height for two lines */
-  background-color: #eff6ff; /* Light blue background */
+  min-height: 100px;
+  padding: 0 24px;
 }
 
-:host ::ng-deep .mat-panel-title {
+/* New Header Styles */
+:host ::ng-deep .mat-expansion-panel-header .mat-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.icon-container {
+  width: 52px;
+  height: 52px;
+  background-color: #e0f7fa; /* Light cyan */
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icon-container mat-icon {
+  color: #00bcd4; /* Cyan */
+  font-size: 28px;
+}
+
+.course-header-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.course-name {
+  font-size: 1.1rem;
   font-weight: 600;
-  color: #4338ca; /* Rich Indigo */
-}
-
-.mat-panel-description {
-  font-size: 0.9rem;
-  color: #64748b;
-  justify-content: flex-start; /* Align summary to the left */
-  margin-top: 4px; /* Add a small gap */
-}
-
-.course-details-container {
-  padding: 0.8rem 1.2rem 1.2rem 1.2rem; /* Add padding back, especially at the top */
-  background-color: #fff;
-  border: none; /* Remove redundant border */
-  box-shadow: none; /* Remove redundant shadow */
-}
-
-.course-header {
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
-.course-header h1 {
-  font-size: 2rem;
-  font-weight: bold;
   color: #1e293b;
 }
 
-.course-header p {
-  font-size: 1rem;
+.course-summary-text {
+  font-size: 0.9rem;
   color: #64748b;
+}
+
+
+.course-details-container {
+  padding: 0.8rem 1.2rem 1.2rem 1.2rem;
+  background-color: #fff;
+  border: none;
+  box-shadow: none;
 }
 
 .section-header {
@@ -161,6 +160,7 @@
 
 .placement-value {
   display: block;
+  font-size: 2.2rem;
   font-weight: bold;
   color: #3b82f6;
 }

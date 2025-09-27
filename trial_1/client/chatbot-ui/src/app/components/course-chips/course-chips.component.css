@@ -1,35 +1,89 @@
-mat-chip-listbox {
+.chips-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #343a40;
+  margin-bottom: 16px;
+  padding: 0 4px;
+}
+
+.chips-header mat-icon {
+  transition: transform 0.2s ease-in-out;
+}
+
+.chips-header mat-icon.rotated {
+  transform: rotate(180deg);
+}
+
+.chips-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px; /* Slightly increased gap for better spacing */
-  margin: 10px 0;
-  justify-content: flex-start; /* Align chips to the start */
+  gap: 12px;
+  padding: 16px;
+  background-color: #f8f9fa; /* Soft, light gray */
+  border-radius: 18px;
+  border: 1px solid #e9ecef;
 }
 
-mat-chip-option {
-  background-color: #e3f2fd; /* A light, friendly blue */
-  color: #0d47a1; /* A dark, readable blue for the text */
-  border-radius: 20px; /* A more rounded, pill-like shape */
-  padding: 10px 16px; /* More padding for a better touch target */
+.course-chip {
+  padding: 10px 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 14px;
   cursor: pointer;
-  transition: all 0.3s ease; /* Smooth transition for all properties */
-  border: none; /* Remove the default border */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* A subtle shadow for depth */
-  font-weight: 500; /* Medium font weight for better readability */
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border-width: 1px;
+  border-style: solid;
 }
 
-mat-chip-option:hover {
-  background-color: #bbdefb; /* A slightly darker blue on hover */
-  transform: translateY(-2px); /* Lift the chip on hover */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* A more pronounced shadow on hover */
+/* --- Color Palette --- */
+
+.chip-color-0 { background-color: #f0f9ff; border-color: #bae6fd; color: #0c4a6e; }
+.chip-color-0:hover { background-color: #e0f2fe; border-color: #7dd3fc; }
+
+.chip-color-1 { background-color: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+.chip-color-1:hover { background-color: #dcfce7; border-color: #86efac; }
+
+.chip-color-2 { background-color: #f5f3ff; border-color: #ddd6fe; color: #5b21b6; }
+.chip-color-2:hover { background-color: #ede9fe; border-color: #c4b5fd; }
+
+.chip-color-3 { background-color: #fff7ed; border-color: #fed7aa; color: #9a3412; }
+.chip-color-3:hover { background-color: #ffedd5; border-color: #fcd3a1; }
+
+.chip-color-4 { background-color: #fdf2f8; border-color: #fbcfe8; color: #9d174d; }
+.chip-color-4:hover { background-color: #fce7f3; border-color: #f9a8d4; }
+
+
+/* --- General Hover/Active Effects --- */
+
+.course-chip:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-mat-chip-option.mat-mdc-chip-selected {
-  background-color: #0d47a1; /* A deep blue for the selected state */
-  color: #ffffff; /* White text for contrast */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* A slightly stronger shadow when selected */
+.course-chip:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-mat-chip-option.mat-mdc-chip-selected:hover {
-  background-color: #1565c0; /* A slightly lighter shade of the selected blue on hover */
+@media (max-width: 768px) {
+  .chips-header {
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+  }
+
+  .chips-container {
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .course-chip {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+  }
 }

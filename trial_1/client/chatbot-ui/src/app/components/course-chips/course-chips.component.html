@@ -1,7 +1,13 @@
-<mat-chip-listbox aria-label="Course selection" (change)="onChipSelectionChange($event)">
-  @for (course of courses; track course) {
-    <mat-chip-option [value]="course">
-      {{course}}
-    </mat-chip-option>
-  }
-</mat-chip-listbox>
+<div class="chips-header" (click)="toggle()">
+  <span>You are eligible for the following courses. Please select one to proceed.</span>
+  <mat-icon [class.rotated]="!isExpanded">expand_more</mat-icon>
+</div>
+@if (isExpanded) {
+  <div class="chips-container">
+    @for (course of courses; track course; let i = $index) {
+      <button class="course-chip" [ngClass]="'chip-color-' + (i % 5)" (click)="onChipClick(course)">
+        {{ course }}
+      </button>
+    }
+  </div>
+}

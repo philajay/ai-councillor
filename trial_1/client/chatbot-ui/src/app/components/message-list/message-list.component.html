@@ -22,9 +22,6 @@
         }
       </div>
     }
-    @if (message.isComponent && message.component === 'course-chips') {
-      <app-course-chips [courses]="message.componentData" (courseSelected)="onCourseSelected($event)"></app-course-chips>
-    }
     @if (message.isComponent && message.component === 'course-info') {
       <app-course-info [data]="message.componentData"></app-course-info>
     }

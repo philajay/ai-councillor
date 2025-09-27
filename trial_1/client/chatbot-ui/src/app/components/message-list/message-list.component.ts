@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Message, MessageService } from '../../services/message.service';
 import { MarkdownComponent } from 'ngx-markdown';
 import { Subscription } from 'rxjs';
-import { CourseChipsComponent } from '../course-chips/course-chips.component';
 import { CourseInfoComponent } from '../course-info/course-info.component';
 import { WebsocketService } from '../../services/websocket.service';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,7 +14,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   imports: [
     CommonModule,
     MarkdownComponent,
-    CourseChipsComponent,
     CourseInfoComponent,
     MatButtonModule,
     MatProgressSpinnerModule,
@@ -69,12 +67,6 @@ export class MessageListComponent
         console.error('Could not scroll to bottom:', err);
       }
     }, 0);
-  }
-
-  onCourseSelected(course: any) {
-    let newMessage = `I would like to pursue ${course}`;
-    this.messageService.addMessage(newMessage, 'user');
-    this.websocketService.sendMessage({ text: newMessage });
   }
 
   onRetry(message: Message): void {

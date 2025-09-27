@@ -21,7 +21,7 @@ export class MessageFormComponent {
 
   sendMessage() {
     if (this.newMessage.trim()) {
-      this.messageService.addMessage(this.newMessage, 'user');
+      this.messageService.addMessage(this.newMessage, 'user', { clearChips: true });
       this.websocketService.sendMessage({ text: this.newMessage });
       this.newMessage = '';
     }

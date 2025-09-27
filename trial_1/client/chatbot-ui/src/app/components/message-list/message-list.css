@@ -54,6 +54,14 @@
   margin: 0;
 }
 
+@media (max-width: 768px) {
+  .message {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+    max-width: 85%;
+  }
+}
+
 
 .user-message {
   background-color: #007bff;
