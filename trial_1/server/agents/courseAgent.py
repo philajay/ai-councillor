@@ -9,7 +9,7 @@ import json
 from db.search_engine import find_by_discovery, modify_course_result
 from common.common import remove_json_tags
 from google.adk.agents.readonly_context import ReadonlyContext
-from common.common import GIST_OUTPUT_KEY, EXTRACTED_ENTITY, LAST_DB_RESULTS , update_session_state, SHOW_SUGGESTED_QUESTIONS, LLM_PROCESSED_DB_RESULTS, set_state_after_tool_call, LAST_CLIENT_MESSAGE
+from common.common import GIST_OUTPUT_KEY, EXTRACTED_ENTITY, LAST_DB_RESULTS , update_session_state, SHOW_SUGGESTED_QUESTIONS, LLM_PROCESSED_DB_RESULTS, set_state_after_tool_call, LAST_CLIENT_MESSAGE, CURRENT_QUERY_ENTITY
 
 
 def getEntityExtractor(state):
@@ -19,8 +19,8 @@ def getEntityExtractor(state):
 From the current user query extract the entities. If program_level is not mentioned ask user politely to mention the program_level.
 
 **Context**
-Bsc, BCa, BA etc are all bachelors prog. So their program level is 'ug'
-MSC Mca etc are all masters programs . So their program level is 'pg'
+In indian education system bsc, bca, bcom are bachelor progmanss. So their program level is 'ug'
+Msc, Mca, Mcom are master programs. So their program level is 'pg'
 
 You also have access to history of the last entities extracted.
 history: {x}
@@ -30,7 +30,6 @@ history: {x}
 
 1. **program_level**
     program level for which user is exploring courses. 
-    All courses which are bachelors like bcs , bcom etc are ug courses
     **Possible Values**
     It can be either 'ug' or 'pg'
     *Examples
@@ -81,12 +80,13 @@ We will always follow **this Chain of Thoughts:**
         "purpose": <Fuuny take on your purpose. Also let user know that it will take time to finish the task so be patient.>
     }}
 
-
+IMPORTANT:
+- Never ever make assumptions about program_level. If it is not mentioned in query or cannot be inferred from last qualification, ask user politely to mention it.
 
 '''
     return LlmAgent(
         name="extract_order_entity",
-        model="gemini-2.0-flash",
+        model="gemini-2.5-flash",
         planner=BuiltInPlanner(
             thinking_config=types.ThinkingConfig(
                 include_thoughts=False,
@@ -98,7 +98,7 @@ We will always follow **this Chain of Thoughts:**
             response_mime_type="application/json"
         ),
         instruction=instructions,
-        output_key=EXTRACTED_ENTITY
+        output_key=CURRENT_QUERY_ENTITY
     )
 
 
@@ -174,11 +174,8 @@ class CourseAgent(BaseAgent, BaseModel):
         self, ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
 
-        cd = course_discovery() 
-        extract_entities = getEntityExtractor(ctx.session.state)
-        async for event in extract_entities.run_async(ctx):
-            yield event
 
+        cd = course_discovery() 
         entity = json.loads(remove_json_tags( ctx.session.state[EXTRACTED_ENTITY]))
         print(f"Entities extracted are {entity}")
 

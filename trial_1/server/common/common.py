@@ -70,6 +70,7 @@ NEXT_AGENT = "next_agent"
 SHOW_SUGGESTED_QUESTIONS = "show_suggested_questions"
 LAST_DB_RESULTS = "last_db_results"
 LAST_CLIENT_MESSAGE = "last_client_message"
+CURRENT_QUERY_ENTITY =  "current_query_entity"
 
 
 

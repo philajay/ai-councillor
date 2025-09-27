@@ -190,6 +190,13 @@ async def websocket_endpoint(websocket: WebSocket):
         print(f"Error in WebSocket handler: {e}")
         import traceback
         traceback.print_exception(e)
+        try:
+            await websocket.send_text(json.dumps({
+                "error": e.__class__.__name__,
+                "message": str(e)
+            }))
+        except Exception as send_e:
+            print(f"Failed to send error message to client: {send_e}")
 
     finally:
         await websocket.close()

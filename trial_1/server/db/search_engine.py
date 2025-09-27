@@ -139,7 +139,7 @@ def find_by_discovery(query_text: str, program_level: str, course_stream_type: l
             outer_query = f"""
                 SELECT id, structured_data, similarity
                 FROM ({inner_query}) AS similarity_query
-                WHERE similarity > 0.15
+                WHERE similarity > 0.10
                 ORDER BY similarity DESC
                 LIMIT 10
             """

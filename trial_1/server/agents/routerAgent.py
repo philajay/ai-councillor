@@ -17,7 +17,7 @@ from .courseAgent import CourseAgent
 from .eligibiltyAgent import EligibilityAgent
 from .followUpAgent import FollowUpAgent
 
-from common.common import EXTRACTED_ENTITY, LLM_PROCESSED_DB_RESULTS, GIST_OUTPUT_KEY, NEXT_AGENT, LAST_DB_RESULTS
+from common.common import EXTRACTED_ENTITY,  GIST_OUTPUT_KEY, NEXT_AGENT, LAST_DB_RESULTS, CURRENT_QUERY_ENTITY, update_session_state
 from .gistAgent import GistAgent
 from .suggestedQuestions import SuggestedQuestion
 from google.adk.agents.readonly_context import ReadonlyContext
@@ -222,34 +222,21 @@ Output Your output should be json as shown below:
 
 }}'''
 
-def summary_agent():
-    agent = LlmAgent(
-            name="summazier",
-            model="gemini-2.5-pro",
-            instruction='''You are expert in summarizing the conversation. Your task is to generate a concise gist of the entire conversation so far.
-
+def summary_agent_instruction(context: ReadonlyContext):
+    entity = context.state.get(EXTRACTED_ENTITY, {})
+    current_query_entity = context.state.get(CURRENT_QUERY_ENTITY, {})
+    last_db_results = context.state.get(LAST_DB_RESULTS, [])
+    instr = f'''You are expert in summarizing the conversation. Your task is to generate a concise gist of the entire conversation so far.
+extracted_entity = {entity}
+current_query_entity = {current_query_entity}
+last_db_results_present = {len(last_db_results) > 0}
 There are three agents available in system out of which one will handle the user quesry. Below is the list of agents:
 1.  **`FollowUpAgent`**:
     - **Use Case:** Use this agent if `gist` and `extracted_entity` are present AND the user's query is a **follow-up question** about those results.
         Use following chain of thoughts to decide if you need to use this agent:
-        1) If uesr query has "new" entity of following type which is not present in extracted_entity then do not use this agent:  
-            a). *course_stream_type**
-                In india there are various types of courses offered based on stream user is pursuing.
-                **THIS MUST BE A LIST OF STRINGS.**
-                **Possible Values**
-                It can be either "MCA", "BCA", "BA", "BE/B.Tech", "B.Pharm", "LLB", "BBA/BMS", "BA/BBA LLB", "MBA/PGDM", "B.Com", "D.El.Ed", "ME/M.Tech", "B.Sc"
-                *Examples
-                    a) User asks for "engineering and management courses". You should extract ["BE/B.Tech", "BBA/BMS", "MBA/PGDM"].
-                    b) User asks for "science courses". You should extract ["B.Sc", "M.Sc"].
-            b. **topic**
-                Subject for which user is looking for courses. Note that there can be None/multiple subjects.
-                **Possible Values**
-                Examples: 
-                a) I want to do course in data science. -> "data science"
-                b) Compaer courses in bsc and bca in air -> "ai"
-                c) I want to do course in data science and ai -> "data science", "ai"
-        2) If uesr query can be answered based on gist and extracted_entity then use this agent.
-
+        0) If last_db_results_present is False then do not use this agent.
+        1) If the `current_query_entity` contains a new "program_level", "course_stream_type", or "topic" that was not in the `extracted_entity`, then it is a **new search**, and you should NOT use this agent.
+        2) If the user's query can be answered using the information from the previous search (context provided by `extracted_entity`), then use this agent.
 
 2.  **`CourseAgent`**:
     - **Use Case:** Use this agent for **new, general discovery searches** about courses. This is for when the user starts a new topic or asks a broad question.
@@ -257,11 +244,11 @@ There are three agents available in system out of which one will handle the user
     - **Example:** "Show me courses in computer science."
     - **Output** Provides lists of actual courses details to the user which can be queried upon. For example:
     [
-        {
+        {{
             "course_name": "Bachelor of Technology (B.Tech) in Computer Science and Engineering",
             "institute_name": "Indian Institute of Technology (IIT) Delhi",
             ......<other details>
-        }
+        }}
     ]
 
 3.  **`EligibilityAgent`**:
@@ -279,7 +266,7 @@ There are three agents available in system out of which one will handle the user
 
 
 Your output should be in following json format:
-{
+{{
     "gist": <
         A brief, one-to-two sentence overview of the conversation's main purpose and key takeaway.
         Essential Details:
@@ -299,12 +286,21 @@ Your output should be in following json format:
     >, 
     "agent": <Agent which will handle the user query>,
     "explanation": <Clear chain of thought as to why this agent was choosen>
-}
+}}
 
 
 ** Things to remember**
 1) Always Keep the result of the eligibility agent in memory as it may be needed in future.
-''',
+'''
+    return instr
+
+
+
+def summary_agent():
+    agent = LlmAgent(
+            name="summazier",
+            model="gemini-2.5-pro",
+            instruction=summary_agent_instruction,
             sub_agents=[],
             planner=BuiltInPlanner(
                 thinking_config=types.ThinkingConfig(
@@ -359,6 +355,19 @@ class RouterAgent(BaseAgent, BaseModel):
     ) -> AsyncGenerator[Event, None]:
         total_start_time = time.time()
 
+        # Step 1: Extract entities from the current user query to inform the router.
+        from .courseAgent import getEntityExtractor
+        from common.common import CURRENT_QUERY_ENTITY
+        entity_extractor = getEntityExtractor(ctx.session.state)
+        async for event in entity_extractor.run_async(ctx):
+            yield event
+        
+        # Check if the entity extractor asked a clarifying question. If so, stop here.
+        entity_str = ctx.session.state.get(CURRENT_QUERY_ENTITY, "{}")
+        entity = json.loads(remove_json_tags(entity_str))
+        if entity.get("clarification_question"):
+            return
+
         # Time summary_agent
         start_time = time.time()
         sm = summary_agent()
@@ -397,6 +406,9 @@ class RouterAgent(BaseAgent, BaseModel):
         elif next_agent == "CourseAgent":
             show_suggested_questions = True
             print("CourseAgent CALLED")
+            # Update the main extracted entity with the current one before running the agent.
+            current_entity = ctx.session.state.get(CURRENT_QUERY_ENTITY, {})
+            await update_session_state(EXTRACTED_ENTITY, current_entity, ctx.session, ctx.session_service)
             start_time = time.time()
             async for event in self.courseAgent.run_async(ctx):
                 yield event
