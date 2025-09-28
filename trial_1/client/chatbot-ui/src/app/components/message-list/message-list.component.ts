@@ -1,4 +1,13 @@
-import { Component, OnInit, ElementRef, AfterViewChecked, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ElementRef,
+  OnDestroy,
+  ViewChild,
+  AfterViewInit,
+  ViewChildren,
+  QueryList,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Message, MessageService } from '../../services/message.service';
 import { MarkdownComponent } from 'ngx-markdown';
@@ -22,51 +31,53 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   styleUrls: ['./message-list.component.css'],
 })
 export class MessageListComponent
-  implements OnInit, AfterViewChecked, OnDestroy
+  implements OnInit, OnDestroy, AfterViewInit
 {
+  @ViewChild('scrollMe') private myScrollContainer!: ElementRef;
+  @ViewChildren('messageEl') private messageElements!: QueryList<ElementRef>;
+
   messages: Message[] = [];
-  private shouldScroll = false;
-  private subscription!: Subscription;
+  private messagesSubscription!: Subscription;
+  private viewChildrenSubscription!: Subscription;
 
   constructor(
     private messageService: MessageService,
-    private el: ElementRef,
     private websocketService: WebsocketService
   ) {}
 
   ngOnInit(): void {
-    this.subscription = this.messageService.messagesUpdated.subscribe(() => {
+    this.messagesSubscription = this.messageService.messagesUpdated.subscribe(() => {
       this.messages = this.messageService.messages;
-      this.shouldScroll = true;
     });
     this.messages = this.messageService.messages;
   }
 
-  ngAfterViewChecked(): void {
-    if (this.shouldScroll) {
+  ngAfterViewInit(): void {
+    this.scrollToBottom(); // Initial scroll
+    this.viewChildrenSubscription = this.messageElements.changes.subscribe(() => {
       this.scrollToBottom();
-      this.shouldScroll = false;
-    }
+    });
   }
 
   ngOnDestroy(): void {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
+    if (this.messagesSubscription) {
+      this.messagesSubscription.unsubscribe();
+    }
+    if (this.viewChildrenSubscription) {
+      this.viewChildrenSubscription.unsubscribe();
     }
   }
 
   private scrollToBottom(): void {
-    setTimeout(() => {
-      try {
-        this.el.nativeElement.scroll({
-          top: this.el.nativeElement.scrollHeight,
-          left: 0,
-          behavior: 'smooth',
-        });
-      } catch (err) {
-        console.error('Could not scroll to bottom:', err);
-      }
-    }, 0);
+    try {
+      // Using setTimeout to make sure the scroll happens after the view is updated
+      setTimeout(() => {
+        this.myScrollContainer.nativeElement.scrollTop =
+          this.myScrollContainer.nativeElement.scrollHeight;
+      }, 0);
+    } catch (err) {
+      console.error('Could not scroll to bottom:', err);
+    }
   }
 
   onRetry(message: Message): void {
