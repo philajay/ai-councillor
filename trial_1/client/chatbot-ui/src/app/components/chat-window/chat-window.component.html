@@ -1,11 +1,17 @@
 <div class="chat-window-container">
-  <mat-tab-group>
+  <mat-tab-group (selectedTabChange)="onTabChange($event)">
     <mat-tab label="Messages">
       <ng-template matTabContent>
         <app-message-list></app-message-list>
       </ng-template>
     </mat-tab>
-    <mat-tab label="Course Info">
+    <mat-tab>
+      <ng-template mat-tab-label>
+        Course Info
+        @if (showCourseInfoBadge) {
+          <span class="notification-dot"></span>
+        }
+      </ng-template>
       <ng-template matTabContent>
         <app-course-info [data]="courseInfoData$ | async"></app-course-info>
       </ng-template>
