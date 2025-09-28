@@ -34,6 +34,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   courseInfoData$: Observable<any[] | null>;
   showCourseInfoBadge = false;
   showChips = false;
+  selectedIndex = 0;
 
   private courseInfoSub!: Subscription;
 
@@ -81,5 +82,9 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     if (event.index === 1) {
       this.showCourseInfoBadge = false;
     }
+  }
+
+  onMessageSent(): void {
+    this.selectedIndex = 0;
   }
 }

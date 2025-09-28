@@ -107,6 +107,7 @@ export class MessageService {
       //component data is array of arrays where we are interested in element at index 1. So we flatten it.
       componentData = componentData.flatMap((item: any) => {
         item[1].id = item[0]; //set id of course as first element
+        item[1].stream = item[2]; //set stream of course as second element
         return item[1];
       });
 
@@ -161,6 +162,7 @@ export class MessageService {
   }
 
   private addBotMessage(lastMessage:any) {
+    let agentName = lastMessage.agent;
     let jsonData = lastMessage.json;
     const message: Message = {
       sender: 'bot',
@@ -168,17 +170,7 @@ export class MessageService {
       text: ''
     };
 
-    if (lastMessage.agent == 'json_formatter') {
-      this.messages.push({
-        text: '',
-        sender: 'bot',
-        isComponent: true,
-        component: 'course-info',
-        componentData: jsonData,
-      });
-      this.messagesUpdated.next();
-      return;
-    } else if (jsonData.agentId === 2 && jsonData.clarification_question) {
+    if (agentName === 'extract_order_entity' && jsonData.clarification_question) {
       console.log(`Clarification question found ${JSON.stringify(jsonData)}`);
       message.text = jsonData.clarification_question;
     } else if (jsonData.agentId) {
@@ -190,9 +182,6 @@ export class MessageService {
     if(jsonData.agentId == "get_eligibility"){
       return
     }
-
-    
-
     this.messages.push(message);
   }
 

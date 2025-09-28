@@ -64,7 +64,7 @@ mat-tab-group ::ng-deep .mat-mdc-tab-body-content {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: #2196F3;
+  background-color: #f44336;
   margin-left: 8px;
   vertical-align: middle;
 }

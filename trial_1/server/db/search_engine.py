@@ -127,7 +127,7 @@ def find_by_discovery(query_text: str, program_level: str, course_stream_type: l
             query_embedding = getModel().encode(query_text)
 
             # Build the inner query
-            inner_query = "SELECT id, structured_data, 1 - (course_embedding <=> %s) AS similarity FROM courses WHERE program_level = %s"
+            inner_query = "SELECT id, structured_data, stream, 1 - (course_embedding <=> %s) AS similarity FROM courses WHERE program_level = %s"
             params = [query_embedding, program_level.upper()]
 
             # If course_stream_type is provided and is a non-empty list, add to the query
@@ -137,7 +137,7 @@ def find_by_discovery(query_text: str, program_level: str, course_stream_type: l
 
             # Wrap the query to filter by similarity
             outer_query = f"""
-                SELECT id, structured_data, similarity
+                SELECT id, structured_data, stream, similarity
                 FROM ({inner_query}) AS similarity_query
                 WHERE similarity > 0.10
                 ORDER BY similarity DESC

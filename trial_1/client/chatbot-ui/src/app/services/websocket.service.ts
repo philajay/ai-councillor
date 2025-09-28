@@ -17,7 +17,10 @@ export class WebsocketService {
     this.socket$ = webSocket<ServerEvent>('ws://localhost:8080/bot');
     this.socket$.subscribe({
       next: (msg) => this.messagesSubject.next(msg),
-      error: (err) => console.error(err),
+      error: (err) => {
+        console.error(err);
+        alert('Could not connect to the server. Please refresh the page or try again later.');
+      },
       complete: () => console.warn('WebSocket connection closed')
     });
   }

@@ -1,5 +1,5 @@
 <div class="chat-window-container">
-  <mat-tab-group [ngStyle]="{ 'bottom': showChips ? '180px' : '80px' }">
+  <mat-tab-group [(selectedIndex)]="selectedIndex" [ngStyle]="{ 'bottom': showChips ? '180px' : '80px' }">
     <mat-tab label="Messages">
       <ng-template matTabContent>
         <app-message-list></app-message-list>
@@ -24,6 +24,6 @@
         <app-course-chips [courses]="courses" (courseSelected)="onCourseSelected($event)"></app-course-chips>
       }
     }
-    <app-message-form></app-message-form>
+    <app-message-form (messageSent)="onMessageSent()"></app-message-form>
   </div>
 </div>
