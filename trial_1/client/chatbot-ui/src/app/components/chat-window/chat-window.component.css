@@ -12,7 +12,7 @@
   position: relative;
   flex-grow: 1;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, .1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   background-color: white;
   overflow: hidden;
 }
@@ -20,7 +20,7 @@
 mat-tab-group {
   position: absolute;
   top: 0;
-  bottom: 80px; /* Adjust this value to match the form container's height */
+  bottom: 80px; /* Default bottom offset */
   left: 0;
   right: 0;
 }
@@ -30,23 +30,21 @@ mat-tab-group {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 80px; /* Fixed height for the form area */
+  height: 80px; /* Default height */
   padding: 1rem;
   border-top: 1px solid #e0e0e0;
   background-color: #ffffff;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-/*
-  This is the key fix.
-  1. It correctly targets the content area of the material tab.
-  2. It gives it 100% height, constrained by the absolutely positioned mat-tab-group.
-  3. It makes the content area a flex container, allowing app-message-list to grow and fill it.
-*/
 mat-tab-group ::ng-deep .mat-mdc-tab-body-content {
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: auto; /* Ensure tab content scrolls */
 }
 
 .notification-dot {
@@ -54,7 +52,7 @@ mat-tab-group ::ng-deep .mat-mdc-tab-body-content {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: #2196F3; /* Blue color */
+  background-color: #2196F3;
   margin-left: 8px;
   vertical-align: middle;
 }

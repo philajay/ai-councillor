@@ -1,5 +1,5 @@
 <div class="chat-window-container">
-  <mat-tab-group (selectedTabChange)="onTabChange($event)">
+  <mat-tab-group [ngStyle]="{ 'bottom': showChips ? '180px' : '80px' }">
     <mat-tab label="Messages">
       <ng-template matTabContent>
         <app-message-list></app-message-list>
@@ -18,7 +18,7 @@
     </mat-tab>
   </mat-tab-group>
 
-  <div class="form-container">
+  <div class="form-container" [ngStyle]="{ 'height': showChips ? '180px' : '80px' }">
     @if (coursesForChips$ | async; as courses) {
       @if(courses && courses.length > 0) {
         <app-course-chips [courses]="courses" (courseSelected)="onCourseSelected($event)"></app-course-chips>

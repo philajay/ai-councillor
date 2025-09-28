@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable, Subscription } from 'rxjs';
-import { skip } from 'rxjs/operators';
+import { skip, tap, scan } from 'rxjs/operators';
 import { MatTabsModule, MatTabChangeEvent } from '@angular/material/tabs';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -33,6 +33,8 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   coursesForChips$: Observable<string[] | null>;
   courseInfoData$: Observable<any[] | null>;
   showCourseInfoBadge = false;
+  showChips = false;
+
   private courseInfoSub!: Subscription;
 
   constructor(
@@ -41,7 +43,16 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef
   ) {
-    this.coursesForChips$ = this.messageService.courseChips$;
+    this.coursesForChips$ = this.messageService.courseChips$.pipe(
+      // Use scan to hold onto the last valid list of chips
+      scan((acc, curr) => {
+        if ((!curr || curr.length === 0) && acc && acc.length > 0) {
+          return acc; // If new value is empty, keep the old one
+        }
+        return curr; // Otherwise, update to the new value
+      }, null as string[] | null),
+      tap(chips => this.showChips = !!chips && chips.length > 0)
+    );
     this.courseInfoData$ = this.messageService.courseInfo$;
   }
 
@@ -49,22 +60,20 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     this.courseInfoSub = this.messageService.courseInfo$.pipe(skip(1)).subscribe(data => {
       if (data && data.length > 0) {
         this.showCourseInfoBadge = true;
-        this.snackBar.open(`${data.length} courses found. Click on the Course Info tab for details.`, 'Dismiss', {
-        });
+        this.snackBar.open(`${data.length} courses found. Click on the Course Info tab for details.`, 'Dismiss');
         this.cdr.markForCheck();
       }
     });
   }
 
   ngOnDestroy(): void {
-    if (this.courseInfoSub) {
-      this.courseInfoSub.unsubscribe();
-    }
+    if (this.courseInfoSub) this.courseInfoSub.unsubscribe();
   }
 
   onCourseSelected(course: string): void {
     const newMessage = `I would like to pursue ${course}`;
-    this.messageService.addMessage(newMessage, 'user');
+    // Pass clearChips: false to prevent the service from clearing the chips
+    this.messageService.addMessage(newMessage, 'user', { clearChips: false });
     this.websocketService.sendMessage({ text: newMessage });
   }
 

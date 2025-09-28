@@ -179,7 +179,7 @@ export class MessageService {
       this.messagesUpdated.next();
       return;
     } else if (jsonData.agentId === 2 && jsonData.clarification_question) {
-      console.log(`Clarification question found ${jsonData}`);
+      console.log(`Clarification question found ${JSON.stringify(jsonData)}`);
       message.text = jsonData.clarification_question;
     } else if (jsonData.agentId) {
       message.text = jsonData.purpose;

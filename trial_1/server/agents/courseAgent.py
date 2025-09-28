@@ -9,11 +9,17 @@ import json
 from db.search_engine import find_by_discovery, modify_course_result
 from common.common import remove_json_tags
 from google.adk.agents.readonly_context import ReadonlyContext
-from common.common import GIST_OUTPUT_KEY, EXTRACTED_ENTITY, LAST_DB_RESULTS , update_session_state, SHOW_SUGGESTED_QUESTIONS, LLM_PROCESSED_DB_RESULTS, set_state_after_tool_call, LAST_CLIENT_MESSAGE, CURRENT_QUERY_ENTITY
+from common.common import GIST_OUTPUT_KEY, EXTRACTED_ENTITY, LAST_DB_RESULTS , update_session_state, SHOW_SUGGESTED_QUESTIONS, LLM_PROCESSED_DB_RESULTS, set_state_after_tool_call, LAST_CLIENT_MESSAGE, CURRENT_QUERY_ENTITY, remove_json_tags
 
 
 def getEntityExtractor(state):
     x = state.get(EXTRACTED_ENTITY, {})
+    try:
+        gist =  json.loads(remove_json_tags( state.get(GIST_OUTPUT_KEY, "")))
+        gist = gist.get("gist", "")
+    except Exception as e:
+        print(f"Error in parsing gist {e}")
+        gist = ""
     instructions = f'''You are expert enity extractor for india education system.
 **Task**
 From the current user query extract the entities. If program_level is not mentioned ask user politely to mention the program_level.
@@ -22,8 +28,10 @@ From the current user query extract the entities. If program_level is not mentio
 In indian education system bsc, bca, bcom are bachelor progmanss. So their program level is 'ug'
 Msc, Mca, Mcom are master programs. So their program level is 'pg'
 
-You also have access to history of the last entities extracted.
-history: {x}
+You also have access to last entities extracted and summary of conversation till now under gist.
+
+last extracted entities: {x}
+gist so far: {gist}
 
 
 **Entities to be extracted.**
@@ -69,6 +77,7 @@ We will always follow **this Chain of Thoughts:**
     "course_stream_type": [],
     "topic": <string>,
     "clarification_question": <Question to get the program_level>
+    "reason_for_clarification": <Reason why you are asking this question.>'
 }}
 
 2) if program_level is present return json 
