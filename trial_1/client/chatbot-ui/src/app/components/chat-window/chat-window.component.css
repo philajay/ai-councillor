@@ -25,6 +25,18 @@ mat-tab-group {
   right: 0;
 }
 
+mat-tab-group ::ng-deep .mat-mdc-tab-header {
+  background-color: #e3f2fd;
+}
+
+mat-tab-group ::ng-deep .mat-mdc-tab {
+  color: #0d47a1;
+}
+
+mat-tab-group ::ng-deep .mat-mdc-tab.mdc-tab--active {
+  background-color: #bbdefb;
+}
+
 .form-container {
   position: absolute;
   bottom: 0;
