@@ -1,2 +1,23 @@
-<app-message-list></app-message-list>
-<app-message-form></app-message-form>
+<div class="chat-window-container">
+  <mat-tab-group>
+    <mat-tab label="Messages">
+      <ng-template matTabContent>
+        <app-message-list></app-message-list>
+      </ng-template>
+    </mat-tab>
+    <mat-tab label="Course Info">
+      <ng-template matTabContent>
+        <app-course-info [data]="courseInfoData$ | async"></app-course-info>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+
+  <div class="form-container">
+    @if (coursesForChips$ | async; as courses) {
+      @if(courses && courses.length > 0) {
+        <app-course-chips [courses]="courses" (courseSelected)="onCourseSelected($event)"></app-course-chips>
+      }
+    }
+    <app-message-form></app-message-form>
+  </div>
+</div>

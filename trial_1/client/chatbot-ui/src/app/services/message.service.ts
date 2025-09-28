@@ -35,6 +35,9 @@ export class MessageService {
   private courseChipsSubject = new BehaviorSubject<string[] | null>(null);
   public courseChips$ = this.courseChipsSubject.asObservable();
 
+  private courseInfoSubject = new BehaviorSubject<any[] | null>(null);
+  public courseInfo$ = this.courseInfoSubject.asObservable();
+
   constructor(private websocketService: WebsocketService) {
     this.websocketService.messages$.subscribe(event => {
       this.handleServerEvent(event);
@@ -115,15 +118,7 @@ export class MessageService {
         return item;
       });
       
-
-      this.messages.push({
-        text: '',
-        sender: 'bot',
-        isComponent: true,
-        component: 'course-info',
-        componentData: componentData,
-      });
-      this.messagesUpdated.next();
+      this.courseInfoSubject.next(componentData);
     }
   }
 
