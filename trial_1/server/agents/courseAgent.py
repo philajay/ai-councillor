@@ -95,7 +95,7 @@ IMPORTANT:
 '''
     return LlmAgent(
         name="extract_order_entity",
-        model="gemini-2.5-flash-lite",
+        model="gemini-2.5-flash",
         planner=BuiltInPlanner(
             thinking_config=types.ThinkingConfig(
                 include_thoughts=False,
@@ -149,7 +149,7 @@ Insights should be relevant to curses and should help user in taking decision.
 def course_discovery():
     return LlmAgent(
         name="find_by_discovery",
-        model="gemini-2.5-flash-lite",
+        model="gemini-2.0-flash",
         planner=BuiltInPlanner(
             thinking_config=types.ThinkingConfig(
                 include_thoughts=False,
