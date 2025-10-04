@@ -39,20 +39,20 @@ gist so far: {gist}
 1. **program_level**
     program level for which user is exploring courses. 
     **Possible Values**
-    It can be either 'ug' or 'pg'
+    It can be either 'UG' or 'PG'
     *Examples
         a) Show me undergraduate courses
         b) Show me post graduatd courses.
         c) show me courses. 
     **Note**
-    Sometime user will not directly mention 'ug' or 'pg'. They will mention their last qualification from which you need to infer if student is lookig for ug or pf course.
-    For example user might say I have done my +2. In this case we can infer that user is looking for ug courses.
+    Sometime user will not directly mention 'UG' or 'PG'. They will mention their last qualification from which you need to infer if student is lookig for UG or PG course.
+    For example user might say I have done my +2. In this case we can infer that user is looking for UG courses.
 
 2. *course_stream_type**
     In india there are various types of courses offered based on stream user is pursuing.
     **THIS MUST BE A LIST OF STRINGS.**
     **Possible Values**
-    It can be either "MCA", "BCA", "BA", "BE/B.Tech", "B.Pharm", "LLB", "BBA/BMS", "BA/BBA LLB", "MBA/PGDM", "B.Com", "D.El.Ed", "ME/M.Tech", "B.Sc"
+    It can be either MCA, BCA, B.Tech, BA, MBA, LLB, D.Pharmacy, B.Com, BBA, M.Tech, IntegratedLaw, B.Sc, B.Pharmacy
     *Examples
         a) User asks for "engineering and management courses". You should extract ["BE/B.Tech", "BBA/BMS", "MBA/PGDM"].
         b) User asks for "science courses". You should extract ["B.Sc", "M.Sc"].
@@ -129,7 +129,7 @@ You have access to the following tool:
 1.  **`find_by_discovery(filters: list)`**: 
     Arguments:
     query_text (str): The user's natural language query.
-    program_level (str): level for which course is being discovered. Must be either ug or pg
+    program_level (str): level for which course is being discovered. Must be either UG or PG
     course_stream_type (str, optional): The program type user is searching for, e.g., BE/Btech, bsc. Defaults to None.
 
     This tool returns the courses based on user query, program_level and course_stream_type entity.

@@ -1,5 +1,6 @@
 import psycopg2
 from pgvector.psycopg2 import register_vector
+import json
 
 
 import google.genai as genai
@@ -11,7 +12,7 @@ from copy import deepcopy
 import os
 # --- Database Configuration ---
 # It's recommended to use environment variables for these in a real application
-DB_NAME = "chatbot"
+DB_NAME = "councillor-assistant"
 DB_USER = "postgres"
 DB_PASS = '1234'
 DB_HOST = 'localhost'
@@ -52,34 +53,35 @@ async def load_model_async(app_state):
     app_state.is_model_loaded = True
     print("********** Model loading complete. Bot is ready. ************")
 
-def normalize_term(term: str, term_type: str, conn) -> str:
+def normalize_term(term: str, term_type: str, conn, tenant_id: str) -> str:
     """
-    Finds the closest canonical term for a given user term using vector search.
+    Finds the canonical term for a given user synonym using vector similarity.
     
     Args:
         term (str): The user-provided term (e.g., "maths").
         term_type (str): The type of term to search for (e.g., "subject", "qualification").
         conn: An active database connection.
+        tenant_id (str): The ID of the client tenant.
         
     Returns:
-        str: The closest canonical term (e.g., "Mathematics").
+        str: The canonical term (e.g., "Mathematics") or the original term if not found.
     """
     if not term:
         return None
     
     with conn.cursor() as cur:
         try:
-            term_embedding = getModel().encode(term)
-            
+            model = getModel()
+            term_vector = model.encode(term).tolist()
             cur.execute(
                 """
-                SELECT term 
-                FROM canonical_terms 
-                WHERE term_type = %s 
-                ORDER BY embedding <=> %s 
+                SELECT canonical_term
+                FROM synonyms
+                WHERE tenant_id = %s AND category = %s
+                ORDER BY synonyms_vector <=> %s
                 LIMIT 1
                 """,
-                (term_type, term_embedding)
+                (tenant_id, term_type, str(term_vector))
             )
             result = cur.fetchone()
             return result[0] if result else term # Return original term if no match
@@ -106,14 +108,48 @@ def get_db_connection():
         return None
 
 
-def find_by_discovery(query_text: str, program_level: str, course_stream_type: list[str]):
+def _prepare_fts_query(query_text: str) -> str:
     """
-    Finds courses by semantic similarity to a query text.
+    Prepares a query string for PostgreSQL's to_tsquery function.
+    - Splits terms by dots or spaces.
+    - Joins them with the AND operator (&).
+    - Adds a prefix search (':*') to the last term.
+    """
+    if not query_text:
+        return ''
+    
+    # Special case for "D.Pharmacy"
+    if query_text.upper() == 'D.PHARMACY':
+        return 'Diploma & in & Pharmacy:*'
+    
+    # Treat dots as spaces and split into parts
+    parts = query_text.replace('.', ' ').split()
+    
+    if not parts:
+        return ''
+        
+    # Join all parts with '&' and add a prefix match to the last one
+    # This handles single-word queries correctly as well.
+    processed_query = ' & '.join(parts[:-1])
+    if processed_query:
+        processed_query += f' & {parts[-1]}:*'
+    else:
+        processed_query = f'{parts[-1]}:*'
+        
+    return processed_query
+
+def find_by_discovery(query_text: str, program_level: str, course_stream_type: list[str], tenant_id: str ):
+    tenant_id = 'cgc_university'
+    if not query_text:
+        query_text = ''
+    """
+    Finds courses by semantic similarity to a query text using a hybrid FTS and vector search.
 
     Args:
         query_text (str): The user's natural language query.
-        program_level (str): level for which course is being discovered. Must be either ug or pg
-        course_stream_type (list[str], optional): A list of program types the user is searching for. Defaults to None.
+        program_level (str): level for which course is being discovered. Must be either UG or PG
+        course_stream_type (list[str], optional): A list of program types the user is searching for.
+        tenant_id (str): The ID of the client tenant.
     Returns:
         list: A ranked list of the most relevant courses, as a list of lists.
     """
@@ -123,38 +159,93 @@ def find_by_discovery(query_text: str, program_level: str, course_stream_type: l
 
     with conn.cursor() as cur:
         try:
-            # Generate embedding for the user's query
-            query_embedding = getModel().encode(query_text)
+            query_vector = getModel().encode(query_text).tolist()
+            
+            # Prepare the FTS search term
+            fts_search_term = _prepare_fts_query(query_text)
 
-            # Build the inner query
-            inner_query = "SELECT id, structured_data, stream, 1 - (course_embedding <=> %s) AS similarity FROM courses WHERE program_level = %s"
-            params = [query_embedding, program_level.upper()]
+            # Base CTEs for FTS and Vector search
+            # Use to_tsquery for more flexible parsing
+            fts_cte = """
+                SELECT id, ROW_NUMBER() OVER (ORDER BY ts_rank(text_tsv, to_tsquery('english', %(search_term)s)) DESC) as rank
+                FROM courses
+                WHERE tenant_id = %(tenant_id)s AND text_tsv @@ to_tsquery('english', %(search_term)s)
+            """
+            vector_cte = """
+                SELECT id, ROW_NUMBER() OVER (ORDER BY text_vector <=> %(query_vector)s ASC) as rank
+                FROM courses
+                WHERE tenant_id = %(tenant_id)s
+            """
+            
+            params = {
+                'tenant_id': tenant_id,
+                'search_term': fts_search_term,
+                'query_vector': str(query_vector)
+            }
 
-            # If course_stream_type is provided and is a non-empty list, add to the query
+            # Add filters if provided
+            filters = []
+            if program_level:
+                filters.append("level = %(level)s")
+                params['level'] = program_level.upper()
             if course_stream_type and isinstance(course_stream_type, list) and len(course_stream_type) > 0:
-                inner_query += " AND course_category = ANY(%s)"
-                params.append(course_stream_type)
+                categories = []
+                for cat in course_stream_type:
+                    categories.extend(cat.split('/'))
+                filters.append("course_category = ANY(%(course_category)s)")
+                params['course_category'] = categories
+            
+            if filters:
+                filter_str = " AND " + " AND ".join(filters)
+                fts_cte += filter_str
+                vector_cte += filter_str
 
-            # Wrap the query to filter by similarity
-            outer_query = f"""
-                SELECT id, structured_data, stream, similarity
-                FROM ({inner_query}) AS similarity_query
-                WHERE similarity > 0.10
-                ORDER BY similarity DESC
-                LIMIT 10
+            fts_cte += " LIMIT 50"
+            vector_cte += " ORDER BY text_vector <=> %(query_vector)s LIMIT 50"
+
+            # Final RRF query
+            sql_query = f"""
+                WITH ranked_ids AS (
+                    WITH config (k) AS (VALUES (60.0)),
+                    fts_results AS ({fts_cte}),
+                    vector_results AS ({vector_cte}),
+                    combined_results AS (
+                        SELECT id, rank FROM fts_results
+                        UNION ALL
+                        SELECT id, rank FROM vector_results
+                    )
+                    SELECT
+                        cr.id,
+                        SUM(1.0 / (config.k + cr.rank)) as rrf_score
+                    FROM
+                        combined_results cr, config
+                    GROUP BY
+                        cr.id, config.k
+                    ORDER BY
+                        rrf_score DESC
+                    LIMIT 20
+                )
+                SELECT
+                    c.id,
+                    c.structured_data,
+                    c.stream
+                FROM
+                    courses c
+                JOIN
+                    ranked_ids ri ON c.id = ri.id
+                ORDER BY
+                    ri.rrf_score DESC;
             """
 
-            # Execute the query
-            cur.execute(outer_query, tuple(params))
-
+            cur.execute(sql_query, params)
             rows = cur.fetchall()
-            if not rows:
+
+            if not rows or len(rows) == 0:
                 return []
             
-            # Return a list of lists for robust parsing on the client
-            header = [desc[0] for desc in cur.description[:-1]]
+            header = [desc[0] for desc in cur.description]
             results = [header]
-            results.extend([list(row[:-1]) for row in rows])
+            results.extend([list(row) for row in rows])
             return results
         except Exception as e:
             print(f"An error occurred during discovery search: {e}")
@@ -165,22 +256,22 @@ def find_by_discovery(query_text: str, program_level: str, course_stream_type: l
 
 
 
-def normalize_criteria(llm_output, conn):
+def normalize_criteria(llm_output, conn, tenant_id):
     criteria = {}
     if llm_output.get('qualification'):
-        criteria['qualification'] = normalize_term(llm_output['qualification'], 'qualification', conn)
+        criteria['qualification'] = normalize_term(llm_output['qualification'], 'qualification', conn, tenant_id)
     
     # Handle a list of subjects for subset matching, with a fallback for a single subject.
     if llm_output.get('subjects') and isinstance(llm_output.get('subjects'), list):
-        normalized_subjects = [normalize_term(s, 'subject', conn) for s in llm_output['subjects']]
+        normalized_subjects = [normalize_term(s, 'subject', conn, tenant_id) for s in llm_output['subjects']]
         criteria['subjects'] = normalized_subjects
     elif llm_output.get('subject'): # Fallback for a single subject
-        criteria['subjects'] = [normalize_term(llm_output['subject'], 'subject', conn)]
+        criteria['subjects'] = [normalize_term(llm_output['subject'], 'subject', conn, tenant_id)]
 
     if llm_output.get('specialization'):
-        criteria['specialization'] = normalize_term(llm_output['specialization'], 'specialization', conn)
+        criteria['specialization'] = normalize_term(llm_output['specialization'], 'specialization', conn, tenant_id)
     if llm_output.get('stream'):
-        criteria['stream'] = normalize_term(llm_output['stream'], 'stream', conn)
+        criteria['stream'] = normalize_term(llm_output['stream'], 'stream', conn, tenant_id)
         
     if 'percentage' in llm_output:
         try:
@@ -190,13 +281,15 @@ def normalize_criteria(llm_output, conn):
 
     return criteria
 
-def find_by_eligibility(criteria:dict) -> list:
+def find_by_eligibility(criteria:dict, tenant_id: str) -> list:
+    tenant_id = 'cgc_university'
     """
     Finds courses based on a structured criteria dictionary using the new schema.
     
     Args:
         criteria (dict): A dictionary with keys 'qualification', 
                          'percentage', 'stream', 'subjects' (list), 'specialization'.
+        tenant_id (str): The ID of the client tenant.
     
     Returns:
         list: A list of course names that match the criteria.
@@ -205,57 +298,44 @@ def find_by_eligibility(criteria:dict) -> list:
     if not conn:
         return ["Error: Could not connect to the database."]
     
-    criteria = normalize_criteria(criteria, conn)
+    criteria = normalize_criteria(criteria, conn, tenant_id)
+
 
     with conn.cursor() as cur:
         query = """
             SELECT DISTINCT c.course_category
-            FROM courses c
-            JOIN eligibility_rules er ON c.id = er.course_id
+            FROM courses c, jsonb_array_elements(c.eligibility_rules) AS rule
         """
-        where_clauses = []
-        params = {}
+        where_clauses = ["c.tenant_id = %(tenant_id)s"]
+        params = {'tenant_id': tenant_id}
 
         if 'qualification' in criteria and criteria['qualification']:
-            addGraduation = ["Diploma", "10+2"]
-            if not criteria['qualification'] in addGraduation:
-                where_clauses.append("(er.qualification = %(qualification)s or er.qualification = 'Graduate')")     
-                params['qualification'] = criteria['qualification']
-            else:
-                where_clauses.append("er.qualification = %(qualification)s")
-                params['qualification'] = criteria['qualification']
+            where_clauses.append("rule ->> 'qualification' = %(qualification)s")
+            params['qualification'] = criteria['qualification']
 
         if 'percentage' in criteria and criteria['percentage']:
-            where_clauses.append("(er.min_percentage <= %(percentage)s OR er.min_percentage IS NULL)")
+            where_clauses.append("( (rule ->> 'min_percentage') IS NULL OR (rule ->> 'min_percentage')::int <= %(percentage)s )")
             params['percentage'] = criteria['percentage']
 
-        # Handle subject-based filtering with the new schema
         if 'subjects' in criteria and criteria['subjects']:
-            # Student must have all subjects in must_have_subjects
+            # Student must have all subjects in 'mandatory'
             where_clauses.append(
-                """(er.must_have_subjects IS NULL OR 
-                    cardinality(er.must_have_subjects) = 0 OR 
-                    er.must_have_subjects @> %(subjects)s)"""
+                """( (rule -> 'mandatory') IS NULL OR 
+                     jsonb_array_length(rule -> 'mandatory') = 0 OR 
+                     (rule -> 'mandatory') <@ %(subjects)s::jsonb )"""
             )
-            # If can_have_subjects is not empty, student must have at least one of them
-            # where_clauses.append(
-            #     """(er.can_have_subjects IS NULL OR 
-            #         cardinality(er.can_have_subjects) = 0 OR 
-            #         er.can_have_subjects && %(subjects)s)"""
-            # )
-            params['subjects'] = criteria['subjects']
+            params['subjects'] = json.dumps(criteria['subjects'])
         else:
             # If student provides no subjects, only match courses with no subject requirements
-            where_clauses.append("(er.must_have_subjects IS NULL OR cardinality(er.must_have_subjects) = 0)")
-            where_clauses.append("(er.can_have_subjects IS NULL OR cardinality(er.can_have_subjects) = 0)")
+            where_clauses.append("( (rule -> 'mandatory') IS NULL OR jsonb_array_length(rule -> 'mandatory') = 0 )")
 
         if 'specialization' in criteria and criteria['specialization']:
             where_clauses.append(
-                """(er.accepted_specializations IS NULL OR 
-                    cardinality(er.accepted_specializations) = 0 OR 
-                    %(specialization)s = ANY(er.accepted_specializations))"""
+                """( (rule -> 'accepted_specializations') IS NULL OR 
+                     jsonb_array_length(rule -> 'accepted_specializations') = 0 OR 
+                     (rule -> 'accepted_specializations') ? %(specialization)s )"""
             )
-            params['specialization'] = criteria['specialization']
+            params['specialization'] = json.dumps(criteria['specialization'])
 
         if where_clauses:
             query += " WHERE " + " AND ".join(where_clauses)
@@ -278,12 +358,13 @@ def find_by_eligibility(criteria:dict) -> list:
 
 
 
-def get_course_details_by_id(course_id: int):
+def get_course_details_by_id(course_id: int, tenant_id: str):
     """
     Retrieves course and eligibility details for a specific course ID.
 
     Args:
         course_id (int): The ID of the course to retrieve.
+        tenant_id (str): The ID of the client tenant.
 
     Returns:
         list: A list of strings, where each string contains the comma-separated
@@ -297,13 +378,10 @@ def get_course_details_by_id(course_id: int):
     with conn.cursor() as cur:
         try:
             cur.execute("""
-                SELECT c.id, c.course_name, c.course_description, c.career_prospects,
-                       c.program_highlights, er.qualification, er.min_percentage,
-                       er.accepted_specializations, er.must_have_subjects, er.can_have_subjects, er.notes
-                FROM courses c
-                LEFT JOIN eligibility_rules er ON c.id = er.course_id
-                WHERE c.id = %s;
-            """, (course_id,))
+                SELECT id, name, text, eligibility_rules
+                FROM courses
+                WHERE id = %s AND tenant_id = %s;
+            """, (course_id, tenant_id))
             rows = cur.fetchall()
             if not rows:
                 return [f"No course found with ID: {course_id}"]
