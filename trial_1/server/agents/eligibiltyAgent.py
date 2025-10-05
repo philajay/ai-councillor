@@ -46,7 +46,7 @@ Expected output:
     "agentId": 3
     "qualification": <>,
     "stream":<>
-    "subject": [<Only return Subject if you are hundred percent sure>]
+    "subjects": [<Only return Subject if you are hundred percent sure>]
     "percentage": <>
     "purpose": <Funny take on your purpose and what are you doing. Also let user know that it will take time to finish the task so be patient.>
 }}
@@ -88,7 +88,7 @@ Extracted Entities: {entity}
 You have access to the following tool:
 1.  **`find_by_eligibility(criteria (dict))`**: 
     criteria (dict): A dictionary with keys 'qualification', 
-                         'percentage', 'stream', 'subject', 'specialization'.
+                         'percentage', 'stream', 'subjects', 'specialization'.
 
                          
 '''
@@ -133,7 +133,20 @@ class EligibilityAgent(BaseAgent, BaseModel):
         async for event in self.extract_entities.run_async(ctx):
             yield event
 
-        entity = json.loads(remove_json_tags( ctx.session.state[EXTRACTED_ENTITY]))
+        
+        # Merge the current entity into the main extracted entity.
+        existing_entity_str = ctx.session.state.get(EXTRACTED_ENTITY, '{}')
+        existing_entity = json.loads(remove_json_tags(existing_entity_str))
+        
+        current_entity_str = ctx.session.state.get(EXTRACTED_ENTITY, '{}')
+        current_entity = json.loads(remove_json_tags(current_entity_str))
+        
+        existing_entity.update(current_entity)
+        
+        from common.common import update_session_state
+        await update_session_state(EXTRACTED_ENTITY, json.dumps(existing_entity), ctx.session, ctx.session_service)
+
+        entity = existing_entity
         print(f"Entities extracted are {entity}")
 
         er = eligibility()

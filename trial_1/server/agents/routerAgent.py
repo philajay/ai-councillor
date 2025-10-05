@@ -406,9 +406,16 @@ class RouterAgent(BaseAgent, BaseModel):
         elif next_agent == "CourseAgent":
             show_suggested_questions = True
             print("CourseAgent CALLED")
-            # Update the main extracted entity with the current one before running the agent.
-            current_entity = ctx.session.state.get(CURRENT_QUERY_ENTITY, {})
-            await update_session_state(EXTRACTED_ENTITY, current_entity, ctx.session, ctx.session_service)
+            # Merge the current entity into the main extracted entity.
+            existing_entity_str = ctx.session.state.get(EXTRACTED_ENTITY, '{}')
+            existing_entity = json.loads(remove_json_tags(existing_entity_str))
+            
+            current_entity_str = ctx.session.state.get(CURRENT_QUERY_ENTITY, '{}')
+            current_entity = json.loads(remove_json_tags(current_entity_str))
+            
+            existing_entity.update(current_entity)
+            
+            await update_session_state(EXTRACTED_ENTITY, json.dumps(existing_entity), ctx.session, ctx.session_service)
             start_time = time.time()
             async for event in self.courseAgent.run_async(ctx):
                 yield event

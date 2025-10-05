@@ -138,43 +138,58 @@ def _prepare_fts_query(query_text: str) -> str:
         
     return processed_query
 
-def find_by_discovery(query_text: str, program_level: str, course_stream_type: list[str], tenant_id: str ):
-    tenant_id = 'cgc_university'
-    if not query_text:
-        query_text = ''
+def find_by_discovery(criteria: dict, tenant_id: str):
     """
-    Finds courses by semantic similarity to a query text using a hybrid FTS and vector search.
+    Finds courses by semantic similarity and eligibility criteria.
 
     Args:
-        query_text (str): The user's natural language query.
-        program_level (str): level for which course is being discovered. Must be either UG or PG
-        course_stream_type (list[str], optional): A list of program types the user is searching for.
+        criteria (dict): 
+            Compulsory Keys:         
+                query_text (str): The user's natural language query.
+                program_level (str): level for which course is being discovered. Must be either UG or PG
+                course_stream_type (list[str], optional): A list of program types the user is searching for.
+
+            Optional Keys: 'qualification', 'percentage', 'stream', 'subjects' (list), 'specialization'.
         tenant_id (str): The ID of the client tenant.
+
     Returns:
-        list: A ranked list of the most relevant courses, as a list of lists.
+        list: A ranked list of the most relevant courses.
     """
+
+    tenant_id = 'cgc_university'
+    
+    query_text = criteria.get('query_text', criteria.get('topic', ''))
+    program_level = criteria.get('program_level')
+    course_stream_type = criteria.get('course_stream_type')
+
+
     conn = get_db_connection()
     if not conn:
         return [["Error: Could not connect to the database."]]
 
+    # Normalize eligibility criteria first
+    criteria = normalize_criteria(criteria, conn, tenant_id)
+
     with conn.cursor() as cur:
         try:
             query_vector = getModel().encode(query_text).tolist()
-            
-            # Prepare the FTS search term
             fts_search_term = _prepare_fts_query(query_text)
 
-            # Base CTEs for FTS and Vector search
-            # Use to_tsquery for more flexible parsing
-            fts_cte = """
-                SELECT id, ROW_NUMBER() OVER (ORDER BY ts_rank(text_tsv, to_tsquery('english', %(search_term)s)) DESC) as rank
-                FROM courses
-                WHERE tenant_id = %(tenant_id)s AND text_tsv @@ to_tsquery('english', %(search_term)s)
+            base_query = "FROM courses c"
+            # Join with eligibility rules only if needed
+            if any(k in criteria for k in ['qualification', 'percentage', 'subjects']):
+                 base_query += ", jsonb_array_elements(c.eligibility_rules) AS rule"
+
+            # FTS and Vector search CTEs
+            fts_cte = f"""
+                SELECT c.id, ROW_NUMBER() OVER (ORDER BY ts_rank(c.text_tsv, to_tsquery('english', %(search_term)s)) DESC) as rank
+                {base_query}
+                WHERE c.tenant_id = %(tenant_id)s AND c.text_tsv @@ to_tsquery('english', %(search_term)s)
             """
-            vector_cte = """
-                SELECT id, ROW_NUMBER() OVER (ORDER BY text_vector <=> %(query_vector)s ASC) as rank
-                FROM courses
-                WHERE tenant_id = %(tenant_id)s
+            vector_cte = f"""
+                SELECT c.id, ROW_NUMBER() OVER (ORDER BY c.text_vector <=> %(query_vector)s ASC) as rank
+                {base_query}
+                WHERE c.tenant_id = %(tenant_id)s
             """
             
             params = {
@@ -183,27 +198,40 @@ def find_by_discovery(query_text: str, program_level: str, course_stream_type: l
                 'query_vector': str(query_vector)
             }
 
-            # Add filters if provided
+            # Add filters
             filters = []
             if program_level:
-                filters.append("level = %(level)s")
+                filters.append("c.level = %(level)s")
                 params['level'] = program_level.upper()
             if course_stream_type and isinstance(course_stream_type, list) and len(course_stream_type) > 0:
-                categories = []
-                for cat in course_stream_type:
-                    categories.extend(cat.split('/'))
-                filters.append("course_category = ANY(%(course_category)s)")
+                categories = [cat for cs in course_stream_type for cat in cs.split('/')]
+                filters.append("c.course_category = ANY(%(course_category)s)")
                 params['course_category'] = categories
+
+            # Add eligibility filters only if qualification exist
+            if 'qualification' in criteria and criteria['qualification']:
+                filters.append("rule ->> 'qualification' = %(qualification)s")
+                params['qualification'] = criteria['qualification']
+                if 'percentage' in criteria and criteria['percentage']:
+                    filters.append("((rule ->> 'min_percentage') IS NULL OR (rule ->> 'min_percentage')::int <= %(percentage)s)")
+                    params['percentage'] = criteria['percentage']
+                if 'subjects' in criteria and criteria['subjects']:
+                    filters.append("""((rule -> 'mandatory') IS NULL OR 
+                                    jsonb_array_length(rule -> 'mandatory') = 0 OR 
+                                    (rule -> 'mandatory') <@ %(subjects)s::jsonb)""")
+                    params['subjects'] = json.dumps(criteria['subjects'])
+                else:
+                    filters.append("( (rule -> 'mandatory') IS NULL OR jsonb_array_length(rule -> 'mandatory') = 0 )")
             
             if filters:
                 filter_str = " AND " + " AND ".join(filters)
                 fts_cte += filter_str
                 vector_cte += filter_str
 
-            fts_cte += " LIMIT 50"
-            vector_cte += " ORDER BY text_vector <=> %(query_vector)s LIMIT 50"
-
-            # Final RRF query
+            fts_cte += " LIMIT 10"
+            vector_cte += " ORDER BY c.text_vector <=> %(query_vector)s LIMIT 10"
+            
+            # Final RRF query remains the same
             sql_query = f"""
                 WITH ranked_ids AS (
                     WITH config (k) AS (VALUES (60.0)),

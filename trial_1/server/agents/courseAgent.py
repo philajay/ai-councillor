@@ -114,36 +114,42 @@ IMPORTANT:
 
 def course_discovery_instruction(context: ReadonlyContext):
     entity = context.state.get(EXTRACTED_ENTITY, {})
-    x = json.loads(remove_json_tags(entity))
-    topic = x.get("topic", "")
+    entity_dict = json.loads(remove_json_tags(entity))
+    topic = entity_dict.get("topic", "")
     if not topic:
         topic = context.state.get(LAST_CLIENT_MESSAGE, "")
-    instruction =  f'''You are and expert education consultant whoc is expert in interpreting the course details.
-**Task**
-Provide insights to students about courses based on their query. 
+    
+    # Use 'topic' if available, otherwise fall back to the last user message.
+    query_text = topic
+    
+    # Add the resolved query_text to the entity dictionary for the tool call.
+    entity_dict['query_text'] = query_text
 
-Extracted Entities: {entity}
-query_text = {topic}
+    instruction = f'''You are an expert education consultant who is adept at interpreting course details.
+**Task**
+Provide insights to students about courses based on their query.
+
+Extracted Entities: {json.dumps(entity_dict)}
 
 You have access to the following tool:
-1.  **`find_by_discovery(filters: list)`**: 
+1.  **`find_by_discovery(criteria: dict)`**: 
     Arguments:
-    query_text (str): The user's natural language query.
-    program_level (str): level for which course is being discovered. Must be either UG or PG
-    course_stream_type (str, optional): The program type user is searching for, e.g., BE/Btech, bsc. Defaults to None.
+        criteria (dict): 
+            Compulsory Keys:         
+                query_text (str): The user's natural language query.
+                program_level (str): level for which course is being discovered. Must be either UG or PG
+                course_stream_type (list[str], optional): A list of program types the user is searching for.
 
-    This tool returns the courses based on user query, program_level and course_stream_type entity.
+            Optional Keys: 'qualification', 'percentage', 'stream', 'subjects' (list), 'specialization'.
+        tenant_id (str): The ID of the client tenant.
+        Extracted Emtities josn will have all the keys which needs to be passed. 
 
-    
-Tool call returns the list of courses to user also which user can see.
+    This tool returns courses based on the user's query and the provided filters.
 
 **Guidelines**
-Based on query and tool call results provide insights to user about the courses.
-Insights should be relevant to curses and should help user in taking decision.
-Choose proper tool for visualiuzation which best presents the information ex. table vs bullt point etc
-
-
-
+- Use the extracted entities and the user's query to call the `find_by_discovery` tool.
+- Based on the tool's results, provide relevant insights to help the user make a decision.
+- Choose the best visualization format (e.g., table, bullet points) to present the information clearly.
 '''
     return instruction
 
@@ -154,12 +160,11 @@ def course_discovery():
         model="gemini-2.0-flash",
         planner=BuiltInPlanner(
             thinking_config=types.ThinkingConfig(
-                include_thoughts=False,
-                thinking_budget=0,
+                include_thoughts=True,
             )
         ),
         generate_content_config=types.GenerateContentConfig(
-            temperature=1
+            temperature=0.2
         ),
         instruction=course_discovery_instruction,
         tools=[find_by_discovery],
@@ -169,10 +174,7 @@ def course_discovery():
 
 
 class CourseAgent(BaseAgent, BaseModel):
-    name: str = Field(default='root_intent_classifier')
-    #extract_entities: LlmAgent = Field(default_factory=getEntityExtractor)
-    # name: str = 'root_intent_classifier'
-    # agent_to_run: LlmAgent
+    name: str = Field(default='root_course_agent')
     model_config = {"arbitrary_types_allowed": True}
 
     def __init__(self, **data):
@@ -183,18 +185,21 @@ class CourseAgent(BaseAgent, BaseModel):
     async def _run_async_impl(
         self, ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
+        
+        entity_str = ctx.session.state.get(EXTRACTED_ENTITY, '{}')
+        entity = json.loads(remove_json_tags(entity_str))
+        print(f"Entities for discovery are: {entity}")
 
-
-        cd = course_discovery() 
-        entity = json.loads(remove_json_tags( ctx.session.state[EXTRACTED_ENTITY]))
-        print(f"Entities extracted are {entity}")
-
-        if not entity["program_level"]:
+        if not entity.get("program_level"):
+            # This case should ideally be handled by the entity extractor.
+            # If it still happens, we might need a clarifying response.
+            print("Warning: program_level not found in CourseAgent.")
             return
 
         await update_session_state(SHOW_SUGGESTED_QUESTIONS, True, ctx.session, ctx.session_service)
-        if  entity["program_level"]:
-            async for event in cd.run_async(ctx):
-                yield event
+        
+        cd = course_discovery()
+        async for event in cd.run_async(ctx):
+            yield event
             
            
