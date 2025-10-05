@@ -140,6 +140,8 @@ Tool call returns the list of courses to user also which user can see.
 **Guidelines**
 Based on query and tool call results provide insights to user about the courses.
 Insights should be relevant to curses and should help user in taking decision.
+Choose proper tool for visualiuzation which best presents the information ex. table vs bullt point etc
+
 
 
 '''

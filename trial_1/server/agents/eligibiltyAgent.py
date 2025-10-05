@@ -34,11 +34,8 @@ From the current user query extract the entities.
 3. **stream**
     In indian eductaion system student opts stream in which he wants to pursue higher studies. They are
     arts, commerce, medical and non medical.
-    if stream is non medical then assign [Mathematics] to subject
-    if stream is medical then assign [ Biology] to subject
-
-3. *specialization**
-    The course done by user in his graduation. 
+    if stream is non medical then assign [Mathematics, Physics, Chemistry] to subject
+    if stream is medical then assign [ Biology, Physics, Chemistry] to subject
 
 4.  *percentage**
     Percentage obtained by user.
@@ -50,7 +47,6 @@ Expected output:
     "qualification": <>,
     "stream":<>
     "subject": [<Only return Subject if you are hundred percent sure>]
-    "specialization": <>
     "percentage": <>
     "purpose": <Funny take on your purpose and what are you doing. Also let user know that it will take time to finish the task so be patient.>
 }}

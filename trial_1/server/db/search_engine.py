@@ -223,7 +223,7 @@ def find_by_discovery(query_text: str, program_level: str, course_stream_type: l
                         cr.id, config.k
                     ORDER BY
                         rrf_score DESC
-                    LIMIT 20
+                    LIMIT 10
                 )
                 SELECT
                     c.id,
@@ -328,14 +328,6 @@ def find_by_eligibility(criteria:dict, tenant_id: str) -> list:
         else:
             # If student provides no subjects, only match courses with no subject requirements
             where_clauses.append("( (rule -> 'mandatory') IS NULL OR jsonb_array_length(rule -> 'mandatory') = 0 )")
-
-        if 'specialization' in criteria and criteria['specialization']:
-            where_clauses.append(
-                """( (rule -> 'accepted_specializations') IS NULL OR 
-                     jsonb_array_length(rule -> 'accepted_specializations') = 0 OR 
-                     (rule -> 'accepted_specializations') ? %(specialization)s )"""
-            )
-            params['specialization'] = json.dumps(criteria['specialization'])
 
         if where_clauses:
             query += " WHERE " + " AND ".join(where_clauses)
