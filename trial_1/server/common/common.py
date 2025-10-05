@@ -2,6 +2,7 @@ import re
 import json
 from typing import Optional, Dict
 from google.adk.tools import ToolContext
+from google.adk.tools.base_tool import BaseTool
 
 
 
@@ -96,7 +97,7 @@ async def update_session_state(key, value, session, session_service):
     await session_service.append_event(session, system_event)
 
 def set_state_after_tool_call(
-        tool:BaseExceptionGroup, args:Dict[str, any], tool_context:ToolContext, 
+        tool:BaseTool, args:Dict[str, any], tool_context:ToolContext, 
         tool_response: Dict
     ) -> Optional[Dict]:
 
@@ -105,5 +106,5 @@ def set_state_after_tool_call(
             tool_context.state[LAST_DB_RESULTS] = tool_response 
             return tool_response
         except:
-            return None
+            return tool_response
         

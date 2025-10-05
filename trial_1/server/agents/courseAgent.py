@@ -12,7 +12,7 @@ from google.adk.agents.readonly_context import ReadonlyContext
 from common.common import GIST_OUTPUT_KEY, EXTRACTED_ENTITY, LAST_DB_RESULTS , update_session_state, SHOW_SUGGESTED_QUESTIONS, LLM_PROCESSED_DB_RESULTS, set_state_after_tool_call, LAST_CLIENT_MESSAGE, CURRENT_QUERY_ENTITY, remove_json_tags
 
 
-def getEntityExtractor(state):
+def getDiscoveryEntityExtractor(state):
     x = state.get(EXTRACTED_ENTITY, {})
     try:
         gist =  json.loads(remove_json_tags( state.get(GIST_OUTPUT_KEY, "")))

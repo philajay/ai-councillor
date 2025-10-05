@@ -356,9 +356,9 @@ class RouterAgent(BaseAgent, BaseModel):
         total_start_time = time.time()
 
         # Step 1: Extract entities from the current user query to inform the router.
-        from .courseAgent import getEntityExtractor
+        from .courseAgent import getDiscoveryEntityExtractor
         from common.common import CURRENT_QUERY_ENTITY
-        entity_extractor = getEntityExtractor(ctx.session.state)
+        entity_extractor = getDiscoveryEntityExtractor(ctx.session.state)
         async for event in entity_extractor.run_async(ctx):
             yield event
         

@@ -2,7 +2,7 @@ import psycopg2
 from pgvector.psycopg2 import register_vector
 import json
 
-
+from common.common import LAST_CLIENT_MESSAGE, LAST_DB_RESULTS, remove_json_tags
 import google.genai as genai
 from google.genai import types
 from google.adk.tools import ToolContext
@@ -137,6 +137,9 @@ def _prepare_fts_query(query_text: str) -> str:
         processed_query = f'{parts[-1]}:*'
         
     return processed_query
+
+
+
 
 def find_by_discovery(criteria: dict, tenant_id: str):
     """
@@ -417,11 +420,61 @@ def get_course_details_by_id(course_id: int, tenant_id: str):
 
 
 def modify_course_result(
-        tool:BaseExceptionGroup, args:Dict[str, any], tool_context:ToolContext, 
+        tool:BaseTool, args:Dict[str, any], tool_context:ToolContext, 
         tool_response: Dict
     ) -> Optional[Dict]:
+        
+        if not tool.name == "find_by_discovery":
+            try:
+                # Add it to state so that we can reterive it to send to client in live_adk
+                tool_context.state[LAST_DB_RESULTS] = tool_response 
+                return tool_response
+            except:
+                return tool_response
+
+
         try:
             # Add it to state so that we can reterive it to send to client in live_adk
-            tool_context.state["last_db_results"] = tool_response 
+            from google import genai
+            import ast
+            client = genai.Client()
+            prompt = f'''You are given a user question and list of rows returned by database. From the user question extract the broader topic about which user is asking question.
+Your task is to return filtered and ranked (most relevant at the top)  list of rows which are some what related to identified broader topic. 
+For eaxmple 
+User Query --> courses in ai 
+broader topic --> computers
+
+User Query --> courses in culinary
+broader topic --> Service industry
+
+Input:
+    Question: {tool_context.state[LAST_CLIENT_MESSAGE]}
+    list_of_rows: {tool_response}            
+Output:
+    Your response must always be a object as shown below:
+    {{
+        "json": [list where first row is header of original list.]
+        "explanation": <Explain why rows were selected>
+    }}
+'''
+            print(prompt)
+            try:
+                response = client.models.generate_content(
+                    model="gemini-2.5-flash",
+                    contents=prompt,
+                    config={
+                        "response_mime_type":"application/json"
+                    }
+                )
+                #convert response string to python list
+                l = json.loads(response.text)
+                reason = l["explanation"]
+                l = l["json"]
+                tool_context.state[LAST_DB_RESULTS] = l
+                return l
+            except Exception as ex:
+                print(ex) 
+                tool_context.state[LAST_DB_RESULTS] = tool_response 
+                return tool_response 
         except:
             return None

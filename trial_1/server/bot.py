@@ -3,6 +3,7 @@ import json
 from google.genai import types
 import asyncio
 from common.common import update_session_state, LAST_CLIENT_MESSAGE, LAST_DB_RESULTS
+
 APP_NAME = "bot"
 
 
@@ -24,14 +25,14 @@ class AgentSession:
 
     async def start(self):
         """Starts an agent session"""
-        from agents.routerAgent import RouterAgent
+        #from agents.routerAgent import RouterAgent
         from google.adk.runners import InMemoryRunner
-
+        from agents.autonomous import AutoAgent
 
         # Create a Runner
         self.runner = InMemoryRunner(
             app_name=APP_NAME,
-            agent=RouterAgent(),
+            agent=AutoAgent(),
         )
 
         # Create a Session
