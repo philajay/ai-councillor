@@ -11,7 +11,7 @@ from common.common import EXTRACTED_ENTITY,  GIST_OUTPUT_KEY, NEXT_AGENT, LAST_D
 from google.adk.agents.readonly_context import ReadonlyContext
 from .prompts.systempPrompt import system_prompt
 
-from db.search_engine import find_by_discovery, find_by_eligibility, modify_course_result
+from db.search_engine import find_by_discovery, find_by_eligibility, modify_course_result, vector_search
 
 
 
@@ -123,13 +123,7 @@ Pathway: {system_prompt}
 
 
 <Tools>
-    1. **`eligibility_entities_extractor`**: 
-        It takes no arguments
-        Use this tool to extract the enteties required for the calling the find_by_eligibility tool
-    2. **`discovery_entities_extractor`**: 
-        It takes no arguments
-        Use this tool to extract the enteties required for the calling the find_by_discovery tool
-    3. **`find_by_eligibility(criteria (dict))`**: 
+    1. **`find_by_eligibility(criteria (dict))`**: 
         Arguments:
             criteria (dict): 
                 'qualification', 'percentage', 'stream', 'subjects' (list), 'specialization'.
@@ -141,7 +135,7 @@ Pathway: {system_prompt}
         criteria (dict): A dictionary with keys 'qualification', 
                          'percentage', 'stream', 'subjects', 'specialization'.
 
-    4. **`find_by_discovery(criteria: dict)`**: 
+    2. **`find_by_discovery(criteria: dict)`**: 
         Arguments:
             criteria (dict): 
                 Compulsory Keys:         
@@ -153,7 +147,16 @@ Pathway: {system_prompt}
             tenant_id (str): The ID of the client tenant.
         Return Value:
             List of courses for selected course_categories
+    3. **`vector_search`**: 
+        Arguments:
+            query (str): user query
+            tenant_id (str): The ID of the client tenant.
+
+        Return Value:
+            A list of strings, where each string returns the chunk of text which matches user query
+            similarity score and url from where text was scraped. 
         
+        Use this tool to search anything other than courses.
     
 </Tools>
 
@@ -189,6 +192,7 @@ def auto_agent():
             tools=[
                     find_by_eligibility, 
                     find_by_discovery,
+                    vector_search
             ],
             after_tool_callback=modify_course_result,
 

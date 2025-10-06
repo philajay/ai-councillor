@@ -22,6 +22,7 @@ DB_PORT = "5432"
 import asyncio
 import threading
 
+TOP_K = 5 
 model = None
 model_lock = threading.Lock()
 
@@ -411,6 +412,66 @@ def get_course_details_by_id(course_id: int, tenant_id: str):
             header = ",".join([desc[0] for desc in cur.description])
             results = [header]
             results.extend([",".join(map(str, row)) for row in rows])
+            return results
+        except Exception as e:
+            print(f"An error occurred during course detail retrieval: {e}")
+            return [f"Error retrieving course details: {e}"]
+        finally:
+            conn.close()
+
+
+def vector_search(query: str, tenant_id:str):
+    """
+    Retrieves chunks of text which matches the query
+
+    Args:
+        query (str): user query
+        tenant_id (str): The ID of the client tenant.
+
+    Returns:
+        list: A list of strings, where each string returns the chunk of text which matches user query
+        similarity score and url from where text was scraped. 
+        Returns an error message if the connection fails or the course is not found.
+    """
+
+    tenant_id = 'cgc_university'
+    # 1. Encode the search query
+    model = getModel()
+    query_vector = model.encode(query).tolist()
+    conn = get_db_connection()
+    
+    # 2. Construct and run the search query
+    with conn.cursor() as cur:
+        try:
+            sql_query = """
+                SELECT
+                    chunk_text,
+                    1 - (content_vector <=> %s) as similarity,
+                    p.url
+                FROM
+                    content_chunks c
+                JOIN
+                    scraped_pages p ON c.page_id = p.id
+                WHERE
+                    c.tenant_id = %s
+                ORDER BY
+                    similarity DESC
+                LIMIT %s;
+            """
+        
+            params = (
+                str(query_vector),
+                tenant_id,
+                TOP_K
+            )
+        
+            cur.execute(sql_query, params)
+            rows = cur.fetchall()
+            
+            if not rows:
+                print("  No results found.")
+                return
+            results = [",".join(map(str, row)) for row in rows]
             return results
         except Exception as e:
             print(f"An error occurred during course detail retrieval: {e}")
