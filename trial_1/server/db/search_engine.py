@@ -2,7 +2,7 @@ import psycopg2
 from pgvector.psycopg2 import register_vector
 import json
 
-from common.common import LAST_CLIENT_MESSAGE, LAST_DB_RESULTS, remove_json_tags
+from common.common import LAST_CLIENT_MESSAGE, LAST_DB_RESULTS, remove_json_tags, SEND_INTERMEDIATE_RESULT
 import google.genai as genai
 from google.genai import types
 from google.adk.tools import ToolContext
@@ -260,7 +260,7 @@ def find_by_discovery(criteria: dict, tenant_id: str):
                 SELECT
                     c.id,
                     c.structured_data,
-                    c.stream
+                    c.name
                 FROM
                     courses c
                 JOIN
@@ -316,7 +316,7 @@ def normalize_criteria(llm_output, conn, tenant_id):
 def find_by_eligibility(criteria:dict, tenant_id: str) -> list:
     tenant_id = 'cgc_university'
     """
-    Finds courses based on a structured criteria dictionary using the new schema.
+    Call this 
     
     Args:
         criteria (dict): A dictionary with keys 'qualification', 
@@ -422,7 +422,13 @@ def get_course_details_by_id(course_id: int, tenant_id: str):
 
 def vector_search(query: str, tenant_id:str):
     """
-    Retrieves chunks of text which matches the query
+    Retrieves chunks of text which matches the query. This tool should be used for information regarding
+    a) campus/hostel facilites
+    b) scholarships 
+    c) loans
+    d) admissions
+    e) sports
+    f) venture facilities
 
     Args:
         query (str): user query
@@ -482,43 +488,55 @@ def vector_search(query: str, tenant_id:str):
 
 def modify_course_result(
         tool:BaseTool, args:Dict[str, any], tool_context:ToolContext, 
-        tool_response: Dict
-    ) -> Optional[Dict]:
+        tool_response: list
+    ) -> Optional[list]:
         
-        if not tool.name == "find_by_discovery":
+        if not tool.name == "find_by_discovery" or not tool_response or len(tool_response) <= 1:
             try:
-                # Add it to state so that we can reterive it to send to client in live_adk
                 tool_context.state[LAST_DB_RESULTS] = tool_response 
                 return tool_response
             except:
                 return tool_response
-
-
+ 
         try:
-            # Add it to state so that we can reterive it to send to client in live_adk
             from google import genai
-            import ast
             client = genai.Client()
-            prompt = f'''You are given a user question and list of rows returned by database. From the user question extract the broader topic about which user is asking question.
-Your task is to return filtered and ranked (most relevant at the top)  list of rows which are some what related to identified broader topic. 
-For eaxmple 
-User Query --> courses in ai 
-broader topic --> computers
 
-User Query --> courses in culinary
-broader topic --> Service industry
+            original_header = tool_response[0]
+            original_data_rows = tool_response[1:]
+
+            try:
+                id_index = original_header.index('id')
+                name_index = original_header.index('name')
+            except ValueError:
+                # If essential columns are missing, return original response
+                tool_context.state[LAST_DB_RESULTS] = tool_response
+                return tool_response
+
+            # Create a simplified list with only id and name for the LLM prompt
+            simplified_list = [['id', 'name']]
+            for row in original_data_rows:
+                simplified_list.append([row[id_index], row[name_index]])
+
+            prompt = f'''You are given a user question and a list of courses with their IDs and names. Your task is to identify the broader topic from the user's question and then filter the list to return only the courses that are most relevant to that topic.
+
+For example:
+User Query: "courses in ai"
+Broader Topic: "computers"
+
+User Query: "courses in culinary"
+Broader Topic: "Service industry"
 
 Input:
-    Question: {tool_context.state[LAST_CLIENT_MESSAGE]}
-    list_of_rows: {tool_response}            
+    Question: {tool_context.state.get(LAST_CLIENT_MESSAGE, "")}
+    list_of_rows: {simplified_list}
+
 Output:
-    Your response must always be a object as shown below:
-    {{
-        "json": [list where first row is header of original list.]
-        "explanation": <Explain why rows were selected>
-    }}
+    Your response must always be a JSON object with two keys: "json" and "explanation".
+    - "json": A list containing the filtered courses. The first element must be the header ['id', 'name'].
+    - "explanation": A brief explanation of why these courses were selected based on the broader topic.
 '''
-            print(prompt)
+            
             try:
                 response = client.models.generate_content(
                     model="gemini-2.5-flash",
@@ -527,15 +545,32 @@ Output:
                         "response_mime_type":"application/json"
                     }
                 )
-                #convert response string to python list
-                l = json.loads(response.text)
-                reason = l["explanation"]
-                l = l["json"]
-                tool_context.state[LAST_DB_RESULTS] = l
-                return l
+                
+                llm_response_data = json.loads(response.text)
+                llm_filtered_list = llm_response_data.get("json", [])
+                
+                if not llm_filtered_list or len(llm_filtered_list) <= 1:
+                    tool_context.state[LAST_DB_RESULTS] = tool_response
+                    return tool_response
+
+                # Extract IDs from the LLM's filtered list
+                llm_header = llm_filtered_list[0]
+                llm_id_index = llm_header.index('id')
+                returned_ids = {row[llm_id_index] for row in llm_filtered_list[1:]}
+
+                # Filter the original tool_response based on the returned IDs
+                final_result = [original_header]
+                for row in original_data_rows:
+                    if row[id_index] in returned_ids:
+                        final_result.append(row)
+                
+                tool_context.state[LAST_DB_RESULTS] = final_result
+                tool_context.actions.state_delta[SEND_INTERMEDIATE_RESULT] = f"Hold on for a momemt please while I prepare the final result.."
+                return final_result
             except Exception as ex:
-                print(ex) 
+                print(f"Error processing LLM response: {ex}") 
                 tool_context.state[LAST_DB_RESULTS] = tool_response 
                 return tool_response 
-        except:
+        except Exception as e:
+            print(f"An error occurred in modify_course_result: {e}")
             return None

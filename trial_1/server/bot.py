@@ -2,7 +2,7 @@ from fastapi import APIRouter, WebSocket
 import json
 from google.genai import types
 import asyncio
-from common.common import update_session_state, LAST_CLIENT_MESSAGE, LAST_DB_RESULTS
+from common.common import update_session_state, LAST_CLIENT_MESSAGE, LAST_DB_RESULTS, SEND_INTERMEDIATE_RESULT
 
 APP_NAME = "bot"
 
@@ -76,6 +76,18 @@ class AgentSession:
                                                     "error": event.error_code
                                                 }))
                     print('Event fired by -->', event.author)
+
+                    if  SEND_INTERMEDIATE_RESULT in event.actions.state_delta.keys() and event.actions.state_delta[SEND_INTERMEDIATE_RESULT]: 
+                        message = {
+                            "text": event.actions.state_delta[SEND_INTERMEDIATE_RESULT],
+                            "agent": event.author
+                            }
+                        await client_websocket.send_text(json.dumps(message))
+                        await client_websocket.send_text(json.dumps({
+                                                "endOfTurn": True,
+                                                "agent": event.author
+                                            }))
+
                     # If the turn complete or interrupted, send it
                     if event.turn_complete or event.interrupted:
                         message = {

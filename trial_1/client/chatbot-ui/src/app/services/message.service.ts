@@ -26,7 +26,7 @@ export class MessageService {
 <br>
 1.  I have done my 12th in arts with 60%. What courses am I eligible for?<br>
 2.  Tell me about the Bachelor of Science in Computer Science program?<br>
-3.  Tell me about placements in BCA Program.`;
+3.  Or Just say Hi`;
 
   messages: Message[] = [{ text: this._message, sender: 'bot' }];
   messagesUpdated = new Subject<void>();
