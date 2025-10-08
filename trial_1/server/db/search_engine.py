@@ -10,13 +10,18 @@ from google.adk.tools.base_tool import BaseTool
 from typing import Optional, Dict
 from copy import deepcopy
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
 # --- Database Configuration ---
 # It's recommended to use environment variables for these in a real application
-DB_NAME = "councillor-assistant"
-DB_USER = "postgres"
-DB_PASS = '1234'
-DB_HOST = 'localhost'
-DB_PORT = "5432"
+DB_NAME = os.getenv("DB_NAME", "councillor-assistant")
+DB_USER = os.getenv("DB_USER", "postgres")
+DB_PASS = os.getenv("DB_PASS", "1234")
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_PORT = os.getenv("DB_PORT", "5432")
 
 
 import asyncio

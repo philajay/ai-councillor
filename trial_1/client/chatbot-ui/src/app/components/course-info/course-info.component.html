@@ -1,52 +1,39 @@
-@if (courses.length > 0) {
-  <div class="course-summary">
-    Showing {{ courses.length }} {{ courses.length === 1 ? 'course' : 'courses' }} based on your query.
-  </div>
-}
-
 @for (group of groupedCourses; track group.stream) {
-  <div class="stream-section">
-    <div class="stream-header">
-      {{ group.stream }} ({{ group.courses.length }} {{ group.courses.length === 1 ? 'course' : 'courses' }})
-    </div>
-    <mat-accordion multi="true">
-      @for (course of group.courses; track course.id; let i = $index) {
-        <mat-expansion-panel class="course-expansion-panel" >
-          <mat-expansion-panel-header>
-            <div class="icon-container">
-              <mat-icon>school</mat-icon> <!-- Placeholder icon -->
-            </div>
-            <div class="course-header-text">
-              <div class="course-name">{{ course.name }}</div>
-              <div class="course-summary-text">{{ course.summary }}</div>
-            </div>
-          </mat-expansion-panel-header>
+  <section class="stream-section">
+    <h2 class="stream-header">{{ group.stream }}</h2>
+    <div class="course-grid">
+      @for (course of group.courses; track course.id) {
+        <div class="course-card">
+          <div class="course-header">
+            <h3 class="course-name">{{ course.name }}</h3>
+            <p class="course-summary-text">{{ course.summary }}</p>
+          </div>
 
-          <div class="course-details-container">
+          <div class="course-details">
             <!-- Career Prospects -->
-            <section class="section-card prospects-card">
-              <div class="section-header">
+            <section class="section">
+              <h4 class="section-title">
                 <mat-icon>work_outline</mat-icon>
-                <h2>Career Prospects</h2>
-              </div>
+                <span>Career Prospects</span>
+              </h4>
               <p>{{ course.careerProspects?.summary }}</p>
-              <mat-chip-listbox aria-label="Career list">
+              <div class="chip-list">
                 @for (career of course.careerProspects?.careers; track career) {
                   <mat-chip>{{ career }}</mat-chip>
                 }
-              </mat-chip-listbox>
+              </div>
             </section>
 
             <!-- Eligibility Criteria -->
-            <section class="section-container">
-              <div class="section-header">
+            <section class="section">
+              <h4 class="section-title">
                 <mat-icon>checklist</mat-icon>
-                <h2>Eligibility Criteria</h2>
-              </div>
-              <div class="eligibility-cards">
-                @for (criterion of course.eligibility; track criterion.title; let i = $index) {
-                  <div class="eligibility-card" [ngClass]="'color-' + (i % 3)">
-                    <h3>{{ criterion.title }}</h3>
+                <span>Eligibility Criteria</span>
+              </h4>
+              <div class="eligibility-grid">
+                @for (criterion of course.eligibility; track criterion.title) {
+                  <div class="eligibility-card">
+                    <h5>{{ criterion.title }}</h5>
                     <markdown [data]="criterion.detail"></markdown>
                   </div>
                 }
@@ -54,35 +41,35 @@
             </section>
 
             <!-- Placements -->
-            <section class="section-container">
-              <div class="section-header">
+            <section class="section">
+              <h4 class="section-title">
                 <mat-icon>trending_up</mat-icon>
-                <h2>Placements</h2>
-              </div>
-              <div class="placement-cards">
+                <span>Placements</span>
+              </h4>
+              <div class="placement-grid">
                 <div class="placement-card">
-                  <span class="placement-value">{{ course.placements?.highestPackage }}</span>
-                  <span class="placement-label">Highest Package</span>
+                  <div class="placement-value">{{ course.placements?.highestPackage }}</div>
+                  <div class="placement-label">Highest Package</div>
                 </div>
                 <div class="placement-card">
-                  <span class="placement-value">{{ course.placements?.placement_offers }}+</span>
-                  <span class="placement-label">Placement Offers</span>
+                  <div class="placement-value">{{ course.placements?.placement_offers }}+</div>
+                  <div class="placement-label">Placement Offers</div>
                 </div>
                 <div class="placement-card">
-                  <span class="placement-value">{{ course.placements?.total_recruiters }}+</span>
-                  <span class="placement-label">Total Recruiters</span>
+                  <div class="placement-value">{{ course.placements?.total_recruiters }}+</div>
+                  <div class="placement-label">Total Recruiters</div>
                 </div>
               </div>
             </section>
 
             <!-- Actions -->
-            <div class="actions-container">
+            <div class="actions">
               <button mat-raised-button color="primary">Apply Now</button>
               <button mat-stroked-button>Know More</button>
             </div>
           </div>
-        </mat-expansion-panel>
+        </div>
       }
-    </mat-accordion>
-  </div>
+    </div>
+  </section>
 }

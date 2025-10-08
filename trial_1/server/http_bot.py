@@ -6,6 +6,10 @@ import asyncio
 from common.common import update_session_state, LAST_CLIENT_MESSAGE, LAST_DB_RESULTS, SEND_INTERMEDIATE_RESULT
 from google.genai.types import Part
 from pydantic import BaseModel
+from google.adk.sessions import InMemorySessionService
+
+
+session_service = InMemorySessionService()
 
 APP_NAME = "http_bot"
 
@@ -31,23 +35,30 @@ class AgentSession:
 
     async def start(self, course_level):
         """Starts an agent session"""
-        from google.adk.runners import InMemoryRunner
+        from google.adk.runners import Runner
         from agents.autonomous import AutoAgent
 
-        self.runner = InMemoryRunner(
+        self.runner = Runner(
             app_name=APP_NAME,
             agent=AutoAgent(),
+            session_service = session_service
         )
 
-
-        self.session = await self.runner.session_service.create_session(
+        self.session = await session_service.get_session(
             app_name=APP_NAME,
             user_id=self.user_id,
-            state={
-                "course_level": course_level
-            },
             session_id=self.session_id
         )
+        
+        if not self.session:
+            self.session = await session_service.create_session(
+                app_name=APP_NAME,
+                user_id=self.user_id,
+                state={
+                    "course_level": course_level
+                },
+                session_id=self.session_id
+            )
 
 async def event_stream(agent_session: AgentSession, data: str):
     # Wait for the model to be loaded before processing the request.
@@ -90,7 +101,7 @@ async def event_stream(agent_session: AgentSession, data: str):
                         "args": {},
                         "results": results,
                         "agent": event.author
-                    }
+                    }   
                     yield f"data: {json.dumps(message)}\n\n"
 
             elif part.text and event.partial:
@@ -126,12 +137,14 @@ async def startup_event():
 
 agent_session = None
 
+@router.get("/hello_world")
+async def hello_world():
+    return {"message": "Hello, World!"}
+
 @router.get("/chat")
 async def chat_endpoint(request: Request, text: str, sessionId: str, courseLevel: str):
-    global agent_session
-    if not agent_session:
-        user_id = "John Doe"  # In a real app, you'd get this from the request/session
-        agent_session = AgentSession(user_id, sessionId, False)
-        await agent_session.start(courseLevel)
+    user_id = "John Doe"  # In a real app, you'd get this from the request/session
+    agent_session = AgentSession(user_id, sessionId, False)
+    await agent_session.start(courseLevel)
     
     return StreamingResponse(event_stream(agent_session, text), media_type="text/event-stream")

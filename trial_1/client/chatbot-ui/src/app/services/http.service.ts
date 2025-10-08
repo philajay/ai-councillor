@@ -1,4 +1,5 @@
 import { Injectable, NgZone } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { ServerEvent } from '../models/server-event.model';
 
@@ -10,8 +11,10 @@ export class HttpService {
   private messagesSubject = new Subject<ServerEvent>();
   public messages$ = this.messagesSubject.asObservable();
   private courseLevel: string | null = null;
+  //private host = "http://localhost:8080"; // Make this configurable
+  private host = "https://ai-assistant-bot-183228620742.us-central1.run.app"
 
-  constructor(private zone: NgZone) {}
+  constructor(private zone: NgZone, private http: HttpClient) {}
 
   private getSessionId(): string {
     let sessionId = localStorage.getItem('chatSessionId');
@@ -26,17 +29,23 @@ export class HttpService {
     this.courseLevel = level;
   }
 
+  warmUpServer() {
+    this.http.get(`${this.host}/hello_world`).subscribe({
+      next: (res) => console.log('Server warmed up:', res),
+      error: (err) => console.error('Error warming up server:', err)
+    });
+  }
+
   connect(message: string): void {
     // Disconnect any existing connection
     this.disconnect();
 
     const sessionId = this.getSessionId();
-    let url = `http://localhost:8080/chat?text=${encodeURIComponent(message)}&sessionId=${sessionId}`;
+    let url = `${this.host}/chat?text=${encodeURIComponent(message)}&sessionId=${sessionId}`;
     if (this.courseLevel) {
       url += `&courseLevel=${encodeURIComponent(this.courseLevel)}`;
     }
     // Create a new EventSource connection
-    // In a real app, you'd likely fetch the URL from an environment config
     this.eventSource = new EventSource(url);
 
     this.eventSource.onmessage = (event) => {
@@ -57,7 +66,6 @@ export class HttpService {
     this.eventSource.onerror = (error) => {
       this.zone.run(() => {
         console.error('EventSource failed:', error);
-        // You might want to alert the user or attempt to reconnect
         this.messagesSubject.error({
           error: 'Connection Error',
           message: 'Could not connect to the server. Please try again later.'
@@ -68,8 +76,6 @@ export class HttpService {
   }
 
   sendMessage(msg: { text: string }): void {
-    // For SSE, the "sending" is done by establishing the connection
-    // with the message as a query parameter.
     this.connect(msg.text);
   }
 
