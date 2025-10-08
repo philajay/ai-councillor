@@ -227,7 +227,7 @@ Pathway: {system_prompt}
 </Flow>
 
 <Output>
-Output for tool find_by_discovery must always be in markdown optimized for best possible ui experience ( ex Use tables for comparison, bullet points for emphasis etc ) explaining why course from our university would help you get better prepared for job.
+Output for tool find_by_discovery must always be in markdown optimized for best possible ui experience explaining why course from our university would help you get better prepared for job.
 The output should create a sense of oppurtunity and urgency by talking about the CGCUET. 
 
 </Output>
@@ -247,12 +247,12 @@ def auto_agent():
             model="gemini-2.5-flash",
             instruction=auto_agent_instruction,
             sub_agents=[],
-            planner=BuiltInPlanner(
-                thinking_config=types.ThinkingConfig(
-                    include_thoughts=False,
-                    thinking_budget=-1 
-                )
-            ),
+            # planner=BuiltInPlanner(
+            #     thinking_config=types.ThinkingConfig(
+            #         include_thoughts=False,
+            #         thinking_budget=-1 
+            #     )
+            # ),
             generate_content_config=types.GenerateContentConfig(
                 temperature=1
             ),

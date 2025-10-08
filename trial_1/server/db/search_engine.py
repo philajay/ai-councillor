@@ -260,7 +260,8 @@ def find_by_discovery(criteria: dict, tenant_id: str):
                 SELECT
                     c.id,
                     c.structured_data,
-                    c.name
+                    c.name,
+                    c.stream
                 FROM
                     courses c
                 JOIN

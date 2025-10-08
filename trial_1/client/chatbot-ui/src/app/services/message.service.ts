@@ -73,7 +73,7 @@ export class MessageService {
   }
 
   private handleServerEvent(event: ServerEvent | { error: string; message: string }) {
-    const isMeaningfulEvent = 'error' in event || event.action || event.endOfTurn || event.text;
+    const isMeaningfulEvent = 'error' in event || event.endOfTurn ;
 
     if (isMeaningfulEvent && (event as any).agent && (event as any).agent == "auto_agent") {
       this.removeLoadingMessage();
@@ -117,7 +117,7 @@ export class MessageService {
       //component data is array of arrays where we are interested in element at index 1. So we flatten it.
       componentData = componentData.flatMap((item: any) => {
         item[1].id = item[0]; //set id of course as first element
-        item[1].stream = item[2]; //set stream of course as second element
+        item[1].stream = item[3]; //set stream of course as second element
         return item[1];
       });
 
@@ -153,7 +153,6 @@ export class MessageService {
 
   private handleTextMessage(text: string) {
     if (this.isNewMessageStream) {
-      this.removeLoadingMessage();
       this.messages.push({ text, sender: 'bot' });
       this.isNewMessageStream = false;
     } else {
