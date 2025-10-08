@@ -1,1 +1,2 @@
-<app-chat-window></app-chat-window>
+<app-course-selection *ngIf="!courseLevel" (courseLevelSelected)="onCourseLevelSelected($event)"></app-course-selection>
+<app-chat-window *ngIf="courseLevel" [courseLevel]="courseLevel"></app-chat-window>

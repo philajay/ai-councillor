@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable, Subscription } from 'rxjs';
 import { skip, tap, scan } from 'rxjs/operators';
@@ -11,7 +11,7 @@ import { MessageFormComponent } from '../message-form/message-form.component';
 import { CourseChipsComponent } from '../course-chips/course-chips.component';
 import { CourseInfoComponent } from '../course-info/course-info.component';
 import { MessageService } from '../../services/message.service';
-import { WebsocketService } from '../../services/websocket.service';
+import { HttpService } from '../../services/http.service';
 
 @Component({
   selector: 'app-chat-window',
@@ -30,6 +30,7 @@ import { WebsocketService } from '../../services/websocket.service';
   styleUrls: ['./chat-window.component.css'],
 })
 export class ChatWindowComponent implements OnInit, OnDestroy {
+  @Input() courseLevel!: string;
   coursesForChips$: Observable<string[] | null>;
   courseInfoData$: Observable<any[] | null>;
   showCourseInfoBadge = false;
@@ -40,7 +41,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
 
   constructor(
     private messageService: MessageService,
-    private websocketService: WebsocketService,
+    private httpService: HttpService,
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef
   ) {
@@ -75,7 +76,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     const newMessage = `I would like to pursue ${course}`;
     // Pass clearChips: false to prevent the service from clearing the chips
     this.messageService.addMessage(newMessage, 'user', { clearChips: false });
-    this.websocketService.sendMessage({ text: newMessage });
+    this.httpService.sendMessage({ text: newMessage });
   }
 
   onTabChange(event: MatTabChangeEvent): void {

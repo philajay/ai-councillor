@@ -73,6 +73,7 @@ LAST_DB_RESULTS = "last_db_results"
 LAST_CLIENT_MESSAGE = "last_client_message"
 CURRENT_QUERY_ENTITY =  "current_query_entity"
 SEND_INTERMEDIATE_RESULT = "send_intermediate_result"
+COURSE_LEVEL = "course_level"
 
 
 

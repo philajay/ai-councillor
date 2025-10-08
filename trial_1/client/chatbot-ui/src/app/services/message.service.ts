@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-// import { WebsocketService } from './websocket.service';
 import { HttpService } from './http.service';
 import { Subject, BehaviorSubject } from 'rxjs';
 import { ServerEvent } from '../models/server-event.model';
@@ -40,12 +39,8 @@ export class MessageService {
   public courseInfo$ = this.courseInfoSubject.asObservable();
 
   constructor(
-    // private websocketService: WebsocketService,
     private httpService: HttpService
     ) {
-    // this.websocketService.messages$.subscribe(event => {
-    //   this.handleServerEvent(event);
-    // });
     this.httpService.messages$.subscribe({
       next: (event) => this.handleServerEvent(event),
       error: (err) => this.handleServerEvent(err)
@@ -83,7 +78,8 @@ export class MessageService {
       this.handleErrorEvent(event);
     } else if (event.action === 'functionCall') {
       this.handleFunctionCall(event);
-    } else if (event.endOfTurn) {
+    }
+    else if (event.endOfTurn) {
       this.handleEndOfTurn(event.agent || '');
     } else if (event.text) {
       this.handleTextMessage(event.text);

@@ -1,5 +1,5 @@
 <div class="scroll-container" #scrollMe>
-@for (message of messages; track message) {
+@for (message of messageService.messages; track message) {
   <div class="message" #messageEl [ngClass]="{
     'user-message': message.sender === 'user',
     'bot-message': message.sender === 'bot',

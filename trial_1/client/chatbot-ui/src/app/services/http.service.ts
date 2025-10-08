@@ -9,6 +9,7 @@ export class HttpService {
   private eventSource: EventSource | null = null;
   private messagesSubject = new Subject<ServerEvent>();
   public messages$ = this.messagesSubject.asObservable();
+  private courseLevel: string | null = null;
 
   constructor(private zone: NgZone) {}
 
@@ -21,14 +22,22 @@ export class HttpService {
     return sessionId;
   }
 
+  setCourseLevel(level: string) {
+    this.courseLevel = level;
+  }
+
   connect(message: string): void {
     // Disconnect any existing connection
     this.disconnect();
 
     const sessionId = this.getSessionId();
+    let url = `http://localhost:8080/chat?text=${encodeURIComponent(message)}&sessionId=${sessionId}`;
+    if (this.courseLevel) {
+      url += `&courseLevel=${encodeURIComponent(this.courseLevel)}`;
+    }
     // Create a new EventSource connection
     // In a real app, you'd likely fetch the URL from an environment config
-    this.eventSource = new EventSource(`http://localhost:8080/chat?text=${encodeURIComponent(message)}&sessionId=${sessionId}`);
+    this.eventSource = new EventSource(url);
 
     this.eventSource.onmessage = (event) => {
       this.zone.run(() => {

@@ -7,83 +7,75 @@ import {
   AfterViewInit,
   ViewChildren,
   QueryList,
+  AfterViewChecked,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Message, MessageService } from '../../services/message.service';
 import { MarkdownComponent } from 'ngx-markdown';
 import { Subscription } from 'rxjs';
 import { CourseInfoComponent } from '../course-info/course-info.component';
-import { WebsocketService } from '../../services/websocket.service';
-import { MatButtonModule } from '@angular/material/button';
+import { HttpService } from '../../services/http.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-message-list',
   standalone: true,
-  imports: [
-    CommonModule,
-    MarkdownComponent,
-    CourseInfoComponent,
-    MatButtonModule,
-    MatProgressSpinnerModule,
-  ],
+  imports: [CommonModule, MarkdownComponent, CourseInfoComponent, MatProgressSpinnerModule],
   templateUrl: './message-list.component.html',
   styleUrls: ['./message-list.component.css'],
 })
-export class MessageListComponent
-  implements OnInit, OnDestroy, AfterViewInit
-{
-  @ViewChild('scrollMe') private myScrollContainer!: ElementRef;
-  @ViewChildren('messageEl') private messageElements!: QueryList<ElementRef>;
-
-  messages: Message[] = [];
+export class MessageListComponent implements OnInit, OnDestroy, AfterViewInit, AfterViewChecked {
+  @ViewChild('scrollMe') private messageContainer!: ElementRef;
+  @ViewChildren('message') public messages!: QueryList<any>;
   private messagesSubscription!: Subscription;
-  private viewChildrenSubscription!: Subscription;
+  private messageCount = 0;
 
   constructor(
-    private messageService: MessageService,
-    private websocketService: WebsocketService
+    public messageService: MessageService,
+    private httpService: HttpService
   ) {}
 
   ngOnInit(): void {
     this.messagesSubscription = this.messageService.messagesUpdated.subscribe(() => {
-      this.messages = this.messageService.messages;
+      this.messageCount = this.messageService.messages.length;
     });
-    this.messages = this.messageService.messages;
   }
 
   ngAfterViewInit(): void {
-    this.scrollToBottom(); // Initial scroll
-    this.viewChildrenSubscription = this.messageElements.changes.subscribe(() => {
-      this.scrollToBottom();
-    });
+    this.messages.changes.subscribe(this.scrollToBottom);
+  }
+
+  ngAfterViewChecked(): void {
+    this.scrollToBottom();
   }
 
   ngOnDestroy(): void {
     if (this.messagesSubscription) {
       this.messagesSubscription.unsubscribe();
     }
-    if (this.viewChildrenSubscription) {
-      this.viewChildrenSubscription.unsubscribe();
-    }
   }
 
-  private scrollToBottom(): void {
-    try {
-      // Using setTimeout to make sure the scroll happens after the view is updated
-      setTimeout(() => {
-        this.myScrollContainer.nativeElement.scrollTop =
-          this.myScrollContainer.nativeElement.scrollHeight;
-      }, 0);
-    } catch (err) {
-      console.error('Could not scroll to bottom:', err);
+  private scrollToBottom = () => {
+    if (this.messageContainer && this.messageContainer.nativeElement) {
+      try {
+        this.messageContainer.nativeElement.scrollTop = this.messageContainer.nativeElement.scrollHeight;
+      } catch (err) {
+        console.error('Could not scroll to bottom:', err);
+      }
     }
-  }
+  };
 
   onRetry(message: Message): void {
     if (message.originalText) {
-      this.messageService.addMessage(message.originalText, 'user');
-      this.websocketService.sendMessage({ text: message.originalText });
+      // Find the error message that corresponds to this retry attempt and remove it
+      const errorMsgIndex = this.messageService.messages.findIndex(
+        (m) => m.isError && m.originalText === message.originalText
+      );
+      if (errorMsgIndex > -1) {
+        this.messageService.messages.splice(errorMsgIndex, 1);
+      }
+      // Resend the original message
+      this.httpService.sendMessage({ text: message.originalText });
     }
   }
 }

@@ -7,7 +7,7 @@ import json
 from common.common import remove_json_tags
 from google.adk.planners import BuiltInPlanner
 from google.genai import types
-from common.common import EXTRACTED_ENTITY,  GIST_OUTPUT_KEY, NEXT_AGENT, LAST_DB_RESULTS, CURRENT_QUERY_ENTITY, update_session_state, set_state_after_tool_call
+from common.common import EXTRACTED_ENTITY,  GIST_OUTPUT_KEY, NEXT_AGENT, LAST_DB_RESULTS, CURRENT_QUERY_ENTITY, update_session_state, set_state_after_tool_call, COURSE_LEVEL
 from google.adk.agents.readonly_context import ReadonlyContext
 from .prompts.systempPrompt import system_prompt
 from datetime import date
@@ -18,6 +18,7 @@ from db.search_engine import find_by_discovery, find_by_eligibility, modify_cour
 
 def getEntityExtractory(state):
     x = state.get(EXTRACTED_ENTITY, {})
+    course_level = state.get(COURSE_LEVEL, {})
     try:
         gist =  json.loads(remove_json_tags( state.get(GIST_OUTPUT_KEY, "")))
         gist = gist.get("gist", "")
@@ -51,7 +52,7 @@ Your 100% focus should be on this task
     * **International Collaborations:** The university fosters **international collaborations** through a network of universities across various countries, opening global opportunities for students.
 
 **Context**
-program level is "UG"
+program level is {course_level}
 
 
 last extracted entities: {x}

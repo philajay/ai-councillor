@@ -29,7 +29,7 @@ class AgentSession:
         self.last_client_text_message = None
         self.session_id = session_id
 
-    async def start(self):
+    async def start(self, course_level):
         """Starts an agent session"""
         from google.adk.runners import InMemoryRunner
         from agents.autonomous import AutoAgent
@@ -43,7 +43,9 @@ class AgentSession:
         self.session = await self.runner.session_service.create_session(
             app_name=APP_NAME,
             user_id=self.user_id,
-            state={},
+            state={
+                "course_level": course_level
+            },
             session_id=self.session_id
         )
 
@@ -121,10 +123,15 @@ async def startup_event():
 
     asyncio.create_task(wrapped_load())
 
+
+agent_session = None
+
 @router.get("/chat")
-async def chat_endpoint(request: Request, text: str, sessionId: str):
-    user_id = "John Doe"  # In a real app, you'd get this from the request/session
-    agent_session = AgentSession(user_id, sessionId, False)
-    await agent_session.start()
+async def chat_endpoint(request: Request, text: str, sessionId: str, courseLevel: str):
+    global agent_session
+    if not agent_session:
+        user_id = "John Doe"  # In a real app, you'd get this from the request/session
+        agent_session = AgentSession(user_id, sessionId, False)
+        await agent_session.start(courseLevel)
     
     return StreamingResponse(event_stream(agent_session, text), media_type="text/event-stream")
