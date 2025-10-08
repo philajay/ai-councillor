@@ -5,6 +5,20 @@
   padding: 2rem;
 }
 
+.stream-section {
+  margin-bottom: 3rem;
+}
+
+.stream-header {
+  font-size: 2em;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #4f46e5;
+  display: inline-block;
+}
+
 .course-grid {
   display: grid;
   grid-template-columns: 1fr;

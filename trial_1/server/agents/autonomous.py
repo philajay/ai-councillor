@@ -102,6 +102,7 @@ Return Example:
     "subjects": [list of subjects opted by user]
     "stream": <stream opted by user>
     "agentId": <Hardcoded 2>
+    "reason": <Reason why these entities were selected>
     "purpose": <Random trivea about university from salient features. Use you imagination to create a hook line>
 }}
 
@@ -130,6 +131,9 @@ Return Example:
 def auto_agent_instruction(context: ReadonlyContext):
     entity = context.state.get(EXTRACTED_ENTITY, {})
     last_db_results = context.state.get(LAST_DB_RESULTS, [])
+    entity_json =  json.loads(remove_json_tags(entity))
+    del entity_json["purpose"]
+    entity = json.dumps(entity_json)
     instr = f'''You are and expert sales career councillor for "CGC University". 
 Today is {date.today()}
 
