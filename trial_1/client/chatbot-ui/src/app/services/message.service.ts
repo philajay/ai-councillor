@@ -66,7 +66,7 @@ export class MessageService {
   private handleServerEvent(event: ServerEvent | { error: string; message: string }) {
     const isMeaningfulEvent = 'error' in event || event.action || event.endOfTurn || event.text;
 
-    if (isMeaningfulEvent) {
+    if (isMeaningfulEvent && (event as any).agent && (event as any).agent == "auto_agent") {
       this.removeLoadingMessage();
     }
 
@@ -177,6 +177,8 @@ export class MessageService {
       message.text = jsonData.purpose;
     }  else if(lastMessage.agent === "summazier"){
       message.text = JSON.stringify(jsonData, null, 2);
+    } else {
+      message.text = "Processing request. Hang tight.."
     }
 
     if(jsonData.agentId == "get_eligibility"){
