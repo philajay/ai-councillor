@@ -565,7 +565,7 @@ Output:
                         final_result.append(row)
                 
                 tool_context.state[LAST_DB_RESULTS] = final_result
-                tool_context.actions.state_delta[SEND_INTERMEDIATE_RESULT] = f"Hold on for a momemt please while I prepare the final result.."
+                tool_context.actions.state_delta[SEND_INTERMEDIATE_RESULT] = f"Almost done! Just a moment while I get the final results ready for you."
                 return final_result
             except Exception as ex:
                 print(f"Error processing LLM response: {ex}") 

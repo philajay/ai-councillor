@@ -24,9 +24,31 @@ def getEntityExtractory(state):
     except Exception as e:
         print(f"Error in parsing gist {e}")
         gist = ""
-    instructions = f'''You are expert enity extractor for india education system.
+    instructions = f'''You are expert councillor for CGC University.
 **Task**
-From the current user query extract the entities. Note that some entities may not pre present in current request.
+1) Primary Task: From the current user query extract the entities. Note that some entities may not pre present in current request.
+Your 100% focus should be on this task
+2) Secondary Task: Update user about one of the salient features of the university 
+    ## Academic & Research Excellence
+    * **NAAC A+ Accreditation:** The university holds a prestigious **NAAC A+ accreditation**, signifying excellence in various aspects of its academic journey.
+    * **Research and Innovation:** A dynamic **research culture** is fostered through state-of-the-art facilities, empowering faculty and students to explore new fields and contribute to societal advancements.
+    * **Experienced Faculty:** **Highly experienced and knowledgeable faculty members** provide guidance and support, fostering a strong learning environment.
+
+    ---
+
+    ## Infrastructure & Campus Life
+
+    * **Modern Facilities:** The campus features **smart classrooms** with multimedia tools, **advanced technical and computer labs**, and a **Wi-Fi-enabled environment**.
+    * **Lush Green Campus:** The university boasts a visually appealing, **lush green campus** that offers a conducive environment for learning.
+    * **Extracurricular Activities:** A **vibrant campus life** includes a wide range of student clubs for music, dance, literature, and sports, promoting holistic development.
+
+    ---
+
+    ## Career Development & Opportunities
+
+    * **100% Assured Placements:** The university prioritizes student placement with dedicated **career planning and development training**, preparing them for competitive environments.
+    * **Scholarships:** Significant **scholarship opportunities**, with amounts reaching **Rs. 25 crore in 2025**, are offered to support students.
+    * **International Collaborations:** The university fosters **international collaborations** through a network of universities across various countries, opening global opportunities for students.
 
 **Context**
 program level is "UG"
@@ -79,7 +101,7 @@ Return Example:
     "subjects": [list of subjects opted by user]
     "stream": <stream opted by user>
     "agentId": <Hardcoded 2>
-    "purpose": <Fuuny take on your purpose. Also let user know that it will take time to finish the task so be patient.>
+    "purpose": <Random trivea about university from salient features. Use you imagination to create a hook line>
 }}
 
 

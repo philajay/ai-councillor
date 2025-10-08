@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { WebsocketService } from './websocket.service';
+// import { WebsocketService } from './websocket.service';
+import { HttpService } from './http.service';
 import { Subject, BehaviorSubject } from 'rxjs';
 import { ServerEvent } from '../models/server-event.model';
 
@@ -38,9 +39,16 @@ export class MessageService {
   private courseInfoSubject = new BehaviorSubject<any[] | null>(null);
   public courseInfo$ = this.courseInfoSubject.asObservable();
 
-  constructor(private websocketService: WebsocketService) {
-    this.websocketService.messages$.subscribe(event => {
-      this.handleServerEvent(event);
+  constructor(
+    // private websocketService: WebsocketService,
+    private httpService: HttpService
+    ) {
+    // this.websocketService.messages$.subscribe(event => {
+    //   this.handleServerEvent(event);
+    // });
+    this.httpService.messages$.subscribe({
+      next: (event) => this.handleServerEvent(event),
+      error: (err) => this.handleServerEvent(err)
     });
   }
 
@@ -52,6 +60,7 @@ export class MessageService {
         this.courseChipsSubject.next(null); // Clear chips only when specified
       }
       this.messages.push({ text: '', sender: 'bot', isLoading: true });
+      this.httpService.sendMessage({ text });
     }
     this.messagesUpdated.next();
   }
@@ -82,6 +91,7 @@ export class MessageService {
   }
 
   private handleErrorEvent(event: { error: string; message: string }) {
+    this.removeLoadingMessage();
     const lastUserMessage = [...this.messages].reverse().find(m => m.sender === 'user');
     if (lastUserMessage) {
       this.messages.push({
@@ -143,6 +153,7 @@ export class MessageService {
 
   private handleTextMessage(text: string) {
     if (this.isNewMessageStream) {
+      this.removeLoadingMessage();
       this.messages.push({ text, sender: 'bot' });
       this.isNewMessageStream = false;
     } else {
