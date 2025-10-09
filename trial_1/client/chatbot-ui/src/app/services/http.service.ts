@@ -17,12 +17,13 @@ export class HttpService {
   constructor(private zone: NgZone, private http: HttpClient) {}
 
   private getSessionId(): string {
-    let sessionId = localStorage.getItem('chatSessionId');
-    if (!sessionId) {
-      sessionId = crypto.randomUUID();
-      localStorage.setItem('chatSessionId', sessionId);
-    }
-    return sessionId;
+    // let sessionId = localStorage.getItem('chatSessionId');
+    // if (!sessionId) {
+    //   sessionId = crypto.randomUUID();
+    //   localStorage.setItem('chatSessionId', sessionId);
+    // }
+    // return sessionId;
+    return crypto.randomUUID();
   }
 
   setCourseLevel(level: string) {

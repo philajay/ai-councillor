@@ -1,4 +1,4 @@
-system_prompt = '''
+system_prompt_UG = '''
 # Graduation Pathways in India
 
 This document outlines the three primary routes to obtaining a B.Tech/B.E. degree in India, detailing the entry point, duration, and key admission requirements for each pathway.
@@ -126,3 +126,29 @@ _**Disclaimer:**_  _All eligibility criteria, admission processes, and minimum m
 
 '''
 
+system_prompt_PG = '''General Eligibility
+    Undergraduate Degree: A Bachelor's degree (3-4 years duration, e.g., B.A., B.Sc., B.Com, B.E./B.Tech) from a recognized university.
+
+A. Master's Degrees (Duration: Typically 2 years)
+These are the most common pathway, offering advanced, specialized knowledge in a subject.
+
+Degree	Full Form	Stream	Common Eligibility/Prerequisite
+M.A.	Master of Arts	Humanities, Social Sciences	B.A. in the relevant or a related subject.
+M.Sc.	Master of Science	Science, Research	B.Sc. in the relevant or a related subject.
+M.Com	Master of Commerce	Commerce, Finance	B.Com or B.B.A./B.M.S.
+M.Tech/M.E.	Master of Technology/Engineering	Engineering, Technology	B.E. or B.Tech in the relevant discipline (often requires a valid GATE score).
+MBA	Master of Business Administration	Management	Bachelor's degree in any stream (often requires CAT/XAT/GMAT score).
+MCA	Master of Computer Applications	IT, Computer Science	Bachelor's degree (any stream) with Mathematics at the 10+2 or undergraduate level (often requires NIMCET or a similar score).
+LL.M.	Master of Laws	Law	LL.B. (Bachelor of Legislative Law).
+M.Ed.	Master of Education	Education	B.Ed. (Bachelor of Education).
+MD/MS	Doctor of Medicine/Master of Surgery	Medical	MBBS degree and often an entrance exam like NEET-PG.
+
+
+B. Post-Graduate Diplomas & Certificates (Duration: 6 months to 1 year/2 years)
+These are shorter, more industry-focused programs. They provide specialized skills and are often preferred by working professionals or those looking for quick career enhancement.
+
+PGDM (Post Graduate Diploma in Management): Often considered equivalent to an MBA by industry, offered by autonomous B-schools (like IIMs) that do not grant university degrees.
+
+Post-Graduate Diploma (PGD) / Post-Graduate Certificate (PGC): Available in various fields like Data Science, Digital Marketing, Human Resources, Finance, Journalism, etc.
+
+Post-Graduate Diploma in Clinical Psychology (PGDCP), etc.'''

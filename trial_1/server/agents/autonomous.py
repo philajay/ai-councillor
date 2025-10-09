@@ -9,7 +9,7 @@ from google.adk.planners import BuiltInPlanner
 from google.genai import types
 from common.common import EXTRACTED_ENTITY,  GIST_OUTPUT_KEY, NEXT_AGENT, LAST_DB_RESULTS, CURRENT_QUERY_ENTITY, update_session_state, set_state_after_tool_call, COURSE_LEVEL
 from google.adk.agents.readonly_context import ReadonlyContext
-from .prompts.systempPrompt import system_prompt
+from .prompts.systempPrompt import system_prompt_UG, system_prompt_PG
 from datetime import date
 
 from db.search_engine import find_by_discovery, find_by_eligibility, modify_course_result, vector_search
@@ -17,19 +17,8 @@ from db.search_engine import find_by_discovery, find_by_eligibility, modify_cour
 
 
 def getEntityExtractory(state):
-    x = state.get(EXTRACTED_ENTITY, {})
-    course_level = state.get(COURSE_LEVEL, {})
-    try:
-        gist =  json.loads(remove_json_tags( state.get(GIST_OUTPUT_KEY, "")))
-        gist = gist.get("gist", "")
-    except Exception as e:
-        print(f"Error in parsing gist {e}")
-        gist = ""
-    instructions = f'''You are expert councillor for CGC University.
-**Task**
-1) Primary Task: From the current user query extract the entities. Note that some entities may not pre present in current request.
-Your 100% focus should be on this task
-2) Secondary Task: Update user about one of the salient features of the university 
+
+    features = '''Update user about one of the salient features of the university 
     ## Academic & Research Excellence
     * **NAAC A+ Accreditation:** The university holds a prestigious **NAAC A+ accreditation**, signifying excellence in various aspects of its academic journey.
     * **Research and Innovation:** A dynamic **research culture** is fostered through state-of-the-art facilities, empowering faculty and students to explore new fields and contribute to societal advancements.
@@ -50,11 +39,28 @@ Your 100% focus should be on this task
     * **100% Assured Placements:** The university prioritizes student placement with dedicated **career planning and development training**, preparing them for competitive environments.
     * **Scholarships:** Significant **scholarship opportunities**, with amounts reaching **Rs. 25 crore in 2025**, are offered to support students.
     * **International Collaborations:** The university fosters **international collaborations** through a network of universities across various countries, opening global opportunities for students.
+'''
+
+
+    x = state.get(EXTRACTED_ENTITY, {})
+    course_level = state.get(COURSE_LEVEL, {})
+    y = "undergraduate"
+    if course_level == "PG":
+        y = "postgraduate"
+    try:
+        gist =  json.loads(remove_json_tags( state.get(GIST_OUTPUT_KEY, "")))
+        gist = gist.get("gist", "")
+    except Exception as e:
+        print(f"Error in parsing gist {e}")
+        gist = ""
+    instructions = f'''You are expert councillor for CGC University.
+**Task**
+1) Primary Task: From the current user query extract the entities. Note that some entities may not pre present in current request.
+Your 100% focus should be on this task
+2) Secondary Task: {features}
 
 **Context**
-program level is {course_level}
-
-
+User is looking for {y} courses. 
 last extracted entities: {x}
 gist so far: {gist}
 
@@ -63,7 +69,10 @@ gist so far: {gist}
 1. **query_text** (str): 
     The user's natural language query.
 
-2. **course_stream_type**
+2. **program_level**
+    The is always passed by client. Current value is {course_level}
+
+3. **course_stream_type**
     In india there are various types of courses offered based on stream user is pursuing.
     **THIS MUST BE A LIST OF STRINGS FROM BELOW POSSIBLE VALUES**
     MCA, BCA, B.Tech, BA, MBA, LLB, D.Pharmacy, B.Com, BBA, M.Tech, IntegratedLaw, B.Sc, B.Pharmacy
@@ -71,7 +80,7 @@ gist so far: {gist}
         a) User asks for "engineering and management courses". You should extract ["BE/B.Tech", "BBA", "MBA"].
         b) User asks for "science courses". You should extract ["B.Sc", "M.Sc"].
 
-3. **qualification**
+4. **qualification**
     The last qualification user has finished 
     **Possible Values**
     "Certificate course", "B.Sc.", "Diploma", "Graduate", "Bachelor's Degree", "B.C.A", "10+2", "M. Sc.", "B.E./B.Tech", "D.Voc"( diploma of vocational courses)
@@ -80,23 +89,23 @@ gist so far: {gist}
         b) Show me post graduat courses.
         c) show me courses. 
 
-4. *subjects**
+5. *subjects**
     The subjects which user has opted in the last qualification
     
-5. **stream**
+6. **stream**
     In indian eductaion system student opts stream in which he wants to pursue higher studies. They are
     arts, commerce, medical and non medical.
     if stream is non medical then assign [Mathematics, Physics, Chemistry] to subject
     if stream is medical then assign [ Biology, Physics, Chemistry] to subject
 
-6.  *percentage**
+7.  *percentage**
     Percentage obtained by user.
 
     
 Return Example:
 {{
     "query_text" : <User query>
-    "program_level": "UG",
+    "program_level": "As sent in by the user",
     "course_stream_type": <Return a list of strings here. e.g., ["B.Sc", "B.E./B.Tech"]>
     "qualification": <The last qualification user has finished>
     "subjects": [list of subjects opted by user]
@@ -134,6 +143,11 @@ def auto_agent_instruction(context: ReadonlyContext):
     entity_json =  json.loads(remove_json_tags(entity))
     del entity_json["purpose"]
     entity = json.dumps(entity_json)
+
+    prompt = system_prompt_UG
+    if entity_json["program_level"] == "PG":
+        prompt = system_prompt_PG
+
     instr = f'''You are and expert sales career councillor for "CGC University". 
 Today is {date.today()}
 
@@ -178,7 +192,7 @@ Goal: To understand the student's ambitions and show them how a specific course 
 
 
 <Context>
-Pathway: {system_prompt}
+Pathway: {prompt}
 </Context>
 
 <Information>
