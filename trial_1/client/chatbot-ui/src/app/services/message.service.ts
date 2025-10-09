@@ -16,6 +16,7 @@ export interface Message {
   retryable?: boolean;
   originalText?: string;
   isLoading?: boolean;
+  isAction?:boolean
 }
 
 @Injectable({
@@ -183,6 +184,9 @@ export class MessageService {
       message.text = jsonData.purpose;
     }  else if(lastMessage.agent === "summazier"){
       message.text = JSON.stringify(jsonData, null, 2);
+    } else if(lastMessage.agent === "auto_action_agent" && jsonData.examSuggested){
+        message.isAction = true;
+        message.text = "Apply now for scholarship."
     } else {
       message.text = "Processing request. Hang tight.."
     }

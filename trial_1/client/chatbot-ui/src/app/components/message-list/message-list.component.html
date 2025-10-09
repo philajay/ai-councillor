@@ -11,6 +11,9 @@
     @if (message.isJson) {
       <div class="json-container">
         <pre>{{ message.text }}</pre>
+        @if(message.isAction){
+          <button mat-raised-button color="primary"> Apply Now</button>
+        }
       </div>
     } @else {
       <markdown [data]="message.text"></markdown>

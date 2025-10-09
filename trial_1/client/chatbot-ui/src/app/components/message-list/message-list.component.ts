@@ -16,11 +16,12 @@ import { Subscription } from 'rxjs';
 import { CourseInfoComponent } from '../course-info/course-info.component';
 import { HttpService } from '../../services/http.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-message-list',
   standalone: true,
-  imports: [CommonModule, MarkdownComponent, CourseInfoComponent, MatProgressSpinnerModule],
+  imports: [CommonModule, MarkdownComponent, CourseInfoComponent, MatProgressSpinnerModule, MatButtonModule],
   templateUrl: './message-list.component.html',
   styleUrls: ['./message-list.component.css'],
 })

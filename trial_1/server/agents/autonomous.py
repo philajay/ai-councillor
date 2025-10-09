@@ -288,6 +288,30 @@ def auto_agent():
 
 
 
+def getActionAgent(context: ReadonlyContext):
+    gist = context.session.state[GIST_OUTPUT_KEY]
+    inst = f''' Your job is to return whether the below gist suggested user to take the examfor scholarship?
+Gist: {gist}
+    output format:
+    {{
+        "examSuggested": <true/false>;
+        "reason": <Why you believe that exam was suggested>
+    }}
+'''
+    agent = LlmAgent(
+            name="auto_action_agent",
+            model="gemini-2.5-flash",
+            instruction=inst,
+            sub_agents=[],
+            generate_content_config=types.GenerateContentConfig(
+                temperature=1,
+                response_mime_type="application/json"
+            )
+        )
+    return agent
+
+
+
 
 class AutoAgent(BaseAgent, BaseModel):
     class Config:
@@ -318,6 +342,10 @@ class AutoAgent(BaseAgent, BaseModel):
         await update_session_state(EXTRACTED_ENTITY, json.dumps(existing_entity), ctx.session, ctx.session_service)
         auto = auto_agent()
         async for event in auto.run_async(ctx):
+            yield event
+
+        aa = getActionAgent(ctx)
+        async for event in aa.run_async(ctx):
             yield event
 
 
