@@ -2,7 +2,7 @@ import psycopg2
 from pgvector.psycopg2 import register_vector
 import json
 
-from common.common import LAST_CLIENT_MESSAGE, LAST_DB_RESULTS, remove_json_tags, SEND_INTERMEDIATE_RESULT
+from common.common import LAST_CLIENT_MESSAGE, LAST_DB_RESULTS, remove_json_tags
 import google.genai as genai
 from google.genai import types
 from google.adk.tools import ToolContext
@@ -578,7 +578,6 @@ Output:
                         final_result.append(row)
                 
                 tool_context.state[LAST_DB_RESULTS] = final_result
-                tool_context.actions.state_delta[SEND_INTERMEDIATE_RESULT] = f"Almost done! Just a moment while I get the final results ready for you."
                 return final_result
             except Exception as ex:
                 print(f"Error processing LLM response: {ex}") 

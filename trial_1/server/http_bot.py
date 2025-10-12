@@ -3,13 +3,14 @@ from fastapi.responses import StreamingResponse
 import json
 from google.genai import types
 import asyncio
-from common.common import update_session_state, LAST_CLIENT_MESSAGE, LAST_DB_RESULTS, SEND_INTERMEDIATE_RESULT
+from common.common import update_session_state, LAST_CLIENT_MESSAGE, LAST_DB_RESULTS
 from google.genai.types import Part
 from pydantic import BaseModel
 from google.adk.sessions import InMemorySessionService, DatabaseSessionService
 
 #session_service = DatabaseSessionService(db_url='postgresql+psycopg2://postgres:1234@localhost/councillor-assistant')
-session_service = InMemorySessionService()
+session_service = DatabaseSessionService(db_url='postgresql+psycopg2://postgres:Supabase%40123@db.tenztfzbcvypmjhsrfpo.supabase.co/postgres')
+#session_service = InMemorySessionService()
 
 APP_NAME = "http_bot"
 
@@ -73,15 +74,6 @@ async def event_stream(agent_session: AgentSession, data: str):
             if event.error_code:
                 yield f"data: {json.dumps({'error': event.error_code})}\n\n"
                 continue
-
-            if SEND_INTERMEDIATE_RESULT in event.actions.state_delta.keys() and event.actions.state_delta[SEND_INTERMEDIATE_RESULT]:
-                message = {
-                    "text": event.actions.state_delta[SEND_INTERMEDIATE_RESULT],
-                    "agent": event.author,
-                    "isIntermediateMessage": True
-                }
-                yield f"data: {json.dumps(message)}\n\n"
-                yield f"data: {json.dumps({'endOfTurn': True, 'agent': event.author})}\n\n"
 
             if event.turn_complete or event.interrupted:
                 yield f"data: {json.dumps({'endOfTurn': True, 'agent': event.author})}\n\n"

@@ -11,19 +11,19 @@ export class HttpService {
   private messagesSubject = new Subject<ServerEvent>();
   public messages$ = this.messagesSubject.asObservable();
   private courseLevel: string | null = null;
-  private host = "http://localhost:8080"; // Make this configurable
-  //private host = "https://ai-assistant-bot-183228620742.us-central1.run.app"
+  //private host = "http://localhost:8080"; // Make this configurable
+  private host = "https://ai-assistant-bot-183228620742.us-central1.run.app"
 
   constructor(private zone: NgZone, private http: HttpClient) {}
 
   private getSessionId(): string {
-    // let sessionId = localStorage.getItem('chatSessionId');
-    // if (!sessionId) {
-    //   sessionId = crypto.randomUUID();
-    //   localStorage.setItem('chatSessionId', sessionId);
-    // }
-    // return sessionId;
-    return crypto.randomUUID();
+    let sessionId = localStorage.getItem('chatSessionId');
+    if (!sessionId) {
+      sessionId = crypto.randomUUID();
+      localStorage.setItem('chatSessionId', sessionId);
+    }
+    return sessionId;
+    // return crypto.randomUUID();
   }
 
   setCourseLevel(level: string) {
