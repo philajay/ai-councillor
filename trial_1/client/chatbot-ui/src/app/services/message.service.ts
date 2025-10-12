@@ -126,7 +126,14 @@ export class MessageService {
         return item;
       });
       
-      this.courseInfoSubject.next(componentData);
+      this.messages.push({
+        text: '',
+        sender: 'bot',
+        isComponent: true,
+        component: 'course-info',
+        componentData: componentData
+      });
+      this.messagesUpdated.next();
     }
   }
 

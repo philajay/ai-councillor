@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef, Input } from '@angular
 import { CommonModule } from '@angular/common';
 import { Observable, Subscription } from 'rxjs';
 import { skip, tap, scan } from 'rxjs/operators';
-import { MatTabsModule, MatTabChangeEvent } from '@angular/material/tabs';
+import { MatTabsModule, MatTabChangeEvent, MatTabGroup } from '@angular/material/tabs';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
@@ -46,12 +46,11 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef
   ) {
     this.coursesForChips$ = this.messageService.courseChips$.pipe(
-      // Use scan to hold onto the last valid list of chips
       scan((acc, curr) => {
         if ((!curr || curr.length === 0) && acc && acc.length > 0) {
-          return acc; // If new value is empty, keep the old one
+          return acc;
         }
-        return curr; // Otherwise, update to the new value
+        return curr;
       }, null as string[] | null),
       tap(chips => this.showChips = !!chips && chips.length > 0)
     );
@@ -74,7 +73,6 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
 
   onCourseSelected(course: string): void {
     const newMessage = `I would like to pursue ${course}`;
-    // Pass clearChips: false to prevent the service from clearing the chips
     this.messageService.addMessage(newMessage, 'user', { clearChips: false });
     this.httpService.sendMessage({ text: newMessage });
   }

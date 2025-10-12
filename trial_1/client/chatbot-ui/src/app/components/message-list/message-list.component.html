@@ -18,6 +18,9 @@
     } @else {
       <markdown [data]="message.text"></markdown>
     }
+    @if (message.isComponent && message.component === 'course-info') {
+      <app-course-info [data]="message.componentData"></app-course-info>
+    }
     @if (message.isError) {
       <div class="error-container">
         <p class="error-text">{{ message.text }}</p>
@@ -26,9 +29,7 @@
         }
       </div>
     }
-    @if (message.isComponent && message.component === 'course-info') {
-      <app-course-info [data]="message.componentData"></app-course-info>
-    }
+    
   </div>
 }
 </div>

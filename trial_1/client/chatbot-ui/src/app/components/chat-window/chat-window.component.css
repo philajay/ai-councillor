@@ -9,7 +9,8 @@
 }
 
 .chat-window-container {
-  position: relative;
+  display: flex;
+  flex-direction: column;
   flex-grow: 1;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -17,32 +18,12 @@
   overflow: hidden;
 }
 
-mat-tab-group {
-  position: absolute;
-  top: 0;
-  bottom: 80px; /* Default bottom offset */
-  left: 0;
-  right: 0;
-}
-
-mat-tab-group ::ng-deep .mat-mdc-tab-header {
-  background-color: #e3f2fd;
-}
-
-mat-tab-group ::ng-deep .mat-mdc-tab {
-  color: #0d47a1;
-}
-
-mat-tab-group ::ng-deep .mat-mdc-tab.mdc-tab--active {
-  background-color: #bbdefb;
+.message-list-container {
+  flex-grow: 1;
+  overflow: auto;
 }
 
 .form-container {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 80px; /* Default height */
   padding: 1rem;
   border-top: 1px solid #e0e0e0;
   background-color: #ffffff;
@@ -50,14 +31,15 @@ mat-tab-group ::ng-deep .mat-mdc-tab.mdc-tab--active {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  height: 80px; /* Default height */
+  transition: height 0.3s ease;
 }
 
-mat-tab-group ::ng-deep .mat-mdc-tab-body-content {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: auto; /* Ensure tab content scrolls */
+.form-container.with-chips {
+  height: 180px;
 }
+
+
 
 .notification-dot {
   display: inline-block;
