@@ -5,9 +5,6 @@
     'bot-message': message.sender === 'bot',
     'has-json': message.isJson
   }">
-    @if (message.isLoading) {
-      <mat-progress-spinner mode="indeterminate" [diameter]="30"></mat-progress-spinner>
-    }
     @if (message.isJson) {
       <div class="json-container">
         <pre>{{ message.text }}</pre>

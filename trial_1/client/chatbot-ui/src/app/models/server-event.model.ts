@@ -6,4 +6,6 @@ export interface ServerEvent {
     endOfTurn?: boolean;
     results?: any;
     agent?:string;
+    isIntermediateMessage?: boolean;
+    progress_spinner?: 'start' | 'end';
   }

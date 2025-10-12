@@ -65,6 +65,7 @@ async def event_stream(agent_session: AgentSession, data: str):
     await app_state.model_loaded_event.wait()
     
     try:
+        yield f"data: {json.dumps({'progress_spinner': 'start'})}\n\n"
         await update_session_state(LAST_CLIENT_MESSAGE, data, agent_session.session, agent_session.runner.session_service)
         content = types.Content(role='user', parts=[types.Part(text=data)])
         
@@ -76,7 +77,8 @@ async def event_stream(agent_session: AgentSession, data: str):
             if SEND_INTERMEDIATE_RESULT in event.actions.state_delta.keys() and event.actions.state_delta[SEND_INTERMEDIATE_RESULT]:
                 message = {
                     "text": event.actions.state_delta[SEND_INTERMEDIATE_RESULT],
-                    "agent": event.author
+                    "agent": event.author,
+                    "isIntermediateMessage": True
                 }
                 yield f"data: {json.dumps(message)}\n\n"
                 yield f"data: {json.dumps({'endOfTurn': True, 'agent': event.author})}\n\n"
@@ -120,6 +122,7 @@ async def event_stream(agent_session: AgentSession, data: str):
         traceback.print_exception(e)
         yield f"data: {json.dumps({'error': e.__class__.__name__, 'message': str(e)})}\n\n"
     finally:
+        yield f"data: {json.dumps({'progress_spinner': 'end'})}\n\n"
         yield f"data: {json.dumps({'action': 'close'})}\n\n"
 
 

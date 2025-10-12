@@ -1,4 +1,7 @@
 <form (ngSubmit)="sendMessage()">
   <input type="text" [(ngModel)]="newMessage" name="newMessage" placeholder="Type a message..." autocomplete="off">
+  <div class="spinner-container" *ngIf="showSpinner">
+    <mat-progress-spinner mode="indeterminate" [diameter]="24"></mat-progress-spinner>
+  </div>
   <button type="submit">Send</button>
 </form>

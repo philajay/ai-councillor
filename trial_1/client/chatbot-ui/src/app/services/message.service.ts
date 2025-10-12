@@ -16,7 +16,8 @@ export interface Message {
   retryable?: boolean;
   originalText?: string;
   isLoading?: boolean;
-  isAction?:boolean
+  isAction?:boolean;
+  isIntermediateMessage?: boolean;
 }
 
 @Injectable({
@@ -39,6 +40,9 @@ export class MessageService {
   private courseInfoSubject = new BehaviorSubject<any[] | null>(null);
   public courseInfo$ = this.courseInfoSubject.asObservable();
 
+  private showSpinnerSubject = new BehaviorSubject<boolean>(false);
+  public showSpinner$ = this.showSpinnerSubject.asObservable();
+
   constructor(
     private httpService: HttpService
     ) {
@@ -55,7 +59,6 @@ export class MessageService {
       if (options.clearChips) {
         this.courseChipsSubject.next(null); // Clear chips only when specified
       }
-      this.messages.push({ text: '', sender: 'bot', isLoading: true });
       this.httpService.sendMessage({ text });
     }
     this.messagesUpdated.next();
@@ -69,6 +72,11 @@ export class MessageService {
   }
 
   private handleServerEvent(event: ServerEvent | { error: string; message: string }) {
+    if ('progress_spinner' in event) {
+      this.showSpinnerSubject.next(event.progress_spinner === 'start');
+      return;
+    }
+
     const isMeaningfulEvent = 'error' in event || event.endOfTurn ;
 
     if (isMeaningfulEvent && (event as any).agent && (event as any).agent == "auto_agent") {
@@ -79,13 +87,14 @@ export class MessageService {
       this.handleErrorEvent(event);
     } else if (event.action === 'functionCall') {
       this.handleFunctionCall(event);
-    }
-    else if (event.endOfTurn) {
+    } else if (event.isIntermediateMessage) {
+      this.handleTextMessage(event);
+    } else if (event.endOfTurn) {
       this.handleEndOfTurn(event.agent || '');
     } else if (event.text) {
-      this.handleTextMessage(event.text);
+      this.handleTextMessage(event);
     }
-  }
+   }
 
   private handleErrorEvent(event: { error: string; message: string }) {
     this.removeLoadingMessage();
@@ -138,6 +147,7 @@ export class MessageService {
   }
 
   private handleEndOfTurn(agent:string) {
+    this.messages = this.messages.filter(m => !m.isIntermediateMessage);
     this.isNewMessageStream = true;
     const lastMessage = this.messages[this.messages.length - 1];
 
@@ -155,9 +165,10 @@ export class MessageService {
     }
   }
 
-  private handleTextMessage(text: string) {
+  private handleTextMessage(event: ServerEvent) {
+    const text = event.text ?? '';
     if (this.isNewMessageStream) {
-      this.messages.push({ text, sender: 'bot' });
+      this.messages.push({ text, sender: 'bot', isIntermediateMessage: event.isIntermediateMessage });
       this.isNewMessageStream = false;
     } else {
       const lastMessage = this.messages[this.messages.length - 1];
