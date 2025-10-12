@@ -114,13 +114,27 @@ Bachelor of Technology (B.Tech) or Bachelor of Engineering (B.E.).
 
 Lateral Entry Entrance Exam or Merit, as decided by the institution.
 
-**AICTE Mandate**
 
-AICTE regulations explicitly allow D.Voc. stream students to apply for lateral entry.
+## 4. Certificate from sant longowal institute from engineering and technology
 
-**Important Note**
+This route recognizes 2 year ertificate from sant longowal institute from engineering and technology and allow to pursue a full engineering degree.
 
-Universities may require students to complete **Bridge Courses** (e.g., in Mathematics, Physics, or Engineering Drawing) during the initial semesters to cover foundational gaps.
+Feature
+
+Details
+
+**Entry Qualification**
+Two years certificate course from Sant Longowal Institute of Engineering and Technology Longowal with at least 60% marks (55% marks in case of candidate belonging to reserved category).
+
+**Certificate from sant longowal institute from engineering and technology. (SLIET) ** in the same or allied sector as the chosen B.Tech/B.E. branch.
+
+**Course**
+
+Bachelor of Technology (B.Tech) or Bachelor of Engineering (B.E.).
+
+
+Entrance Exam or Merit, as decided by the institution.
+
 
 _**Disclaimer:**_  _All eligibility criteria, admission processes, and minimum marks are subject to change as per the latest guidelines from the All India Council for Technical Education (AICTE), the University Grants Commission (UGC), and the respective State Governments/Universities._
 

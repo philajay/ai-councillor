@@ -83,7 +83,7 @@ gist so far: {gist}
 4. **qualification**
     The last qualification user has finished 
     **Possible Values**
-    "Certificate course", "B.Sc.", "Diploma", "Graduate", "Bachelor's Degree", "B.C.A", "10+2", "M. Sc.", "B.E./B.Tech", "D.Voc"( diploma of vocational courses)
+    "Certificate", "B.Sc.", "Diploma", "Graduate", "Bachelor's Degree", "B.C.A", "10+2", "M. Sc.", "B.E./B.Tech", "D.Voc"( diploma of vocational courses)
     *Examples
         a) Show me undergraduat courses
         b) Show me post graduat courses.
@@ -137,12 +137,17 @@ Return Example:
     )
 
 
+def clean_entities(entities:dict):
+    to_delete = ["reason", "purpose"]
+    for s in to_delete:
+        del entities[s]
+    return entities
+
 def auto_agent_instruction(context: ReadonlyContext):
     entity = context.state.get(EXTRACTED_ENTITY, {})
     last_db_results = context.state.get(LAST_DB_RESULTS, [])
     entity_json =  json.loads(remove_json_tags(entity))
-    del entity_json["purpose"]
-    entity = json.dumps(entity_json)
+    entity = json.dumps(clean_entities(entity_json))
 
     prompt = system_prompt_UG
     if entity_json["program_level"] == "PG":

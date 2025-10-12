@@ -188,7 +188,8 @@ export class MessageService {
         message.isAction = true;
         message.text = "Apply now for scholarship."
     } else {
-      message.text = "Processing request. Hang tight.."
+      //message.text = "Processing request. Hang tight.."
+      return
     }
 
     if(jsonData.agentId == "get_eligibility"){

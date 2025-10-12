@@ -12,7 +12,7 @@
       <div class="json-container">
         <pre>{{ message.text }}</pre>
         @if(message.isAction){
-          <button mat-raised-button color="primary"> Apply Now</button>
+          <button mat-raised-button color="primary" (click)="loadCGC()" > Apply Now</button>
         }
       </div>
     } @else {

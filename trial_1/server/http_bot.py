@@ -6,9 +6,9 @@ import asyncio
 from common.common import update_session_state, LAST_CLIENT_MESSAGE, LAST_DB_RESULTS, SEND_INTERMEDIATE_RESULT
 from google.genai.types import Part
 from pydantic import BaseModel
-from google.adk.sessions import InMemorySessionService
+from google.adk.sessions import InMemorySessionService, DatabaseSessionService
 
-
+#session_service = DatabaseSessionService(db_url='postgresql+psycopg2://postgres:1234@localhost/councillor-assistant')
 session_service = InMemorySessionService()
 
 APP_NAME = "http_bot"

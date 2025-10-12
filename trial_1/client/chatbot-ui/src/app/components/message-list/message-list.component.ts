@@ -79,4 +79,7 @@ export class MessageListComponent implements OnInit, OnDestroy, AfterViewInit, A
       this.httpService.sendMessage({ text: message.originalText });
     }
   }
+  loadCGC(){
+    window.open('https://cgcuet.cgcuniversity.in/', '_blank')
+  }
 }

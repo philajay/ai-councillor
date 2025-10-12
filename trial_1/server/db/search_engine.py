@@ -149,7 +149,11 @@ def _prepare_fts_query(query_text: str) -> str:
 
 def find_by_discovery(criteria: dict, tenant_id: str):
     """
-    Finds courses by semantic similarity and eligibility criteria.
+    Finds courses by semantic similarity.
+    Example: 
+    1) Show me engg courses. 
+    2) What is the placement of the BCA program
+    3) Compare BSc and Bca
 
     Args:
         criteria (dict): 
@@ -322,8 +326,11 @@ def normalize_criteria(llm_output, conn, tenant_id):
 def find_by_eligibility(criteria:dict, tenant_id: str) -> list:
     tenant_id = 'cgc_university'
     """
-    Call this 
+    Call this function to find all the types of courses which user can apply to based on the eligibility critera given by user.
     
+    Examples:
+        1) What course can I apply to after doing my +2 in arts.
+
     Args:
         criteria (dict): A dictionary with keys 'qualification', 
                          'percentage', 'stream', 'subjects' (list), 'specialization'.
