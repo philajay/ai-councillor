@@ -169,29 +169,6 @@ Goal: To understand the student's ambitions and show them how a specific course 
 
 <Core Principles of the Agent's Dialogue>
 1) Connect Data to Benefits to frame couse as an investment. Be at your creative best to engage student. 
-    Example for one possible variation: 
-        ### Invest in Your Creative Future: Your Path to a High-Impact Career
-
-        * **Build a Job-Winning Portfolio 🎨**
-            Go beyond theory with hands-on projects that will impress top employers from day one.
-
-        * **Learn from Industry Masters 🧑‍🏫**
-            Gain priceless insights and mentorship from experienced professionals who are leaders in the creative field.
-
-        * **Gain an Unbeatable Network Advantage 🤝**
-            Connect directly with leading companies through our exclusive partnerships, giving you a head start in your career.
-
-        * **Unlock Prestigious Career Roles 🚀**
-            Step into high-demand positions like UI/UX Designer, Branding Specialist, or even Creative Director.
-
-        * **See a Powerful Return on Investment 💼**
-            With graduates earning packages up to **₹33 LPA**, your education is a direct investment in a lucrative future.
-
-        * **Join a Proven Legacy of Success ✅**
-            Tap into our vast network of **1,200+ top recruiters** and a track record of over **10,000+ placement offers**.
-
-        * **Start Your Journey Easily ✨**
-            Simple eligibility (10+2 in any stream or a 10th + 3-year diploma) makes it easy to begin your path to success.
 2) Position the Scholarship Test as an Opportunity: It's not a test; it's a gateway to a more affordable, high-quality education and a chance to prove their potential.
 </Core Principles of the Agent's Dialogue>
 
@@ -208,7 +185,12 @@ Pathway: {prompt}
 
 <Tools>
     1. **`find_by_eligibility(criteria (dict))`**: 
-        Arguments:
+    Call this function to find all the types of courses which user can apply to based on the eligibility critera given by user.
+    
+    Examples:
+        1) What course can I apply to after doing my +2 in arts.
+
+    Arguments:
             criteria (dict): 
                 'qualification', 'percentage', 'stream', 'subjects' (list), 'specialization'.
                 extracted_entity and current_query_entity will have required information.
@@ -220,6 +202,11 @@ Pathway: {prompt}
                          'percentage', 'stream', 'subjects', 'specialization'.
 
     2. **`find_by_discovery(criteria: dict)`**: 
+        Finds courses by semantic similarity.
+        Example: 
+            1) Show me engg courses. 
+            2) What is the placement of the BCA program
+            3) Compare BSc and Bca
         Arguments:
             criteria (dict): 
                 Compulsory Keys:         
@@ -250,12 +237,6 @@ Pathway: {prompt}
     Step 4. Keep on suggesting/asking questions till user has selected a course.
 </Flow>
 
-<Output>
-Output for tool find_by_discovery must always be in markdown optimized for best possible ui experience explaining why course from our university would help you get better prepared for job.
-The output should create a sense of oppurtunity and urgency by talking about the CGCUET. 
-
-</Output>
-
 <MostImportant>
     Application would be mostly used on mobile devices. Your markdown content must be optimized for mobile devices.
 </MostImportant>
@@ -271,12 +252,12 @@ def auto_agent():
             model="gemini-2.5-flash",
             instruction=auto_agent_instruction,
             sub_agents=[],
-            # planner=BuiltInPlanner(
-            #     thinking_config=types.ThinkingConfig(
-            #         include_thoughts=False,
-            #         thinking_budget=-1 
-            #     )
-            # ),
+            planner=BuiltInPlanner(
+                thinking_config=types.ThinkingConfig(
+                    include_thoughts=False,
+                    thinking_budget=-1 
+                )
+            ),
             generate_content_config=types.GenerateContentConfig(
                 temperature=1
             ),
@@ -318,6 +299,8 @@ Gist: {gist}
 
 
 
+import time
+
 class AutoAgent(BaseAgent, BaseModel):
     class Config:
         arbitrary_types_allowed = True
@@ -331,11 +314,18 @@ class AutoAgent(BaseAgent, BaseModel):
     async def _run_async_impl(
         self, ctx: InvocationContext
     ) -> AsyncGenerator[Event, None]:
+        overall_start_time = time.time()
+        print(f"[{time.time() - overall_start_time:.2f}s] - AutoAgent: Starting execution")
+
+        # --- 1. Entity Extraction ---
+        entity_start_time = time.time()
+        print(f"[{time.time() - overall_start_time:.2f}s] - AutoAgent: Starting entity extraction...")
         x = getEntityExtractory(ctx.session.state)
         async for event in x.run_async(ctx):
             yield event
-        
-            # Merge the current entity into the main extracted entity.
+        print(f"[{time.time() - overall_start_time:.2f}s] - AutoAgent: Entity extraction finished (took {time.time() - entity_start_time:.2f}s)")
+
+        # Merge the current entity into the main extracted entity.
         existing_entity_str = ctx.session.state.get(EXTRACTED_ENTITY, '{}')
         existing_entity = json.loads(remove_json_tags(existing_entity_str))
         
@@ -345,13 +335,24 @@ class AutoAgent(BaseAgent, BaseModel):
         existing_entity.update(current_entity)
         
         await update_session_state(EXTRACTED_ENTITY, json.dumps(existing_entity), ctx.session, ctx.session_service)
+        
+        # --- 2. Main Auto Agent ---
+        auto_agent_start_time = time.time()
+        print(f"[{time.time() - overall_start_time:.2f}s] - AutoAgent: Starting main auto_agent...")
         auto = auto_agent()
         async for event in auto.run_async(ctx):
             yield event
+        print(f"[{time.time() - overall_start_time:.2f}s] - AutoAgent: Main auto_agent finished (took {time.time() - auto_agent_start_time:.2f}s)")
 
+        # --- 3. Action Agent ---
+        action_agent_start_time = time.time()
+        print(f"[{time.time() - overall_start_time:.2f}s] - AutoAgent: Starting action agent...")
         aa = getActionAgent(ctx)
         async for event in aa.run_async(ctx):
             yield event
+        print(f"[{time.time() - overall_start_time:.2f}s] - AutoAgent: Action agent finished (took {time.time() - action_agent_start_time:.2f}s)")
+        
+        print(f"[{time.time() - overall_start_time:.2f}s] - AutoAgent: Finished execution (total took {time.time() - overall_start_time:.2f}s)")
 
 
 

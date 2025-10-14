@@ -1,6 +1,7 @@
 import psycopg2
 from pgvector.psycopg2 import register_vector
 import json
+import time  # Import the time module
 
 from common.common import LAST_CLIENT_MESSAGE, LAST_DB_RESULTS, remove_json_tags
 import google.genai as genai
@@ -149,12 +150,6 @@ def _prepare_fts_query(query_text: str) -> str:
 
 def find_by_discovery(criteria: dict, tenant_id: str):
     """
-    Finds courses by semantic similarity.
-    Example: 
-    1) Show me engg courses. 
-    2) What is the placement of the BCA program
-    3) Compare BSc and Bca
-
     Args:
         criteria (dict): 
             Compulsory Keys:         
@@ -168,6 +163,8 @@ def find_by_discovery(criteria: dict, tenant_id: str):
     Returns:
         list: A ranked list of the most relevant courses.
     """
+    start_time = time.time()
+    print(f"SearchEngine: Starting find_by_discovery...")
 
     tenant_id = 'cgc_university'
     
@@ -294,6 +291,8 @@ def find_by_discovery(criteria: dict, tenant_id: str):
             return [[f"Error during search: {e}"]]
         finally:
             conn.close()
+            end_time = time.time()
+            print(f"SearchEngine: find_by_discovery finished (took {end_time - start_time:.2f}s)")
 
 
 
@@ -324,13 +323,10 @@ def normalize_criteria(llm_output, conn, tenant_id):
     return criteria
 
 def find_by_eligibility(criteria:dict, tenant_id: str) -> list:
+    start_time = time.time()
+    print(f"SearchEngine: Starting find_by_eligibility...")
     tenant_id = 'cgc_university'
     """
-    Call this function to find all the types of courses which user can apply to based on the eligibility critera given by user.
-    
-    Examples:
-        1) What course can I apply to after doing my +2 in arts.
-
     Args:
         criteria (dict): A dictionary with keys 'qualification', 
                          'percentage', 'stream', 'subjects' (list), 'specialization'.
@@ -391,6 +387,8 @@ def find_by_eligibility(criteria:dict, tenant_id: str) -> list:
             return [f"Error during search: {e}"]
         finally:
             conn.close()
+            end_time = time.time()
+            print(f"SearchEngine: find_by_eligibility finished (took {end_time - start_time:.2f}s)")
 
 
 
@@ -503,6 +501,8 @@ def modify_course_result(
         tool:BaseTool, args:Dict[str, any], tool_context:ToolContext, 
         tool_response: list
     ) -> Optional[list]:
+        start_time = time.time()
+        print(f"SearchEngine: Starting modify_course_result...")
         
         if not tool.name == "find_by_discovery" or not tool_response or len(tool_response) <= 1:
             try:
@@ -586,3 +586,6 @@ Output:
         except Exception as e:
             print(f"An error occurred in modify_course_result: {e}")
             return None
+        finally:
+            end_time = time.time()
+            print(f"SearchEngine: modify_course_result finished (took {end_time - start_time:.2f}s)")

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChatWindowComponent } from './components/chat-window/chat-window.component';
 import { CourseSelectionComponent } from './components/course-selection/course-selection.component';
-import { HttpService } from './services/http.service';
+import { WebsocketService } from './services/websocket.service';
 
 @Component({
   selector: 'app-root',
@@ -14,10 +14,10 @@ import { HttpService } from './services/http.service';
 export class AppComponent {
   courseLevel: string | null = null;
 
-  constructor(private httpService: HttpService) {}
+  constructor(private websocketService: WebsocketService) {}
 
   onCourseLevelSelected(level: string) {
     this.courseLevel = level;
-    this.httpService.setCourseLevel(level);
+    this.websocketService.setCourseLevel(level);
   }
 }
