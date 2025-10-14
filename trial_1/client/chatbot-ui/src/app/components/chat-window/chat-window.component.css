@@ -21,6 +21,7 @@
 .message-list-container {
   flex-grow: 1;
   overflow: auto;
+  scroll-behavior: smooth;
 }
 
 .form-container {

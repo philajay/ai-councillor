@@ -9,8 +9,8 @@ from pydantic import BaseModel
 from google.adk.sessions import InMemorySessionService, DatabaseSessionService
 
 #session_service = DatabaseSessionService(db_url='postgresql+psycopg2://postgres:1234@localhost/councillor-assistant')
-session_service = DatabaseSessionService(db_url='postgresql+psycopg2://postgres:Supabase%40123@db.tenztfzbcvypmjhsrfpo.supabase.co/postgres')
-#session_service = InMemorySessionService()
+#session_service = DatabaseSessionService(db_url='postgresql+psycopg2://postgres:Supabase%40123@db.tenztfzbcvypmjhsrfpo.supabase.co/postgres')
+session_service = InMemorySessionService()
 
 APP_NAME = "http_bot"
 

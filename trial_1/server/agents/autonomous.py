@@ -265,7 +265,7 @@ def auto_agent():
                 )
             ),
             generate_content_config=types.GenerateContentConfig(
-                temperature=1
+                temperature=0
             ),
             output_key = GIST_OUTPUT_KEY,
             tools=[

@@ -1,10 +1,6 @@
 import {
   Component,
   OnInit,
-  OnDestroy,
-  ViewChild,
-  ElementRef,
-  AfterViewChecked,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Message, MessageService } from '../../services/message.service';
@@ -21,8 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
   templateUrl: './message-list.component.html',
   styleUrls: ['./message-list.component.css'],
 })
-export class MessageListComponent implements OnInit, OnDestroy, AfterViewChecked {
-  @ViewChild('scrollMe') private myScrollContainer!: ElementRef;
+export class MessageListComponent implements OnInit {
 
   constructor(
     public messageService: MessageService,
@@ -30,21 +25,6 @@ export class MessageListComponent implements OnInit, OnDestroy, AfterViewChecked
   ) {}
 
   ngOnInit(): void {
-  }
-
-  ngOnDestroy(): void {
-  }
-
-  ngAfterViewChecked() {
-    this.scrollToBottom();
-  }
-
-  scrollToBottom(): void {
-    try {
-        this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
-    } catch(err) {
-        console.error('Could not scroll to bottom:', err);
-    }
   }
 
   onRetry(message: Message): void {

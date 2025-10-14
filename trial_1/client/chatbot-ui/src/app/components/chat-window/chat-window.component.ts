@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, Input, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable, Subscription } from 'rxjs';
 import { skip, tap, scan } from 'rxjs/operators';
@@ -29,8 +29,10 @@ import { HttpService } from '../../services/http.service';
   templateUrl: './chat-window.component.html',
   styleUrls: ['./chat-window.component.css'],
 })
-export class ChatWindowComponent implements OnInit, OnDestroy {
+export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() courseLevel!: string;
+  @ViewChild('messageListContainer') private messageListContainer!: ElementRef;
+
   coursesForChips$: Observable<string[] | null>;
   courseInfoData$: Observable<any[] | null>;
   showCourseInfoBadge = false;
@@ -38,6 +40,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
   selectedIndex = 0;
 
   private courseInfoSub!: Subscription;
+  private observer!: MutationObserver;
 
   constructor(
     private messageService: MessageService,
@@ -67,8 +70,27 @@ export class ChatWindowComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngAfterViewInit(): void {
+    this.observer = new MutationObserver((mutations) => {
+      this.scrollToBottom();
+    });
+    this.observer.observe(this.messageListContainer.nativeElement, {
+      childList: true,
+      subtree: true
+    });
+  }
+
   ngOnDestroy(): void {
     if (this.courseInfoSub) this.courseInfoSub.unsubscribe();
+    if (this.observer) this.observer.disconnect();
+  }
+
+  scrollToBottom(): void {
+    try {
+      this.messageListContainer.nativeElement.scrollTop = this.messageListContainer.nativeElement.scrollHeight;
+    } catch (err) {
+      console.error('Could not scroll to bottom:', err);
+    }
   }
 
   onCourseSelected(course: string): void {

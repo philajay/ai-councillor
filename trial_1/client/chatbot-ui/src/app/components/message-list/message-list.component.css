@@ -10,9 +10,7 @@
   padding: 20px;
   gap: 15px;
   background-color: #f9f9f9;
-  scroll-behavior: smooth;
   flex-grow: 1;
-  overflow-y: auto; /* Enable vertical scrolling */
 }
 
 .message {
