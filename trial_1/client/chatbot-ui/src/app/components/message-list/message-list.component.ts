@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { Message, MessageService } from '../../services/message.service';
 import { MarkdownComponent } from 'ngx-markdown';
 import { CourseInfoComponent } from '../course-info/course-info.component';
+import { CourseChipsComponent } from '../course-chips/course-chips.component';
 import { HttpService } from '../../services/http.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,7 +14,7 @@ import { MatButtonModule } from '@angular/material/button';
 @Component({
   selector: 'app-message-list',
   standalone: true,
-  imports: [CommonModule, MarkdownComponent, CourseInfoComponent, MatProgressSpinnerModule, MatButtonModule],
+  imports: [CommonModule, MarkdownComponent, CourseInfoComponent, CourseChipsComponent, MatProgressSpinnerModule, MatButtonModule],
   templateUrl: './message-list.component.html',
   styleUrls: ['./message-list.component.css'],
 })
@@ -25,6 +26,12 @@ export class MessageListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+  }
+
+  onCourseSelected(course: string): void {
+    const newMessage = `I would like to pursue ${course}`;
+    this.messageService.addMessage(newMessage, 'user');
+    this.httpService.sendMessage({ text: newMessage });
   }
 
   onRetry(message: Message): void {

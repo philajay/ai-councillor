@@ -3,7 +3,8 @@
   <div class="message" #messageEl [ngClass]="{
     'user-message': message.sender === 'user',
     'bot-message': message.sender === 'bot',
-    'has-json': message.isJson
+    'has-json': message.isJson,
+    'component-message': message.isComponent
   }">
     @if (message.isJson) {
       <div class="json-container">
@@ -17,6 +18,9 @@
     }
     @if (message.isComponent && message.component === 'course-info') {
       <app-course-info [data]="message.componentData"></app-course-info>
+    }
+    @if (message.isComponent && message.component === 'course-chips') {
+      <app-course-chips [courses]="message.componentData" (courseSelected)="onCourseSelected($event)"></app-course-chips>
     }
     @if (message.isError) {
       <div class="error-container">

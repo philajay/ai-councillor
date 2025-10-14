@@ -3,12 +3,7 @@
     <app-message-list></app-message-list>
   </div>
 
-  <div class="form-container" [class.with-chips]="showChips">
-    @if (coursesForChips$ | async; as courses) {
-      @if(courses && courses.length > 0) {
-        <app-course-chips [courses]="courses" (courseSelected)="onCourseSelected($event)"></app-course-chips>
-      }
-    }
+  <div class="form-container">
     <app-message-form (messageSent)="onMessageSent()"></app-message-form>
   </div>
 </div>

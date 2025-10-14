@@ -1,16 +1,13 @@
-<div class="course-selector">
-  <div class="selector-header" (click)="toggle($event)">
-    <span>View Eligible Courses</span>
-    <mat-icon [class.rotated]="!isExpanded">expand_less</mat-icon>
+<div class="course-chips-container">
+  <div class="chips-header">
+    <h1 class="chips-title">What courses are you interested in studying?</h1>
+    <p class="chips-subtitle">To help you find your perfect fit, please choose from the following broad fields of study</p>
   </div>
-
-  @if (isExpanded) {
-  <div class="courses-list">
+  <div class="chips-grid">
     @for (course of courses; track course; let i = $index) {
-    <button class="course-item" [ngClass]="'chip-color-' + (i % 5)" (click)="onChipClick(course)">
-      {{ course }}
-    </button>
+      <div class="chip" (click)="onChipClick(course)" [ngClass]="'gradient-' + (i % 4)">
+        <span class="chip-title">{{ course }}</span>
+      </div>
     }
   </div>
-  }
 </div>

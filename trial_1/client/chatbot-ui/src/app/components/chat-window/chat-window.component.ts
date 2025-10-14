@@ -33,10 +33,8 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() courseLevel!: string;
   @ViewChild('messageListContainer') private messageListContainer!: ElementRef;
 
-  coursesForChips$: Observable<string[] | null>;
   courseInfoData$: Observable<any[] | null>;
   showCourseInfoBadge = false;
-  showChips = false;
   selectedIndex = 0;
 
   private courseInfoSub!: Subscription;
@@ -48,15 +46,6 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef
   ) {
-    this.coursesForChips$ = this.messageService.courseChips$.pipe(
-      scan((acc, curr) => {
-        if ((!curr || curr.length === 0) && acc && acc.length > 0) {
-          return acc;
-        }
-        return curr;
-      }, null as string[] | null),
-      tap(chips => this.showChips = !!chips && chips.length > 0)
-    );
     this.courseInfoData$ = this.messageService.courseInfo$;
   }
 
@@ -91,12 +80,6 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
     } catch (err) {
       console.error('Could not scroll to bottom:', err);
     }
-  }
-
-  onCourseSelected(course: string): void {
-    const newMessage = `I would like to pursue ${course}`;
-    this.messageService.addMessage(newMessage, 'user', { clearChips: false });
-    this.httpService.sendMessage({ text: newMessage });
   }
 
   onTabChange(event: MatTabChangeEvent): void {

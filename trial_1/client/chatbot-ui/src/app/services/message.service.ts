@@ -34,9 +34,6 @@ export class MessageService {
   messagesUpdated = new Subject<void>();
   private isNewMessageStream = true;
 
-  private courseChipsSubject = new BehaviorSubject<string[] | null>(null);
-  public courseChips$ = this.courseChipsSubject.asObservable();
-
   private courseInfoSubject = new BehaviorSubject<any[] | null>(null);
   public courseInfo$ = this.courseInfoSubject.asObservable();
 
@@ -56,9 +53,6 @@ export class MessageService {
     this.messages.push({ text, sender });
     if (sender === 'user') {
       this.isNewMessageStream = true;
-      if (options.clearChips) {
-        this.courseChipsSubject.next(null); // Clear chips only when specified
-      }
       this.httpService.sendMessage({ text });
     }
     this.messagesUpdated.next();
@@ -113,7 +107,14 @@ export class MessageService {
 
   private handleFunctionCall(event: ServerEvent) {
     if (event.name === 'find_by_eligibility') {
-      this.courseChipsSubject.next(event.results as string[]);
+      this.messages.push({
+        text: '',
+        sender: 'bot',
+        isComponent: true,
+        component: 'course-chips',
+        componentData: event.results as string[]
+      });
+      this.messagesUpdated.next();
     }
 
     if (event.name === 'find_by_discovery') {
