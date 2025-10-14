@@ -4,7 +4,8 @@
     'user-message': message.sender === 'user',
     'bot-message': message.sender === 'bot',
     'has-json': message.isJson,
-    'component-message': message.isComponent
+    'course-chips-message': message.component === 'course-chips',
+    'course-info-message': message.component === 'course-info'
   }">
     @if (message.isJson) {
       <div class="json-container">
@@ -20,7 +21,7 @@
       <app-course-info [data]="message.componentData"></app-course-info>
     }
     @if (message.isComponent && message.component === 'course-chips') {
-      <app-course-chips [courses]="message.componentData" (courseSelected)="onCourseSelected($event)"></app-course-chips>
+      <app-course-chips [courses]="message.componentData" (showCourses)="onShowCourses($event)" (showCareers)="onShowCareers($event)"></app-course-chips>
     }
     @if (message.isError) {
       <div class="error-container">

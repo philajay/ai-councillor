@@ -351,12 +351,12 @@ class AutoAgent(BaseAgent, BaseModel):
         print(f"[{time.time() - overall_start_time:.2f}s] - AutoAgent: Main auto_agent finished (took {time.time() - auto_agent_start_time:.2f}s)")
 
         # --- 3. Action Agent ---
-        action_agent_start_time = time.time()
-        print(f"[{time.time() - overall_start_time:.2f}s] - AutoAgent: Starting action agent...")
-        aa = getActionAgent(ctx)
-        async for event in aa.run_async(ctx):
-            yield event
-        print(f"[{time.time() - overall_start_time:.2f}s] - AutoAgent: Action agent finished (took {time.time() - action_agent_start_time:.2f}s)")
+        # action_agent_start_time = time.time()
+        # print(f"[{time.time() - overall_start_time:.2f}s] - AutoAgent: Starting action agent...")
+        # aa = getActionAgent(ctx)
+        # async for event in aa.run_async(ctx):
+        #     yield event
+        # print(f"[{time.time() - overall_start_time:.2f}s] - AutoAgent: Action agent finished (took {time.time() - action_agent_start_time:.2f}s)")
         
         print(f"[{time.time() - overall_start_time:.2f}s] - AutoAgent: Finished execution (total took {time.time() - overall_start_time:.2f}s)")
 

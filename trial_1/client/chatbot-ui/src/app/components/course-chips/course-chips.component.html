@@ -5,8 +5,17 @@
   </div>
   <div class="chips-grid">
     @for (course of courses; track course; let i = $index) {
-      <div class="chip" (click)="onChipClick(course)" [ngClass]="'gradient-' + (i % 4)">
-        <span class="chip-title">{{ course }}</span>
+      <div class="chip-container">
+        <div class="chip" [ngClass]="'gradient-' + (i % 4)" [class.is-flipped]="flipped.has(course)">
+          <div class="chip-front">
+            <span class="chip-title">{{ course }}</span>
+            <button class="chip-button" (click)="toggleFlip(course)">Explore</button>
+          </div>
+          <div class="chip-back">
+            <button class="chip-button" (click)="onShowCareers(course)">Show Careers</button>
+            <button class="chip-button" (click)="onShowCourses(course)">Show Courses</button>
+          </div>
+        </div>
       </div>
     }
   </div>

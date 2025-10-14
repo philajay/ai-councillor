@@ -1,7 +1,9 @@
 :host {
   display: block;
   font-family: 'Poppins', sans-serif;
-  background-color: #f8f9fa;
+  background-color: #e0f7fa; /* Fallback */
+  background-image: linear-gradient(160deg, #e0f7fa 0%, #b2dfdb 100%);
+  border-radius: 12px;
 }
 
 .stream-section {
@@ -11,7 +13,7 @@
 .stream-header {
   font-size: 1.5em;
   font-weight: 600;
-  color: #343a40;
+  color: #1f3d5a;
   margin-bottom: 1.5rem;
 }
 

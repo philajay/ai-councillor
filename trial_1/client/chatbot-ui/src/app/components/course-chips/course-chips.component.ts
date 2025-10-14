@@ -11,9 +11,24 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class CourseChipsComponent {
   @Input() courses: string[] = [];
-  @Output() courseSelected = new EventEmitter<string>();
+  @Output() showCourses = new EventEmitter<string>();
+  @Output() showCareers = new EventEmitter<string>();
 
-  onChipClick(course: string): void {
-    this.courseSelected.emit(course);
+  flipped = new Set<string>();
+
+  toggleFlip(course: string): void {
+    if (this.flipped.has(course)) {
+      this.flipped.delete(course);
+    } else {
+      this.flipped.add(course);
+    }
+  }
+
+  onShowCourses(course: string): void {
+    this.showCourses.emit(course);
+  }
+
+  onShowCareers(course: string): void {
+    this.showCareers.emit(course);
   }
 }

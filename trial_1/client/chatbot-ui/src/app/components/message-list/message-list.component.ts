@@ -28,8 +28,14 @@ export class MessageListComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  onCourseSelected(course: string): void {
-    const newMessage = `I would like to pursue ${course}`;
+  onShowCourses(course: string): void {
+    const newMessage = `Show me courses in ${course}`;
+    this.messageService.addMessage(newMessage, 'user');
+    this.httpService.sendMessage({ text: newMessage });
+  }
+
+  onShowCareers(course: string): void {
+    const newMessage = `What are the career options for ${course}?`;
     this.messageService.addMessage(newMessage, 'user');
     this.httpService.sendMessage({ text: newMessage });
   }

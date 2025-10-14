@@ -1,7 +1,7 @@
 .course-chips-container {
   padding: 40px 20px;
-  background-color: #e0f7fa; /* Fallback */
-  background-image: linear-gradient(160deg, #e0f7fa 0%, #b2dfdb 100%);
+  background-color: #b2dfdb; /* Fallback */
+  background-image: radial-gradient(ellipse at 20% 20%, #e0f7fa 40%, #b2dfdb 110%);
   border-radius: 12px;
   margin-bottom: 15px;
 }
@@ -33,40 +33,69 @@
   justify-content: center;
   max-width: 600px;
   margin: auto;
+  perspective: 1000px; /* Add perspective for 3D effect */
+}
+
+.chip-container {
+  width: 150px;
+  height: 150px;
+  position: relative;
 }
 
 .chip {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  position: absolute;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+  cursor: pointer;
+}
+
+.chip.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.chip-front, .chip-back {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  position: absolute;
+  backface-visibility: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  cursor: pointer;
-  position: relative;
-  color: white;
   border: 4px solid white;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 5px 10px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  overflow: hidden; /* Hide overflowing gradient layers */
 }
 
-.chip::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: radial-gradient(circle at top left, rgba(255, 255, 255, 0.3), transparent 40%);
-  z-index: 1;
+.chip-front {
+  color: white;
+  flex-direction: column;
+  justify-content: center;
 }
 
+.chip-back {
+  color: white;
+  transform: rotateY(180deg);
+  flex-direction: column;
+  gap: 10px;
+}
 
-.chip:hover {
-  transform: translateY(-8px) scale(1.05);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15), 0 8px 15px rgba(0, 0, 0, 0.1);
+.chip-button {
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid white;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-weight: 600;
+}
+
+.chip-button:hover {
+  background-color: rgba(255, 255, 255, 0.4);
 }
 
 .chip-title {
@@ -75,7 +104,6 @@
   text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
   padding: 10px;
   line-height: 1.3;
-  z-index: 2; /* Ensure text is above the gradient overlay */
 }
 
 /* Thematic Gradient Backgrounds */
