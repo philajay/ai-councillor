@@ -12,7 +12,7 @@ export class CourseSelectionComponent implements OnInit {
   constructor(private httpService: HttpService) {}
 
   ngOnInit(): void {
-    this.httpService.warmUpServer();
+    //this.httpService.warmUpServer();
   }
 
   selectCourseLevel(level: string) {

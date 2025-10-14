@@ -11,8 +11,8 @@ export class WebsocketService {
   private messagesSubject = new Subject<ServerEvent>();
   public messages$ = this.messagesSubject.asObservable();
   private courseLevel: string | null = null;
-  private host = "ws://localhost:8080"; // Make this configurable
-  //private host = "wss://ai-assistant-bot-183228620742.us-central1.run.app"
+  //private host = "ws://localhost:8080"; // Make this configurable
+  private host = "wss://ai-assistant-bot-183228620742.us-central1.run.app"
 
   constructor(private zone: NgZone) {}
 

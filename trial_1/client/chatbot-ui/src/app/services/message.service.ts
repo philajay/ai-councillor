@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { WebsocketService } from './websocket.service';
+import { HttpService } from './http.service';
 import { Subject, BehaviorSubject } from 'rxjs';
 import { ServerEvent } from '../models/server-event.model';
 
@@ -44,9 +44,9 @@ export class MessageService {
   public showSpinner$ = this.showSpinnerSubject.asObservable();
 
   constructor(
-    private websocketService: WebsocketService
+    private httpService: HttpService
     ) {
-    this.websocketService.messages$.subscribe({
+    this.httpService.messages$.subscribe({
       next: (event) => this.handleServerEvent(event),
       error: (err) => this.handleServerEvent(err)
     });
@@ -59,7 +59,7 @@ export class MessageService {
       if (options.clearChips) {
         this.courseChipsSubject.next(null); // Clear chips only when specified
       }
-      this.websocketService.connect(text);
+      this.httpService.sendMessage({ text });
     }
     this.messagesUpdated.next();
   }
