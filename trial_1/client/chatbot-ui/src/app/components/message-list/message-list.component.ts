@@ -40,6 +40,18 @@ export class MessageListComponent implements OnInit {
     this.httpService.sendMessage({ text: newMessage });
   }
 
+  onShowFees(course: string): void {
+    const newMessage = `What are the fees for ${course}?`;
+    this.messageService.addMessage(newMessage, 'user');
+    this.httpService.sendMessage({ text: newMessage });
+  }
+
+  onShowPlacements(course: string): void {
+    const newMessage = `What are the placement details for ${course}?`;
+    this.messageService.addMessage(newMessage, 'user');
+    this.httpService.sendMessage({ text: newMessage });
+  }
+
   onRetry(message: Message): void {
     if (message.originalText) {
       const errorMsgIndex = this.messageService.messages.findIndex(

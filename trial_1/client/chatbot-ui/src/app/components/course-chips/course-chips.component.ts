@@ -13,6 +13,8 @@ export class CourseChipsComponent {
   @Input() courses: string[] = [];
   @Output() showCourses = new EventEmitter<string>();
   @Output() showCareers = new EventEmitter<string>();
+  @Output() showFees = new EventEmitter<string>();
+  @Output() showPlacements = new EventEmitter<string>();
 
   flipped = new Set<string>();
 
@@ -30,5 +32,13 @@ export class CourseChipsComponent {
 
   onShowCareers(course: string): void {
     this.showCareers.emit(course);
+  }
+
+  onShowFees(course: string): void {
+    this.showFees.emit(course);
+  }
+
+  onShowPlacements(course: string): void {
+    this.showPlacements.emit(course);
   }
 }

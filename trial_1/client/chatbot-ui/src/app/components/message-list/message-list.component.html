@@ -21,7 +21,7 @@
       <app-course-info [data]="message.componentData"></app-course-info>
     }
     @if (message.isComponent && message.component === 'course-chips') {
-      <app-course-chips [courses]="message.componentData" (showCourses)="onShowCourses($event)" (showCareers)="onShowCareers($event)"></app-course-chips>
+      <app-course-chips [courses]="message.componentData" (showCourses)="onShowCourses($event)" (showCareers)="onShowCareers($event)" (showFees)="onShowFees($event)" (showPlacements)="onShowPlacements($event)"></app-course-chips>
     }
     @if (message.isError) {
       <div class="error-container">

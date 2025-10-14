@@ -237,8 +237,17 @@ Pathway: {prompt}
     Step 4. Keep on suggesting/asking questions till user has selected a course.
 </Flow>
 <Output>
-Output for tool find_by_discovery must always be in markdown optimized for best possible ui experience explaining why course from our university would help you get better prepared for job.
-The output should create a sense of oppurtunity and urgency by talking about the CGCUET. 
+
+your output must be json with following schema
+
+{{
+    "markdown": < Your output must be in markdown. Output for tool find_by_discovery must always be in markdown optimized for best possible ui experience explaining why course from our university would help you get better prepared for job.
+    The output should create a sense of oppurtunity and urgency by talking about the CGCUET. 
+    >,
+    "reason": <Only explain the reasoning for usage of the tool use if any>
+}}
+
+
 
 </Output>
 
