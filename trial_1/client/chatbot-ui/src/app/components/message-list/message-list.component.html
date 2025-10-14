@@ -1,3 +1,4 @@
+<app-sticky-header *ngIf="showStickyHeader" (headerClick)="scrollToCourseChips()"></app-sticky-header>
 <div class="scroll-container" #scrollMe>
 @for (message of messageService.messages; track message) {
   <div class="message" #messageEl [ngClass]="{
@@ -21,7 +22,9 @@
       <app-course-info [data]="message.componentData"></app-course-info>
     }
     @if (message.isComponent && message.component === 'course-chips') {
-      <app-course-chips [courses]="message.componentData" (showCourses)="onShowCourses($event)" (showCareers)="onShowCareers($event)" (showFees)="onShowFees($event)" (showPlacements)="onShowPlacements($event)"></app-course-chips>
+      <div appIntersectionObserver (visibilityChange)="onVisibilityChange($event)">
+        <app-course-chips [courses]="message.componentData" (showCourses)="onShowCourses($event)" (showCareers)="onShowCareers($event)" (showFees)="onShowFees($event)" (showPlacements)="onShowPlacements($event)"></app-course-chips>
+      </div>
     }
     @if (message.isError) {
       <div class="error-container">

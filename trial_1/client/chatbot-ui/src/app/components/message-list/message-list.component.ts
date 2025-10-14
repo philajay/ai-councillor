@@ -1,6 +1,10 @@
 import {
   Component,
   OnInit,
+  ViewChild,
+  ElementRef,
+  QueryList,
+  ViewChildren,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Message, MessageService } from '../../services/message.service';
@@ -10,15 +14,21 @@ import { CourseChipsComponent } from '../course-chips/course-chips.component';
 import { HttpService } from '../../services/http.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
+import { IntersectionObserverDirective } from '../../directives/intersection-observer.directive';
+import { StickyHeaderComponent } from '../sticky-header/sticky-header.component';
 
 @Component({
   selector: 'app-message-list',
   standalone: true,
-  imports: [CommonModule, MarkdownComponent, CourseInfoComponent, CourseChipsComponent, MatProgressSpinnerModule, MatButtonModule],
+  imports: [CommonModule, MarkdownComponent, CourseInfoComponent, CourseChipsComponent, MatProgressSpinnerModule, MatButtonModule, IntersectionObserverDirective, StickyHeaderComponent],
   templateUrl: './message-list.component.html',
   styleUrls: ['./message-list.component.css'],
 })
 export class MessageListComponent implements OnInit {
+  @ViewChild('scrollMe') private scrollContainer!: ElementRef;
+  @ViewChildren('messageEl') private messageElements!: QueryList<ElementRef>;
+
+  showStickyHeader = false;
 
   constructor(
     public messageService: MessageService,
@@ -26,6 +36,17 @@ export class MessageListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+  }
+
+  onVisibilityChange(isVisible: boolean): void {
+    this.showStickyHeader = !isVisible;
+  }
+
+  scrollToCourseChips(): void {
+    const courseChipsElement = this.messageElements.find(el => el.nativeElement.querySelector('app-course-chips'));
+    if (courseChipsElement) {
+      courseChipsElement.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   }
 
   onShowCourses(course: string): void {

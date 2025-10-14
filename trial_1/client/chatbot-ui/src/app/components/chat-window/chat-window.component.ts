@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, Input, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, Input, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable, Subscription } from 'rxjs';
 import { skip, tap, scan } from 'rxjs/operators';
@@ -29,7 +29,7 @@ import { HttpService } from '../../services/http.service';
   templateUrl: './chat-window.component.html',
   styleUrls: ['./chat-window.component.css'],
 })
-export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
+export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewChecked {
   @Input() courseLevel!: string;
   @ViewChild('messageListContainer') private messageListContainer!: ElementRef;
 
@@ -38,7 +38,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedIndex = 0;
 
   private courseInfoSub!: Subscription;
-  private observer!: MutationObserver;
+  private previousMessageCount = 0;
 
   constructor(
     private messageService: MessageService,
@@ -50,6 +50,7 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.previousMessageCount = this.messageService.messages.length;
     this.courseInfoSub = this.messageService.courseInfo$.pipe(skip(1)).subscribe(data => {
       if (data && data.length > 0) {
         this.showCourseInfoBadge = true;
@@ -59,27 +60,25 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  ngAfterViewInit(): void {
-    this.observer = new MutationObserver((mutations) => {
+  ngAfterViewChecked(): void {
+    if (this.messageService.messages.length !== this.previousMessageCount) {
       this.scrollToBottom();
-    });
-    this.observer.observe(this.messageListContainer.nativeElement, {
-      childList: true,
-      subtree: true
-    });
+      this.previousMessageCount = this.messageService.messages.length;
+    }
   }
 
   ngOnDestroy(): void {
     if (this.courseInfoSub) this.courseInfoSub.unsubscribe();
-    if (this.observer) this.observer.disconnect();
   }
 
   scrollToBottom(): void {
-    try {
-      this.messageListContainer.nativeElement.scrollTop = this.messageListContainer.nativeElement.scrollHeight;
-    } catch (err) {
-      console.error('Could not scroll to bottom:', err);
-    }
+    setTimeout(() => {
+      try {
+        this.messageListContainer.nativeElement.scrollTop = this.messageListContainer.nativeElement.scrollHeight;
+      } catch (err) {
+        console.error('Could not scroll to bottom:', err);
+      }
+    }, 0);
   }
 
   onTabChange(event: MatTabChangeEvent): void {
