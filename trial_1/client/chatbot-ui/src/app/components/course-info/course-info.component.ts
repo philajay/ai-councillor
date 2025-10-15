@@ -5,7 +5,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MarkdownComponent } from 'ngx-markdown';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatExpansionModule } from '@angular/material/expansion';
+
+import { MessageService } from '../../services/message.service';
 
 @Component({
   selector: 'app-course-info',
@@ -18,6 +21,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
     MatChipsModule,
     MarkdownComponent,
     MatExpansionModule,
+    MatTooltipModule,
   ],
   templateUrl: './course-info.component.html',
   styleUrls: ['./course-info.component.css'],
@@ -27,13 +31,18 @@ export class CourseInfoComponent implements OnChanges {
   courses: any[] = [];
   groupedCourses: { stream: string; courses: any[] }[] = [];
 
-  constructor() {}
+  constructor(private messageService: MessageService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['data'] && this.data) {
       this.courses = Array.isArray(this.data) ? this.data : [this.data];
       this.groupCoursesByStream();
     }
+  }
+
+  exploreCourse(course: any): void {
+    this.messageService.backupMessages();
+    this.messageService.setSelectedCourse(course);
   }
 
   private groupCoursesByStream(): void {

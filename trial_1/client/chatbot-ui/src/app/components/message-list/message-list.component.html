@@ -1,40 +1,51 @@
-<app-sticky-header *ngIf="showStickyHeader" (headerClick)="scrollToCourseChips()"></app-sticky-header>
 <div class="scroll-container" #scrollMe>
-@for (message of messageService.messages; track message) {
-  <div class="message" #messageEl [ngClass]="{
-    'user-message': message.sender === 'user',
-    'bot-message': message.sender === 'bot',
-    'has-json': message.isJson,
-    'course-chips-message': message.component === 'course-chips',
-    'course-info-message': message.component === 'course-info'
-  }">
-    @if (message.isJson) {
-      <div class="json-container">
-        <pre>{{ message.text }}</pre>
-        @if(message.isAction){
-          <button mat-raised-button color="primary" (click)="loadCGC()" > Apply Now</button>
-        }
-      </div>
-    } @else {
-      <markdown [data]="message.text"></markdown>
-    }
-    @if (message.isComponent && message.component === 'course-info') {
-      <app-course-info [data]="message.componentData"></app-course-info>
-    }
-    @if (message.isComponent && message.component === 'course-chips') {
-      <div appIntersectionObserver (visibilityChange)="onVisibilityChange($event)">
-        <app-course-chips [courses]="message.componentData" (showCourses)="onShowCourses($event)" (showCareers)="onShowCareers($event)" (showFees)="onShowFees($event)" (showPlacements)="onShowPlacements($event)"></app-course-chips>
-      </div>
-    }
-    @if (message.isError) {
-      <div class="error-container">
-        <p class="error-text">{{ message.text }}</p>
-        @if (message.retryable) {
-          <button mat-stroked-button color="warn" (click)="onRetry(message)">Retry</button>
-        }
-      </div>
-    }
-    
+  <div *ngIf="selectedCourse">
+    <div class="sticky-header-details">
+      <button mat-icon-button (click)="back()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h3>Course Details</h3>
+    </div>
+    <app-course-details [course]="selectedCourse"></app-course-details>
   </div>
-}
+
+  <app-sticky-header *ngIf="showStickyHeader && !selectedCourse" (headerClick)="scrollToCourseChips()"></app-sticky-header>
+  
+  @for (message of messageService.messages; track message) {
+    <div class="message" #messageEl [ngClass]="{
+      'user-message': message.sender === 'user',
+      'bot-message': message.sender === 'bot',
+      'has-json': message.isJson,
+      'course-chips-message': message.component === 'course-chips',
+      'course-info-message': message.component === 'course-info'
+    }">
+      @if (message.isJson) {
+        <div class="json-container">
+          <pre>{{ message.text }}</pre>
+          @if(message.isAction){
+            <button mat-raised-button color="primary" (click)="loadCGC()" > Apply Now</button>
+          }
+        </div>
+      } @else {
+        <markdown [data]="message.text"></markdown>
+      }
+      @if (message.isComponent && message.component === 'course-info') {
+        <app-course-info [data]="message.componentData"></app-course-info>
+      }
+      @if (message.isComponent && message.component === 'course-chips') {
+        <div appIntersectionObserver (visibilityChange)="onVisibilityChange($event)">
+          <app-course-chips [courses]="message.componentData" (showCourses)="onShowCourses($event)" (showCareers)="onShowCareers($event)" (showFees)="onShowFees($event)" (showPlacements)="onShowPlacements($event)"></app-course-chips>
+        </div>
+      }
+      @if (message.isError) {
+        <div class="error-container">
+          <p class="error-text">{{ message.text }}</p>
+          @if (message.retryable) {
+            <button mat-stroked-button color="warn" (click)="onRetry(message)">Retry</button>
+          }
+        </div>
+      }
+      
+    </div>
+  }
 </div>

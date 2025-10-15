@@ -1,82 +1,42 @@
 <mat-accordion>
   @for (group of groupedCourses; track group.stream) {
-    <mat-expansion-panel [expanded]="groupedCourses.length === 1">
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          {{ group.stream }} ({{ group.courses.length }} courses)
-        </mat-panel-title>
-      </mat-expansion-panel-header>
+  <mat-expansion-panel [expanded]="groupedCourses.length === 1">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        {{ group.stream }} ({{ group.courses.length }} courses)
+      </mat-panel-title>
+    </mat-expansion-panel-header>
 
-      <div class="course-grid">
-        @for (course of group.courses; track course.id) {
-          <div class="course-card">
-            <div class="course-header">
-              <h3 class="course-name">{{ course.name }}</h3>
-              <p class="course-summary-text">{{ course.summary }}</p>
-            </div>
+    <div class="course-grid">
+      @for (course of group.courses; track course.id) {
+      <div class="course-card">
+        <div class="course-header">
+          <h3 class="course-name">{{ course.name }}</h3>
+          <p
+            class="course-summary-text"
+            matTooltip="{{ course.summary }}"
+            matTooltipPosition="above"
+          >
+            {{ course.summary | slice : 0 : 100 }}...
+          </p>
+        </div>
 
-            <div class="course-details">
-              <!-- Career Prospects -->
-              <section class="section">
-                <h4 class="section-title">
-                  <mat-icon>work_outline</mat-icon>
-                  <span>Career Prospects</span>
-                </h4>
-                <p>{{ course.careerProspects?.summary }}</p>
-                <div class="chip-list">
-                  @for (career of course.careerProspects?.careers; track career) {
-                    <mat-chip class="career-chip">{{ career }}</mat-chip>
-                  }
-                </div>
-              </section>
-
-              <!-- Eligibility Criteria -->
-              <section class="section">
-                <h4 class="section-title">
-                  <mat-icon>checklist</mat-icon>
-                  <span>Eligibility Criteria</span>
-                </h4>
-                @for (criterion of course.eligibility; track criterion.title) {
-                  <div class="eligibility-card">
-                    <h5>{{ criterion.title }}</h5>
-                    <markdown [data]="criterion.detail"></markdown>
-                  </div>
-                }
-              </section>
-
-              <!-- Placements (Always Visible) -->
-              <section class="section">
-                <h4 class="section-title">
-                  <mat-icon>trending_up</mat-icon>
-                  <span>Placements</span>
-                </h4>
-                <div class="placement-grid">
-                  <div class="placement-card">
-                    <div class="placement-value">
-                      {{ course.placements?.highestPackage.split(' ')[0] }}
-                      <span>{{ course.placements?.highestPackage.split(' ').slice(1).join(' ') }}</span>
-                    </div>
-                    <div class="placement-label">Highest Package</div>
-                  </div>
-                  <div class="placement-card">
-                    <div class="placement-value">{{ course.placements?.placement_offers }}+</div>
-                    <div class="placement-label">Placement Offers</div>
-                  </div>
-                  <div class="placement-card">
-                    <div class="placement-value">{{ course.placements?.total_recruiters }}+</div>
-                    <div class="placement-label">Total Recruiters</div>
-                  </div>
-                </div>
-              </section>
-
-              <!-- Actions -->
-              <div class="actions">
-                <button mat-raised-button color="primary">Apply Now</button>
-              </div>
-            </div>
+        <div class="course-details">
+          <!-- Actions -->
+          <div class="actions">
+            <button mat-raised-button color="primary">Apply Now</button>
+            <button
+              mat-stroked-button
+              color="primary"
+              (click)="exploreCourse(course)"
+            >
+              Explore
+            </button>
           </div>
-        }
+        </div>
       </div>
-    </mat-expansion-panel>
+      }
+    </div>
+  </mat-expansion-panel>
   }
 </mat-accordion>

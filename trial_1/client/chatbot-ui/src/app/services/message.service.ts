@@ -40,6 +40,9 @@ export class MessageService {
   private showSpinnerSubject = new BehaviorSubject<boolean>(false);
   public showSpinner$ = this.showSpinnerSubject.asObservable();
 
+  private backedUpMessages: Message[] = [];
+  public selectedCourse: any | null = null;
+
   constructor(
     private httpService: HttpService
     ) {
@@ -47,6 +50,24 @@ export class MessageService {
       next: (event) => this.handleServerEvent(event),
       error: (err) => this.handleServerEvent(err)
     });
+  }
+
+  setSelectedCourse(course: any) {
+    this.selectedCourse = course;
+    this.messagesUpdated.next();
+  }
+
+  backupMessages() {
+    this.backedUpMessages = [...this.messages];
+    this.messages = [];
+    this.messagesUpdated.next();
+  }
+
+  restoreMessages() {
+    this.messages = [...this.backedUpMessages];
+    this.backedUpMessages = [];
+    this.selectedCourse = null;
+    this.messagesUpdated.next();
   }
 
   addMessage(text: string, sender: 'user' | 'bot', options: { clearChips?: boolean } = {}) {

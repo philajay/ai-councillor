@@ -7,7 +7,6 @@
 .scroll-container {
   display: flex;
   flex-direction: column;
-  padding: 20px;
   gap: 15px;
   background-color: transparent;
   flex-grow: 1;
@@ -87,4 +86,21 @@
   white-space: pre-wrap; /* Allows wrapping long lines */
   word-wrap: break-word;
   color: #f1f1f1; /* Light text color */
+}
+
+.sticky-header-details {
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sticky-header-details h3 {
+  margin: 0;
+  font-weight: 500;
 }
