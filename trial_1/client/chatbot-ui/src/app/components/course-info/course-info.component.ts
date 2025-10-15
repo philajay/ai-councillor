@@ -32,14 +32,8 @@ export class CourseInfoComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['data'] && this.data) {
       this.courses = Array.isArray(this.data) ? this.data : [this.data];
-      this.courses.forEach(course => course.isExpanded = false);
       this.groupCoursesByStream();
     }
-  }
-
-  toggleDetails(course: any, group: { stream: string; courses: any[] }): void {
-    const newState = !course.isExpanded;
-    group.courses.forEach(c => c.isExpanded = newState);
   }
 
   private groupCoursesByStream(): void {

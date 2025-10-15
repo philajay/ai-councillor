@@ -111,6 +111,14 @@
   font-size: 0.8em !important;
 }
 
+.career-chip {
+  background-color: #e0e7ff !important;
+  color: #4f46e5 !important;
+  border: 1px solid #c7d2fe !important;
+  font-weight: 500 !important;
+  font-size: 0.8em !important;
+}
+
 .eligibility-card {
   background-color: #f8f9fa;
   padding: 1rem;
@@ -156,18 +164,6 @@
   font-size: 0.8em;
   color: #6c757d;
   margin-top: 0.25rem;
-}
-
-.expandable-content {
-  overflow: hidden;
-  transition: max-height 0.4s ease-in-out, visibility 0.4s ease-in-out;
-  max-height: 0;
-  visibility: hidden;
-}
-
-.expandable-content.expanded {
-  max-height: 1200px; /* Sufficiently large value */
-  visibility: visible;
 }
 
 .actions {
