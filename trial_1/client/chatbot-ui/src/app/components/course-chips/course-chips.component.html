@@ -8,6 +8,7 @@
       <div class="chip-container">
         <div class="chip" [ngClass]="'gradient-' + (i % 4)" [class.is-flipped]="flipped.has(course)">
           <div class="chip-front">
+            <img [src]="courseIcons.get(course)" alt="Course Icon" class="chip-icon">
             <span class="chip-title">{{ course }}</span>
             <button class="chip-button" (click)="toggleFlip(course)">Explore</button>
           </div>

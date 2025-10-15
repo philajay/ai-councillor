@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 
@@ -9,14 +9,20 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './course-chips.component.html',
   styleUrls: ['./course-chips.component.css'],
 })
-export class CourseChipsComponent {
+export class CourseChipsComponent implements OnInit {
   @Input() courses: string[] = [];
   @Output() showCourses = new EventEmitter<string>();
   @Output() showCareers = new EventEmitter<string>();
   @Output() showFees = new EventEmitter<string>();
   @Output() showPlacements = new EventEmitter<string>();
 
+  courseIcons = new Map<string, string>();
+  private icons = ['beaker.svg', 'graduation-cap.svg', 'lightbulb.svg', 'atom.svg'];
   flipped = new Set<string>();
+
+  ngOnInit(): void {
+    this.assignIcons();
+  }
 
   toggleFlip(course: string): void {
     if (this.flipped.has(course)) {
@@ -24,6 +30,14 @@ export class CourseChipsComponent {
     } else {
       this.flipped.add(course);
     }
+  }
+
+  private assignIcons(): void {
+    this.courseIcons.clear();
+    this.courses.forEach(course => {
+      const iconIndex = Math.floor(Math.random() * this.icons.length);
+      this.courseIcons.set(course, `assets/${this.icons[iconIndex]}`);
+    });
   }
 
   onShowCourses(course: string): void {
