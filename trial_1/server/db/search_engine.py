@@ -394,6 +394,7 @@ def find_by_eligibility(criteria:dict, tenant_id: str) -> list:
 
 
 def get_course_details_by_id(course_id: int, tenant_id: str):
+    tenant_id = 'cgc_university'
     """
     Retrieves course and eligibility details for a specific course ID.
 
@@ -413,7 +414,7 @@ def get_course_details_by_id(course_id: int, tenant_id: str):
     with conn.cursor() as cur:
         try:
             cur.execute("""
-                SELECT id, name, text, eligibility_rules
+                SELECT  name, level, course_category, stream, structured_data, text 
                 FROM courses
                 WHERE id = %s AND tenant_id = %s;
             """, (course_id, tenant_id))

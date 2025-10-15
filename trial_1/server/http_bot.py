@@ -35,15 +35,14 @@ class AgentSession:
         self.last_client_text_message = None
         self.session_id = session_id
 
-    async def start(self, course_level):
+    async def start(self, agent, initial_state={}):
         """Starts an agent session"""
         from google.adk.runners import Runner
-        from agents.autonomous import AutoAgent
 
         self.runner = Runner(
             app_name=APP_NAME,
-            agent=AutoAgent(),
-            session_service = session_service
+            agent=agent,
+            session_service=session_service
         )
 
         self.session = await session_service.get_session(
@@ -56,9 +55,7 @@ class AgentSession:
             self.session = await session_service.create_session(
                 app_name=APP_NAME,
                 user_id=self.user_id,
-                state={
-                    "course_level": course_level
-                },
+                state=initial_state,
                 session_id=self.session_id
             )
 
@@ -106,13 +103,14 @@ async def event_stream(agent_session: AgentSession, data: str):
             if event.is_final_response():
                 if event.content and event.content.parts:
                     final_response_text = event.content.parts[0].text
-                    if event.author == 'auto_agent':
+                    if event.author == 'auto_agent' or event.author == 'course_sales_agent':
                         try:
                             markdown = re.search(r'<Markdown>(.*?)</Markdown>', final_response_text, re.DOTALL).group(1).strip()
                             reason = re.search(r'<Reason>(.*?)</Reason>', final_response_text, re.DOTALL).group(1).strip()
                             js = {"markdown": markdown, "reason": reason}
                             message = {"text": json.dumps(js), "agent": event.author}
-                        except Exception:
+                        except Exception as ex:
+                            print(ex)
                             message = {"text": json.dumps({"markdown": final_response_text}), "agent": event.author}
                     else:
                         message = {"text": final_response_text, "agent": event.author}
@@ -140,6 +138,7 @@ async def startup_event():
     asyncio.create_task(wrapped_load())
 
 
+from agents.autonomous import AutoAgent, CourseSaleAgent
 agent_session = None
 
 @router.get("/hello_world")
@@ -150,6 +149,16 @@ async def hello_world():
 async def chat_endpoint(request: Request, text: str, sessionId: str, courseLevel: str):
     user_id = "John Doe"  # In a real app, you'd get this from the request/session
     agent_session = AgentSession(user_id, sessionId, False)
-    await agent_session.start(courseLevel)
+    await agent_session.start(AutoAgent(), initial_state={"course_level": courseLevel})
     
     return StreamingResponse(event_stream(agent_session, text), media_type="text/event-stream")
+
+@router.get("/get_course")
+async def get_course_endpoint(request: Request, text: str, sessionId: str, courseId: str):
+    user_id = "John Doe"
+    agent_session = AgentSession(user_id, sessionId, False)
+    await agent_session.start(CourseSaleAgent(), initial_state={"course_id": courseId})
+
+    return StreamingResponse(event_stream(agent_session, text), media_type="text/event-stream")
+
+

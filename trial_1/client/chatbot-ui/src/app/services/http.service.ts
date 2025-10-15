@@ -37,15 +37,10 @@ export class HttpService {
     });
   }
 
-  connect(message: string): void {
+  private connect(url: string): void {
     // Disconnect any existing connection
     this.disconnect();
 
-    const sessionId = this.getSessionId();
-    let url = `${this.host}/chat?text=${encodeURIComponent(message)}&sessionId=${sessionId}`;
-    if (this.courseLevel) {
-      url += `&courseLevel=${encodeURIComponent(this.courseLevel)}`;
-    }
     // Create a new EventSource connection
     this.eventSource = new EventSource(url);
 
@@ -77,7 +72,18 @@ export class HttpService {
   }
 
   sendMessage(msg: { text: string }): void {
-    this.connect(msg.text);
+    const sessionId = this.getSessionId();
+    let url = `${this.host}/chat?text=${encodeURIComponent(msg.text)}&sessionId=${sessionId}`;
+    if (this.courseLevel) {
+      url += `&courseLevel=${encodeURIComponent(this.courseLevel)}`;
+    }
+    this.connect(url);
+  }
+
+  sendCourseMessage(msg: { text: string, courseId: string }): void {
+    const sessionId = this.getSessionId() + msg.courseId;
+    const url = `${this.host}/get_course?text=${encodeURIComponent(msg.text)}&sessionId=${sessionId}&courseId=${encodeURIComponent(msg.courseId)}`;
+    this.connect(url);
   }
 
   disconnect(): void {

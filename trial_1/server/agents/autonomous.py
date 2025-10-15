@@ -12,7 +12,7 @@ from google.adk.agents.readonly_context import ReadonlyContext
 from .prompts.systempPrompt import system_prompt_UG, system_prompt_PG
 from datetime import date
 
-from db.search_engine import find_by_discovery, find_by_eligibility, modify_course_result, vector_search
+from db.search_engine import find_by_discovery, find_by_eligibility, modify_course_result, vector_search, get_course_details_by_id
 
 
 
@@ -249,7 +249,7 @@ your output must be in following XML Schema
     </Markdown>
     <Reason>
         explain the reasoning for usage of the tool use if any
-    <Reason>
+    </Reason>
 </Response>
 
 
@@ -292,6 +292,7 @@ def auto_agent():
 
         )
     return agent
+
 
 
 
@@ -374,6 +375,129 @@ class AutoAgent(BaseAgent, BaseModel):
         # print(f"[{time.time() - overall_start_time:.2f}s] - AutoAgent: Action agent finished (took {time.time() - action_agent_start_time:.2f}s)")
         
         print(f"[{time.time() - overall_start_time:.2f}s] - AutoAgent: Finished execution (total took {time.time() - overall_start_time:.2f}s)")
+
+
+
+
+def get_course_sales_agent(context: ReadonlyContext):
+    inst = f'''You are and expert sales career councillor for "CGC University". 
+Today is {date.today()}
+
+Task:
+Student browsed the courses and is looking at the details of the course. Your task is to convice him to register for scholarship exam.
+
+<Scholarship>
+    CGC University, Mohali believes in empowering students to achieve their dreams. With the CGCUET scholarships, we’re helping you realize your full potential and ensuring you don’t miss out on any opportunity for success.
+</Scholarship>
+
+
+<ScholarshipExamDetails>
+    Two simple steps
+    1: Upload Adaar card
+    2: Select date and time
+    3: Make payment
+    4: Give example and unlock your future
+</ScholarshipExamDetails>
+
+<Agent Persona>
+Role: A friendly, knowledgeable, and encouraging course advisor.
+Tone: Professional yet warm, consultative, and aspirational. 
+</Agent Persona>
+
+
+
+<Core Principles of the Agent's Dialogue>
+1) Connect Data to Benefits to frame couse as an investment. Be at your creative best to engage student. 
+2) Position the Scholarship Test as an Opportunity: It's not a test; it's a gateway to a more affordable, high-quality education and a chance to prove their potential.
+</Core Principles of the Agent's Dialogue>
+
+<Tools>
+    1. **`get_course_details_by_id(course_id:str, tenant_id:str)`**: 
+    Call this function to find details of the course
+    
+    Arguments:
+            course_id:str: 
+                id of the course which student is looking for details
+            tenant_id (str): The ID of the client tenant.
+        Return Value:
+            List of course names for which user is eligible.
+        
+    2. **`vector_search`**: 
+        Arguments:
+            query (str): user query
+            tenant_id (str): The ID of the client tenant.
+
+        Return Value:
+            A list of strings, where each string returns the chunk of text which matches user query
+            similarity score and url from where text was scraped. 
+        
+
+</Tools>
+
+
+
+
+<Output>
+
+your output must be in following XML Schema
+
+<Response>
+    <Markdown>
+        The output should create a sense of oppurtunity and urgency by talking about the CGCUET. 
+    </Markdown>
+    <Reason>
+        explain the reasoning for usage of the tool use if any
+    </Reason>
+</Response>
+
+
+</Output>
+
+
+<MostImportant>
+    Application would be mostly used on mobile devices. Your markdown content must be optimized for mobile devices.
+</MostImportant>
+'''
+    agent = LlmAgent(
+            name="course_sales_agent",
+            model="gemini-2.5-flash",
+            instruction=inst,
+            sub_agents=[],
+            generate_content_config=types.GenerateContentConfig(
+                temperature=1
+            ),
+            tools=[
+                get_course_details_by_id,
+                vector_search
+            ],
+        )
+    return agent
+
+class CourseSaleAgent(BaseAgent, BaseModel):
+    class Config:
+        arbitrary_types_allowed = True
+
+    name: str = Field(default='course_sales_controller')
+    def __init__(self, **data):
+        BaseModel.__init__(self, **data)
+        BaseAgent.__init__(self, name=self.name, sub_agents=[])
+
+    @override
+    async def _run_async_impl(
+        self, ctx: InvocationContext
+    ) -> AsyncGenerator[Event, None]:
+        overall_start_time = time.time()
+        print(f"[{time.time() - overall_start_time:.2f}s] - CourseAgent: Starting execution")
+
+        # --- 2. Main Auto Agent ---
+        auto_agent_start_time = time.time()
+        print(f"[{time.time() - overall_start_time:.2f}s] - CourseAgent: Starting main auto_agent...")
+        auto = get_course_sales_agent(ctx)
+        async for event in auto.run_async(ctx):
+            yield event
+        print(f"[{time.time() - overall_start_time:.2f}s] - CourseAgent: Main auto_agent finished (took {time.time() - auto_agent_start_time:.2f}s)")
+
+
 
 
 

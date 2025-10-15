@@ -127,7 +127,7 @@ def find_by_discovery(query_text, model):
         finally:
             conn.close()
 
-def get_course_requirements(course_id):
+def get_course(course_id):
     """
     Retrieves all eligibility rules for a specific course ID.
     
@@ -144,7 +144,7 @@ def get_course_requirements(course_id):
     with conn.cursor() as cur:
         try:
             cur.execute(
-                "SELECT qualification, min_percentage, required_subjects, notes FROM eligibility_rules WHERE course_id = %s",
+                "select name, level, course_category, stream, structured_data, text from courses WHERE course_id = %s",
                 (course_id,)
             )
             # Fetch all results and format them as a list of dicts

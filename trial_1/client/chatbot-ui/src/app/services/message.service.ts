@@ -74,7 +74,11 @@ export class MessageService {
     this.messages.push({ text, sender });
     if (sender === 'user') {
       this.isNewMessageStream = true;
-      this.httpService.sendMessage({ text });
+      if (this.selectedCourse) {
+        this.httpService.sendCourseMessage({ text, courseId: this.selectedCourse.id });
+      } else {
+        this.httpService.sendMessage({ text });
+      }
     }
     this.messagesUpdated.next();
   }
@@ -217,7 +221,7 @@ export class MessageService {
       text: ''
     };
 
-    if(agentName === 'extract_order_entity' || agentName === 'auto_agent'){
+    if(agentName === 'extract_order_entity' || agentName === 'auto_agent' || agentName == "course_sales_agent"){
       console.log(JSON.stringify(jsonData,  null, 2))
     }
 
@@ -226,7 +230,7 @@ export class MessageService {
       message.text = jsonData.clarification_question;
     } else if (jsonData.agentId) {
       message.text = jsonData.purpose;
-    }  else if(lastMessage.agent === "auto_agent"){
+    }  else if(lastMessage.agent === "auto_agent" || agentName == "course_sales_agent"){
         message.isJson = false;
         message.text = jsonData["markdown"]
     } else {
