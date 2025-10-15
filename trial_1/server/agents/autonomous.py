@@ -240,15 +240,17 @@ Pathway: {prompt}
 </Flow>
 <Output>
 
-your output must be json with following schema
+your output must be in following XML Schema
 
-{{
-    "markdown": < Your output must be in markdown. Output for tool find_by_discovery must always be in markdown optimized for best possible ui experience explaining why course from our university would help you get better prepared for job.
-    The output should create a sense of oppurtunity and urgency by talking about the CGCUET. 
-    >,
-    "reason": <Only explain the reasoning for usage of the tool use if any>
-}}
-
+<Response>
+    <Markdown>
+        Output for tool find_by_discovery must always be in markdown optimized for best possible ui experience explaining why course from our university would help you get better prepared for job.
+        The output should create a sense of oppurtunity and urgency by talking about the CGCUET. 
+    </Markdown>
+    <Reason>
+        explain the reasoning for usage of the tool use if any
+    <Reason>
+</Response>
 
 
 </Output>
@@ -276,8 +278,10 @@ def auto_agent():
                 )
             ),
             generate_content_config=types.GenerateContentConfig(
-                temperature=0
+                temperature=1
             ),
+
+            
             output_key = GIST_OUTPUT_KEY,
             tools=[
                     find_by_eligibility, 

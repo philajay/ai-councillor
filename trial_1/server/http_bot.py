@@ -1,3 +1,4 @@
+import re
 from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
 import json
@@ -105,7 +106,16 @@ async def event_stream(agent_session: AgentSession, data: str):
             if event.is_final_response():
                 if event.content and event.content.parts:
                     final_response_text = event.content.parts[0].text
-                    message = {"text": final_response_text, "agent": event.author}
+                    if event.author == 'auto_agent':
+                        try:
+                            markdown = re.search(r'<Markdown>(.*?)</Markdown>', final_response_text, re.DOTALL).group(1).strip()
+                            reason = re.search(r'<Reason>(.*?)</Reason>', final_response_text, re.DOTALL).group(1).strip()
+                            js = {"markdown": markdown, "reason": reason}
+                            message = {"text": json.dumps(js), "agent": event.author}
+                        except Exception:
+                            message = {"text": json.dumps({"markdown": final_response_text}), "agent": event.author}
+                    else:
+                        message = {"text": final_response_text, "agent": event.author}
                     yield f"data: {json.dumps(message)}\n\n"
                     yield f"data: {json.dumps({'endOfTurn': True, 'agent': event.author})}\n\n"
 
