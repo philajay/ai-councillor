@@ -27,18 +27,16 @@
 }
 
 .chips-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 24px;
-  justify-content: center;
+  align-items: stretch;
   max-width: 600px;
   margin: auto;
   perspective: 1000px; /* Add perspective for 3D effect */
 }
 
 .chip-container {
-  flex: 1 1 180px;
-  max-width: 180px;
   position: relative;
 }
 
