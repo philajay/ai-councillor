@@ -57,5 +57,23 @@
         </div>
       </div>
     </section>
+
+    <!-- Fees Info -->
+    <section class="section" *ngIf="course.fees_info">
+      <h4 class="section-title">
+        <mat-icon>monetization_on</mat-icon>
+        <span>Fees Info</span>
+      </h4>
+      <markdown [data]="course.fees_info"></markdown>
+    </section>
+
+    <!-- Why Us -->
+    <section class="section" *ngIf="course.whyUs">
+      <h4 class="section-title">
+        <mat-icon>info_outline</mat-icon>
+        <span>Why Us</span>
+      </h4>
+      <markdown [data]="course.whyUs"></markdown>
+    </section>
   </div>
 </div>
