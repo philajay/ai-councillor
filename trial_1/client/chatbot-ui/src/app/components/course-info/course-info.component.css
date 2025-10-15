@@ -20,10 +20,9 @@
 .course-grid {
   display: flex;
   gap: 1.5rem;
-  overflow-x: auto;
   padding-bottom: 1.5rem;
-  scrollbar-width: thin;
-  scrollbar-color: #ced4da #f1f3f5;
+  flex-wrap: wrap;
+  justify-content: flex-start;
 }
 
 .course-card {
@@ -35,6 +34,12 @@
   display: flex;
   flex-direction: column;
   transition: box-shadow 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .course-card {
+    flex: 0 0 320px;
+  }
 }
 
 .course-card:hover {

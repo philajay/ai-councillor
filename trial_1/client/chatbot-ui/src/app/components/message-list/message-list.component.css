@@ -33,6 +33,13 @@
   width: 80%;
 }
 
+@media (max-width: 768px) {
+  .course-chips-message,
+  .course-info-message {
+    width: 100%;
+  }
+}
+
 .message p {
   margin: 0;
 }

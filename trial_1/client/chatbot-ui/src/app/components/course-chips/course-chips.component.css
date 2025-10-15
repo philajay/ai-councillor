@@ -28,12 +28,13 @@
 
 .chips-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 24px;
   align-items: stretch;
-  max-width: 600px;
+  max-width: 1200px;
   margin: auto;
   perspective: 1000px; /* Add perspective for 3D effect */
+  justify-content: center;
 }
 
 .chip-container {
