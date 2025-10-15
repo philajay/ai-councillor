@@ -196,14 +196,17 @@ export class MessageService {
       text: ''
     };
 
+    if(agentName === 'extract_order_entity' || agentName === 'auto_agent'){
+      console.log(JSON.stringify(jsonData))
+    }
+
     if (agentName === 'extract_order_entity' && jsonData.clarification_question) {
       console.log(`Clarification question found ${JSON.stringify(jsonData)}`);
       message.text = jsonData.clarification_question;
+      console.log(jsonData["reason"])
     } else if (jsonData.agentId) {
       message.text = jsonData.purpose;
-    }  else if(lastMessage.agent === "summazier"){
-      message.text = JSON.stringify(jsonData, null, 2);
-    } else if(lastMessage.agent === "auto_agent"){
+    }  else if(lastMessage.agent === "auto_agent"){
         message.isJson = false;
         message.text = jsonData["markdown"]
         console.log(jsonData["reason"])

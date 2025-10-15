@@ -53,15 +53,14 @@ def getEntityExtractory(state):
     except Exception as e:
         print(f"Error in parsing gist {e}")
         gist = ""
-    instructions = f'''You are expert councillor for CGC University.
+    instructions = f'''You are an expert entity extraction assistant. Your task is to analyze a user's query to identify and extract relevant entities. You will be given a set of "previously extracted entities" and a "new user query". Your goal is to return an updated list of all entities, incorporating entities from the new query.
 **Task**
-1) Primary Task: From the current user query extract the entities. Note that some entities may not pre present in current request.
-Your 100% focus should be on this task
+1) Primary Task: Concatenate the previously extracted queries with extracted entities from current user query.
 2) Secondary Task: {features}
 
 **Context**
 User is looking for {y} courses. 
-last extracted entities: {x}
+previous extracted entities: {x}
 gist so far: {gist}
 
 
@@ -111,7 +110,7 @@ Return Example:
     "subjects": [list of subjects opted by user]
     "stream": <stream opted by user>
     "agentId": <Hardcoded 2>
-    "reason": <Reason why these entities were selected>
+    "reason": <Explain how new entities were extracted and enriched the existing entities>
     "purpose": <Random trivea about university from salient features. Use you imagination to create a hook line>
 }}
 
@@ -229,6 +228,9 @@ Pathway: {prompt}
         
 
 </Tools>
+
+
+
 
 <Flow>
     Step 1. Identify the path way for graduation
