@@ -38,7 +38,7 @@ export class MessageService {
 3.  Or Just say Hi`;
 
   private threads = new Map<string, Thread>();
-  private activeThreadId: string = 'main';
+  private activeThreadId: string = 'explore';
 
   messagesUpdated = new Subject<string>();
   private isNewMessageStream = true;
@@ -52,8 +52,8 @@ export class MessageService {
   constructor(
     private httpService: HttpService
     ) {
-    this.threads.set('main', {
-      id: 'main',
+    this.threads.set('explore', {
+      id: 'explore',
       name: 'Chat',
       messages: [{ text: this._message, sender: 'bot' }],
     });
@@ -94,7 +94,7 @@ export class MessageService {
       };
       this.threads.set(threadId, {
         id: threadId,
-        name: course.course_name,
+        name: course.name,
         messages: [initialMessage],
         selectedCourse: course,
       });
