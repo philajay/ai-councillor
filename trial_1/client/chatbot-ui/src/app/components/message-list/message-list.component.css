@@ -32,6 +32,17 @@
   width: 80%;
 }
 
+
+.course-details-message{
+  max-width: none;
+  padding: 0;
+  background-color: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  align-self: stretch;
+  width: 100%;
+}
+
 @media (max-width: 768px) {
   .course-chips-message,
   .course-info-message {

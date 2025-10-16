@@ -9,7 +9,8 @@
       'bot-message': message.sender === 'bot',
       'has-json': message.isJson,
       'course-chips-message': message.component === 'course-chips',
-      'course-info-message': message.component === 'course-info'
+      'course-info-message': message.component === 'course-info',
+      'course-details-message': message.component === 'course-details'
     }">
       @if (message.isJson) {
         <div class="json-container">

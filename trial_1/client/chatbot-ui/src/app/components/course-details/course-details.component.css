@@ -111,3 +111,20 @@
   color: #64748b;
   margin-top: 0.5rem;
 }
+
+.action-chip {
+  background-image: linear-gradient(45deg, #4f46e5, #818cf8);
+  border: none;
+  border-radius: 9999px;
+  padding: 0.6rem 1.2rem;
+  color: #ffffff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.action-chip:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.3);
+}

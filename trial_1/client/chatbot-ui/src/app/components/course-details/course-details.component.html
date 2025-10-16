@@ -75,5 +75,18 @@
       </h4>
       <markdown [data]="course.whyUs"></markdown>
     </section>
+
+    <!-- Action Chips for Next Steps -->
+    <section class="section">
+      <h4 class="section-title">
+        <mat-icon>explore</mat-icon>
+        <span>Next Steps</span>
+      </h4>
+      <div class="chip-list">
+        <button mat-stroked-button *ngFor="let chip of actionChips" (click)="handleChipClick(chip)" class="action-chip">
+          {{ chip.text }}
+        </button>
+      </div>
+    </section>
   </div>
 </div>

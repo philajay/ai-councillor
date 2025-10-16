@@ -119,6 +119,7 @@ export class HttpService {
   }
 
   sendCourseMessage(msg: { text: string, courseId: string }): void {
+    //const sessionId = this.getSessionId() + msg.courseId;
     const sessionId = this.getSessionId() + msg.courseId;
     const url = `${this.host}/get_course`;
     const body = {
