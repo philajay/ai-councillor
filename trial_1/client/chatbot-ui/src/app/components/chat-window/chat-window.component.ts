@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, Input, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, Input, ViewChildren, ElementRef, AfterViewChecked, QueryList } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { MatTabsModule, MatTabChangeEvent } from '@angular/material/tabs';
@@ -28,12 +28,13 @@ import { MessageService, Thread } from '../../services/message.service';
   styleUrls: ['./chat-window.component.css'],
 })
 export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewChecked {
-  @ViewChild('messageListContainer') private messageListContainer!: ElementRef;
+  @ViewChildren('messageListContainer') private messageListContainers!: QueryList<ElementRef>;
 
   threads: Thread[] = [];
   selectedIndex = 0;
   private messagesSub!: Subscription;
   private previousMessageCounts = new Map<string, number>();
+  private tabChanged = false;
 
   constructor(
     private messageService: MessageService,
@@ -53,15 +54,28 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewChecked 
   }
 
   ngAfterViewChecked(): void {
+    let shouldScroll = false;
+
+    // Case 1: Tab was changed by the user
+    if (this.tabChanged) {
+      shouldScroll = true;
+      this.tabChanged = false;
+    }
+
+    // Case 2: New message arrived in the currently active thread
     const activeThread = this.messageService.activeThread;
     if (activeThread) {
       const currentMessageCount = activeThread.messages.length;
       const previousMessageCount = this.previousMessageCounts.get(activeThread.id) || 0;
 
       if (currentMessageCount !== previousMessageCount) {
-        this.scrollToBottom();
+        shouldScroll = true;
         this.previousMessageCounts.set(activeThread.id, currentMessageCount);
       }
+    }
+
+    if (shouldScroll) {
+      this.scrollToBottom();
     }
   }
 
@@ -72,7 +86,10 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewChecked 
   scrollToBottom(): void {
     setTimeout(() => {
       try {
-        this.messageListContainer.nativeElement.scrollTop = this.messageListContainer.nativeElement.scrollHeight;
+        const container = this.messageListContainers.toArray()[this.selectedIndex];
+        if (container) {
+          container.nativeElement.scrollTop = container.nativeElement.scrollHeight;
+        }
       } catch (err) {
         console.error('Could not scroll to bottom:', err);
       }
@@ -80,8 +97,10 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewChecked 
   }
 
   onTabChange(index: number): void {
+    this.selectedIndex = index;
     const threadId = this.threads[index].id;
     this.messageService.setActiveThread(threadId);
+    this.tabChanged = true;
   }
 
   onMessageSent(): void {
