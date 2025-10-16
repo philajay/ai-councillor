@@ -23,8 +23,6 @@ class AppState:
 
 app_state = AppState()
 
-class ChatRequest(BaseModel):
-    text: str
 
 class AgentSession:
     def __init__(self, user_id, session_id, is_audio=False):
@@ -145,20 +143,30 @@ agent_session = None
 async def hello_world():
     return {"message": "Hello, World!"}
 
-@router.get("/chat")
-async def chat_endpoint(request: Request, text: str, sessionId: str, courseLevel: str):
+class ChatRequest(BaseModel):
+    text: str
+    sessionId: str
+    courseLevel: str
+
+class CourseRequest(BaseModel):
+    text: str
+    sessionId: str
+    courseId: str
+
+@router.post("/chat")
+async def chat_endpoint(request: ChatRequest):
     user_id = "John Doe"  # In a real app, you'd get this from the request/session
-    agent_session = AgentSession(user_id, sessionId, False)
-    await agent_session.start(AutoAgent(), initial_state={"course_level": courseLevel})
+    agent_session = AgentSession(user_id, request.sessionId, False)
+    await agent_session.start(AutoAgent(), initial_state={"course_level": request.courseLevel})
     
-    return StreamingResponse(event_stream(agent_session, text), media_type="text/event-stream")
+    return StreamingResponse(event_stream(agent_session, request.text), media_type="text/event-stream")
 
-@router.get("/get_course")
-async def get_course_endpoint(request: Request, text: str, sessionId: str, courseId: str):
+@router.post("/get_course")
+async def get_course_endpoint(request: CourseRequest):
     user_id = "John Doe"
-    agent_session = AgentSession(user_id, sessionId, False)
-    await agent_session.start(CourseSaleAgent(), initial_state={"course_id": courseId})
+    agent_session = AgentSession(user_id, request.sessionId, False)
+    await agent_session.start(CourseSaleAgent(), initial_state={"course_id": request.courseId})
 
-    return StreamingResponse(event_stream(agent_session, text), media_type="text/event-stream")
+    return StreamingResponse(event_stream(agent_session, request.text), media_type="text/event-stream")
 
 

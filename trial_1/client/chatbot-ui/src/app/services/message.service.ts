@@ -75,7 +75,7 @@ export class MessageService {
     if (sender === 'user') {
       this.isNewMessageStream = true;
       if (this.selectedCourse) {
-        this.httpService.sendCourseMessage({ text, courseId: this.selectedCourse.id });
+        this.httpService.sendCourseMessage({ text, courseId: this.selectedCourse.id.toString() });
       } else {
         this.httpService.sendMessage({ text });
       }

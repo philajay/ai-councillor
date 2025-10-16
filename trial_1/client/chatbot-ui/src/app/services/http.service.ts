@@ -7,7 +7,7 @@ import { ServerEvent } from '../models/server-event.model';
   providedIn: 'root'
 })
 export class HttpService {
-  private eventSource: EventSource | null = null;
+  private abortController: AbortController | null = null;
   private messagesSubject = new Subject<ServerEvent>();
   public messages$ = this.messagesSubject.asObservable();
   private courseLevel: string | null = null;
@@ -37,59 +37,102 @@ export class HttpService {
     });
   }
 
-  private connect(url: string): void {
-    // Disconnect any existing connection
+  private async connect(url: string, body: any): Promise<void> {
     this.disconnect();
+    this.abortController = new AbortController();
+    const signal = this.abortController.signal;
 
-    // Create a new EventSource connection
-    this.eventSource = new EventSource(url);
-
-    this.eventSource.onmessage = (event) => {
-      this.zone.run(() => {
-        try {
-          const parsedData = JSON.parse(event.data);
-          if (parsedData.action === 'close') {
-            this.disconnect();
-            return;
-          }
-          this.messagesSubject.next(parsedData);
-        } catch (error) {
-          console.error('Failed to parse server event:', error);
-        }
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+        signal,
       });
-    };
 
-    this.eventSource.onerror = (error) => {
+      if (!response.body) {
+        throw new Error('Response body is null');
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      const processStream = async () => {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) {
+            break;
+          }
+
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split('\n\n');
+
+          for (const line of lines) {
+            if (line.startsWith('data:')) {
+              const data = line.substring(5).trim();
+              this.zone.run(() => {
+                try {
+                  const parsedData = JSON.parse(data);
+                  if (parsedData.action === 'close') {
+                    this.disconnect();
+                    return;
+                  }
+                  this.messagesSubject.next(parsedData);
+                } catch (error) {
+                  console.error('Failed to parse server event:', error);
+                }
+              });
+            }
+          }
+        }
+      };
+
+      await processStream();
+
+    } catch (error) {
+      if (signal.aborted) {
+        console.log('Fetch request aborted.');
+        return;
+      }
       this.zone.run(() => {
-        console.error('EventSource failed:', error);
+        console.error('Fetch API failed:', error);
         this.messagesSubject.error({
           error: 'Connection Error',
           message: 'Could not connect to the server. Please try again later.'
         });
         this.disconnect();
       });
-    };
+    }
   }
 
   sendMessage(msg: { text: string }): void {
     const sessionId = this.getSessionId();
-    let url = `${this.host}/chat?text=${encodeURIComponent(msg.text)}&sessionId=${sessionId}`;
-    if (this.courseLevel) {
-      url += `&courseLevel=${encodeURIComponent(this.courseLevel)}`;
-    }
-    this.connect(url);
+    const url = `${this.host}/chat`;
+    const body = {
+      text: msg.text,
+      sessionId: sessionId,
+      courseLevel: this.courseLevel
+    };
+    this.connect(url, body);
   }
 
   sendCourseMessage(msg: { text: string, courseId: string }): void {
     const sessionId = this.getSessionId() + msg.courseId;
-    const url = `${this.host}/get_course?text=${encodeURIComponent(msg.text)}&sessionId=${sessionId}&courseId=${encodeURIComponent(msg.courseId)}`;
-    this.connect(url);
+    const url = `${this.host}/get_course`;
+    const body = {
+      text: msg.text,
+      sessionId: sessionId,
+      courseId: msg.courseId
+    };
+    this.connect(url, body);
   }
 
   disconnect(): void {
-    if (this.eventSource) {
-      this.eventSource.close();
-      this.eventSource = null;
+    if (this.abortController) {
+      this.abortController.abort();
+      this.abortController = null;
       console.warn('SSE connection closed');
     }
   }
