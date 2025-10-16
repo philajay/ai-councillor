@@ -1,7 +1,11 @@
 <div class="chat-window-container">
-  <div class="message-list-container" #messageListContainer>
-    <app-message-list></app-message-list>
-  </div>
+  <mat-tab-group [selectedIndex]="selectedIndex" (selectedIndexChange)="onTabChange($event)">
+    <mat-tab *ngFor="let thread of threads" [label]="thread.name">
+      <div class="message-list-container" #messageListContainer>
+        <app-message-list [messages]="thread.messages"></app-message-list>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
 
   <div class="form-container">
     <app-message-form (messageSent)="onMessageSent()"></app-message-form>

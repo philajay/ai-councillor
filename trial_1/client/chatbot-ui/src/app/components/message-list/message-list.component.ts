@@ -1,12 +1,11 @@
 import {
   Component,
-  OnInit,
+  Input,
   ViewChild,
   ElementRef,
   QueryList,
   ViewChildren,
   ChangeDetectorRef,
-  OnDestroy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Message, MessageService } from '../../services/message.service';
@@ -20,7 +19,6 @@ import { IntersectionObserverDirective } from '../../directives/intersection-obs
 import { StickyHeaderComponent } from '../sticky-header/sticky-header.component';
 import { CourseDetailsComponent } from '../course-details/course-details.component';
 import { MatIconModule } from '@angular/material/icon';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-message-list',
@@ -29,38 +27,18 @@ import { Subscription } from 'rxjs';
   templateUrl: './message-list.component.html',
   styleUrls: ['./message-list.component.css'],
 })
-export class MessageListComponent implements OnInit, OnDestroy {
+export class MessageListComponent {
+  @Input() messages: Message[] = [];
   @ViewChild('scrollMe') private scrollContainer!: ElementRef;
   @ViewChildren('messageEl') private messageElements!: QueryList<ElementRef>;
 
   showStickyHeader = false;
-  private messagesSubscription!: Subscription;
 
   constructor(
-    public messageService: MessageService,
+    private messageService: MessageService,
     private httpService: HttpService,
     private cdr: ChangeDetectorRef
   ) {}
-
-  ngOnInit(): void {
-    this.messagesSubscription = this.messageService.messagesUpdated.subscribe(() => {
-      this.cdr.detectChanges();
-    });
-  }
-
-  ngOnDestroy(): void {
-    if (this.messagesSubscription) {
-      this.messagesSubscription.unsubscribe();
-    }
-  }
-
-  get selectedCourse(): any {
-    return this.messageService.selectedCourse;
-  }
-
-  back(): void {
-    this.messageService.restoreMessages();
-  }
 
   onVisibilityChange(isVisible: boolean): void {
     this.showStickyHeader = !isVisible;
@@ -76,34 +54,30 @@ export class MessageListComponent implements OnInit, OnDestroy {
   onShowCourses(course: string): void {
     const newMessage = `Show me courses in ${course}`;
     this.messageService.addMessage(newMessage, 'user');
-    this.httpService.sendMessage({ text: newMessage });
   }
 
   onShowCareers(course: string): void {
     const newMessage = `What are the career options for ${course}?`;
     this.messageService.addMessage(newMessage, 'user');
-    this.httpService.sendMessage({ text: newMessage });
   }
 
   onShowFees(course: string): void {
     const newMessage = `What are the fees for ${course}?`;
     this.messageService.addMessage(newMessage, 'user');
-    this.httpService.sendMessage({ text: newMessage });
   }
 
   onShowPlacements(course: string): void {
     const newMessage = `What are the placement details for ${course}?`;
     this.messageService.addMessage(newMessage, 'user');
-    this.httpService.sendMessage({ text: newMessage });
   }
 
   onRetry(message: Message): void {
     if (message.originalText) {
-      const errorMsgIndex = this.messageService.messages.findIndex(
+      const errorMsgIndex = this.messages.findIndex(
         (m) => m.isError && m.originalText === message.originalText
       );
       if (errorMsgIndex > -1) {
-        this.messageService.messages.splice(errorMsgIndex, 1);
+        this.messages.splice(errorMsgIndex, 1);
       }
       this.httpService.sendMessage({ text: message.originalText });
     }

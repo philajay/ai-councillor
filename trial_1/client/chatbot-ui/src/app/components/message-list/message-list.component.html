@@ -1,17 +1,9 @@
 <div class="scroll-container" #scrollMe>
-  <div *ngIf="selectedCourse">
-    <div class="sticky-header-details">
-      <button mat-icon-button (click)="back()">
-        <mat-icon>arrow_back</mat-icon>
-      </button>
-      <h3>Course Details</h3>
-    </div>
-    <app-course-details [course]="selectedCourse"></app-course-details>
-  </div>
 
-  <app-sticky-header *ngIf="showStickyHeader && !selectedCourse" (headerClick)="scrollToCourseChips()"></app-sticky-header>
+
+  <app-sticky-header *ngIf="showStickyHeader" (headerClick)="scrollToCourseChips()"></app-sticky-header>
   
-  @for (message of messageService.messages; track message) {
+  @for (message of messages; track message) {
     <div class="message" #messageEl [ngClass]="{
       'user-message': message.sender === 'user',
       'bot-message': message.sender === 'bot',
@@ -31,6 +23,9 @@
       }
       @if (message.isComponent && message.component === 'course-info') {
         <app-course-info [data]="message.componentData"></app-course-info>
+      }
+      @if (message.isComponent && message.component === 'course-details') {
+        <app-course-details [course]="message.componentData"></app-course-details>
       }
       @if (message.isComponent && message.component === 'course-chips') {
         <div appIntersectionObserver (visibilityChange)="onVisibilityChange($event)">

@@ -1,17 +1,15 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, Input, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Observable, Subscription } from 'rxjs';
-import { skip, tap, scan } from 'rxjs/operators';
-import { MatTabsModule, MatTabChangeEvent, MatTabGroup } from '@angular/material/tabs';
+import { Subscription } from 'rxjs';
+import { MatTabsModule, MatTabChangeEvent } from '@angular/material/tabs';
 import { MatBadgeModule } from '@angular/material/badge';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { MessageListComponent } from '../message-list/message-list.component';
 import { MessageFormComponent } from '../message-form/message-form.component';
 import { CourseChipsComponent } from '../course-chips/course-chips.component';
 import { CourseInfoComponent } from '../course-info/course-info.component';
-import { MessageService } from '../../services/message.service';
-import { HttpService } from '../../services/http.service';
+import { MessageService, Thread } from '../../services/message.service';
 
 @Component({
   selector: 'app-chat-window',
@@ -30,45 +28,45 @@ import { HttpService } from '../../services/http.service';
   styleUrls: ['./chat-window.component.css'],
 })
 export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewChecked {
-  @Input() courseLevel!: string;
   @ViewChild('messageListContainer') private messageListContainer!: ElementRef;
 
-  courseInfoData$: Observable<any[] | null>;
-  showCourseInfoBadge = false;
+  threads: Thread[] = [];
   selectedIndex = 0;
-
-  private courseInfoSub!: Subscription;
-  private previousMessageCount = 0;
+  private messagesSub!: Subscription;
+  private previousMessageCounts = new Map<string, number>();
 
   constructor(
     private messageService: MessageService,
-    private httpService: HttpService,
-    private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef
-  ) {
-    this.courseInfoData$ = this.messageService.courseInfo$;
-  }
+  ) {}
 
   ngOnInit(): void {
-    this.previousMessageCount = this.messageService.messages.length;
-    this.courseInfoSub = this.messageService.courseInfo$.pipe(skip(1)).subscribe(data => {
-      if (data && data.length > 0) {
-        this.showCourseInfoBadge = true;
-        this.snackBar.open(`${data.length} courses found. Click on the Course Info tab for details.`, 'Dismiss');
-        this.cdr.markForCheck();
-      }
+    this.threads = this.messageService.getThreads();
+    this.selectedIndex = this.threads.findIndex(t => t.id === this.messageService.activeThread.id);
+    this.threads.forEach(t => this.previousMessageCounts.set(t.id, t.messages.length));
+
+    this.messagesSub = this.messageService.messagesUpdated.subscribe((threadId) => {
+      this.threads = this.messageService.getThreads();
+      this.selectedIndex = this.threads.findIndex(t => t.id === threadId);
+      this.cdr.detectChanges();
     });
   }
 
   ngAfterViewChecked(): void {
-    if (this.messageService.messages.length !== this.previousMessageCount) {
-      this.scrollToBottom();
-      this.previousMessageCount = this.messageService.messages.length;
+    const activeThread = this.messageService.activeThread;
+    if (activeThread) {
+      const currentMessageCount = activeThread.messages.length;
+      const previousMessageCount = this.previousMessageCounts.get(activeThread.id) || 0;
+
+      if (currentMessageCount !== previousMessageCount) {
+        this.scrollToBottom();
+        this.previousMessageCounts.set(activeThread.id, currentMessageCount);
+      }
     }
   }
 
   ngOnDestroy(): void {
-    if (this.courseInfoSub) this.courseInfoSub.unsubscribe();
+    if (this.messagesSub) this.messagesSub.unsubscribe();
   }
 
   scrollToBottom(): void {
@@ -81,13 +79,12 @@ export class ChatWindowComponent implements OnInit, OnDestroy, AfterViewChecked 
     }, 0);
   }
 
-  onTabChange(event: MatTabChangeEvent): void {
-    if (event.index === 1) {
-      this.showCourseInfoBadge = false;
-    }
+  onTabChange(index: number): void {
+    const threadId = this.threads[index].id;
+    this.messageService.setActiveThread(threadId);
   }
 
   onMessageSent(): void {
-    this.selectedIndex = 0;
+    // The message is sent to the active thread, no need to switch tabs here.
   }
 }

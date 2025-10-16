@@ -35,14 +35,18 @@ export class CourseInfoComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['data'] && this.data) {
-      this.courses = Array.isArray(this.data) ? this.data : [this.data];
+      const rawCourses = Array.isArray(this.data) ? this.data : [this.data];
+      // Map the 'Course' property to 'course_name'
+      this.courses = rawCourses.map(course => ({
+        ...course,
+        course_name: course.Course || 'Course Details'
+      }));
       this.groupCoursesByStream();
     }
   }
 
   exploreCourse(course: any): void {
-    this.messageService.backupMessages();
-    this.messageService.setSelectedCourse(course);
+    this.messageService.createCourseThread(course);
   }
 
   private groupCoursesByStream(): void {

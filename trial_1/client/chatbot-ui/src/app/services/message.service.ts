@@ -20,6 +20,13 @@ export interface Message {
   isIntermediateMessage?: boolean;
 }
 
+export interface Thread {
+  id: string;
+  name: string;
+  messages: Message[];
+  selectedCourse?: any;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -30,8 +37,10 @@ export class MessageService {
 2.  Tell me about the Bachelor of Science in Computer Science program?<br>
 3.  Or Just say Hi`;
 
-  messages: Message[] = [{ text: this._message, sender: 'bot' }];
-  messagesUpdated = new Subject<void>();
+  private threads = new Map<string, Thread>();
+  private activeThreadId: string = 'main';
+
+  messagesUpdated = new Subject<string>();
   private isNewMessageStream = true;
 
   private courseInfoSubject = new BehaviorSubject<any[] | null>(null);
@@ -40,47 +49,71 @@ export class MessageService {
   private showSpinnerSubject = new BehaviorSubject<boolean>(false);
   public showSpinner$ = this.showSpinnerSubject.asObservable();
 
-  private backedUpMessages: Message[] = [];
-  public selectedCourse: any | null = null;
-
   constructor(
     private httpService: HttpService
     ) {
+    this.threads.set('main', {
+      id: 'main',
+      name: 'Chat',
+      messages: [{ text: this._message, sender: 'bot' }],
+    });
     this.httpService.messages$.subscribe({
       next: (event) => this.handleServerEvent(event),
       error: (err) => this.handleServerEvent(err)
     });
   }
 
-  setSelectedCourse(course: any) {
-    this.selectedCourse = course;
-    this.messagesUpdated.next();
+  get activeThread(): Thread {
+    return this.threads.get(this.activeThreadId)!;
   }
 
-  backupMessages() {
-    this.backedUpMessages = [...this.messages];
-    this.messages = [];
-    this.messagesUpdated.next();
+  get messages(): Message[] {
+    return this.activeThread.messages;
   }
 
-  restoreMessages() {
-    this.messages = [...this.backedUpMessages];
-    this.backedUpMessages = [];
-    this.selectedCourse = null;
-    this.messagesUpdated.next();
+  getThreads(): Thread[] {
+    return Array.from(this.threads.values());
+  }
+
+  setActiveThread(threadId: string): void {
+    if (this.threads.has(threadId)) {
+      this.activeThreadId = threadId;
+      this.messagesUpdated.next(threadId);
+    }
+  }
+
+  createCourseThread(course: any): string {
+    const threadId = `course_${course.id}`;
+    if (!this.threads.has(threadId)) {
+      const initialMessage: Message = {
+        text: '',
+        sender: 'bot',
+        isComponent: true,
+        component: 'course-details',
+        componentData: course,
+      };
+      this.threads.set(threadId, {
+        id: threadId,
+        name: course.course_name,
+        messages: [initialMessage],
+        selectedCourse: course,
+      });
+    }
+    this.setActiveThread(threadId);
+    return threadId;
   }
 
   addMessage(text: string, sender: 'user' | 'bot', options: { clearChips?: boolean } = {}) {
-    this.messages.push({ text, sender });
+    this.activeThread.messages.push({ text, sender });
     if (sender === 'user') {
       this.isNewMessageStream = true;
-      if (this.selectedCourse) {
-        this.httpService.sendCourseMessage({ text, courseId: this.selectedCourse.id.toString() });
+      if (this.activeThread.selectedCourse) {
+        this.httpService.sendCourseMessage({ text, courseId: this.activeThread.selectedCourse.id.toString() });
       } else {
         this.httpService.sendMessage({ text });
       }
     }
-    this.messagesUpdated.next();
+    this.messagesUpdated.next(this.activeThreadId);
   }
 
   private removeLoadingMessage() {
@@ -126,7 +159,7 @@ export class MessageService {
         retryable: true,
         originalText: lastUserMessage.text,
       });
-      this.messagesUpdated.next();
+      this.messagesUpdated.next(this.activeThreadId);
     }
   }
 
@@ -139,7 +172,7 @@ export class MessageService {
         component: 'course-chips',
         componentData: event.results as string[]
       });
-      this.messagesUpdated.next();
+      this.messagesUpdated.next(this.activeThreadId);
     }
 
     if (event.name === 'find_by_discovery') {
@@ -168,12 +201,12 @@ export class MessageService {
         component: 'course-info',
         componentData: componentData
       });
-      this.messagesUpdated.next();
+      this.messagesUpdated.next(this.activeThreadId);
     }
   }
 
   private handleEndOfTurn(agent:string) {
-    this.messages = this.messages.filter(m => !m.isIntermediateMessage);
+    this.activeThread.messages = this.messages.filter(m => !m.isIntermediateMessage);
     this.isNewMessageStream = true;
     const lastMessage = this.messages[this.messages.length - 1];
 
@@ -209,7 +242,7 @@ export class MessageService {
         }
       }
     }
-    this.messagesUpdated.next();
+    this.messagesUpdated.next(this.activeThreadId);
   }
 
   private addBotMessage(lastMessage:any) {
