@@ -1,45 +1,23 @@
 [
-  {
-    "id": "eligibility_and_discovery_bsc",
-    "description": "Tests a two-step conversation: first providing eligibility, then asking for specific B.Sc courses.",
-    "conversation": [
-      "I have done my 12th with 60% in arts.",
-      "Show me courses in B.Sc"
-    ],
-    "expected_turns": [
-      {
-        "user_input": "I have done my 12th with 60% in arts.",
-        "tool_calls": [
-          {
-            "name": "find_by_eligibility",
-            "parameter_checks": {
-              "qualification": "10+2",
-              "stream": "arts",
-              "percentage": 60
-            },
-            "result_checks": [
-              { "type": "count", "operator": "==", "value": 8 }
-            ]
-          }
-        ]
-      },
-      {
-        "user_input": "Show me courses in B.Sc",
-        "tool_calls": [
-          {
-            "name": "find_by_discovery",
-            "parameter_checks": {
-              "qualification": "10+2",
-              "stream": "arts",
-              "percentage": 60,
-              "course_stream_type": ["B.Sc"]
-            },
-            "result_checks": [
-              { "type": "count", "operator": "<=", "value": 5 }
-            ]
-          }
-        ]
-      }
-    ]
-  }
+    {
+        "query_1": "I have done my 12th with 60% in arts.",
+        "query_2": "Show me courses in B.Sc",
+        "count_1": 8,
+        "count_2": 5,
+        "count_2_operator": "<="
+    },
+    {
+        "query_1": "I have done my 12th with 60% in non medical.",
+        "query_2": "Show me courses in B.Sc",
+        "count_1": 9,
+        "count_2": 8,
+        "count_2_operator": "=="
+    },
+    {
+        "query_1": "I have done my 12th with 60% in medical.",
+        "query_2": "Show me courses in B.Sc",
+        "count_1": 8,
+        "count_2": 10,
+        "count_2_operator": "=="
+    }
 ]
