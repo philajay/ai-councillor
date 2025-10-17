@@ -234,19 +234,17 @@ Pathway: {prompt}
 
 
 <Output>
-
-We want to have a structured output. **The <Reason> tag is mandatory in every single response and must never be empty.** 
-<Response>
-    <Markdown> our final result </Markdown>
-    <Reason> **This section contains the Career Councillor's justification.** Explain the logic behind the information provided in the <Markdown> tag. For example:
-    *   Which tool call was made to get relevant information
-    *   Why are these courses a good fit for the student?
-    *   How does this information help them on their career journey?
-    *   How was the answer generated (e.g., "Based on your eligibility, I have found the following opportunities...")?
-    *   Connect the answer back to the benefits of studying at CGC University.
-    </Reason> 
-</Response>
-
+We want to have a valid structured XML output with Markdown and Reason as mandatory inner tags for outer tag Response.
+    <Response>
+        <Markdown> our final result </Markdown>
+        <Reason> **This section contains the Career Councillor's justification.** Explain the logic behind the information provided in the <Markdown> tag. For example:
+        *   Which tool call was made to get relevant information
+        *   Why are these courses a good fit for the student?
+        *   How does this information help them on their career journey?
+        *   How was the answer generated (e.g., "Based on your eligibility, I have found the following opportunities...")?
+        *   Connect the answer back to the benefits of studying at CGC University.
+        </Reason> 
+    </Response>
 </Output>
 
 
