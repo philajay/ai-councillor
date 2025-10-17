@@ -164,7 +164,7 @@ def find_by_discovery(criteria: dict, tenant_id: str):
         list: A ranked list of the most relevant courses.
     """
     start_time = time.time()
-    print(f"SearchEngine: Starting find_by_discovery...")
+    print(f"SearchEngine: Starting find_by_discovery..........{json.dumps(criteria, indent = 2)}")
 
     tenant_id = 'cgc_university'
     
@@ -324,7 +324,7 @@ def normalize_criteria(llm_output, conn, tenant_id):
 
 def find_by_eligibility(criteria:dict, tenant_id: str) -> list:
     start_time = time.time()
-    print(f"SearchEngine: Starting find_by_eligibility...")
+    print(f"SearchEngine: Starting find_by_eligibility.......  {json.dumps(criteria, indent = 2)}")
     tenant_id = 'cgc_university'
     """
     Args:

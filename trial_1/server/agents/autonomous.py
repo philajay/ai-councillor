@@ -47,21 +47,17 @@ def getEntityExtractory(state):
     y = "undergraduate"
     if course_level == "PG":
         y = "postgraduate"
-    try:
-        gist =  json.loads(remove_json_tags( state.get(GIST_OUTPUT_KEY, "")))
-        gist = gist.get("gist", "")
-    except Exception as e:
-        print(f"Error in parsing gist {e}")
-        gist = ""
+    
     instructions = f'''You are an expert entity extraction assistant. Your task is to analyze a user's query to identify and extract relevant entities. You will be given a set of "previously extracted entities" and a "new user query". Your goal is to return an updated list of all entities, incorporating entities from the new query.
 **Task**
-1) Primary Task: Concatenate the previously extracted queries with extracted entities from current user query.
+1) Primary Task: Concatenate/Replace the previously extracted queries with extracted entities from current user query.
+    - replace only when query explicitly mentions interest in some entity than replace the entity.
+    
 2) Secondary Task: {features}
 
 **Context**
 User is looking for {y} courses. 
 previous extracted entities: {x}
-gist so far: {gist}
 
 
 **Entities to be extracted.**
@@ -98,8 +94,8 @@ gist so far: {gist}
     if stream is medical then assign [ Biology, Physics, Chemistry] to subject
 
 7.  *percentage**
-    Percentage obtained by user.
-
+    Percentage obtained by user. 
+    
     
 Return Example:
 {{
@@ -110,12 +106,9 @@ Return Example:
     "subjects": [list of subjects opted by user]
     "stream": <stream opted by user>
     "agentId": <Hardcoded 2>
-    "reason": <Explain how new entities were extracted and enriched the existing entities>
+    "reason": <Explain how entities were extracted and modified the existing entities>
     "purpose": <Random trivea about university from salient features. Use you imagination to create a hook line>
 }}
-
-
-
 
 '''
     return LlmAgent(
@@ -128,7 +121,7 @@ Return Example:
             )
         ),
         generate_content_config=types.GenerateContentConfig(
-            temperature=1,
+            temperature=0,
             response_mime_type="application/json"
         ),
         instruction=instructions,
@@ -138,9 +131,12 @@ Return Example:
 
 def clean_entities(entities:dict):
     to_delete = ["reason", "purpose"]
-    for s in to_delete:
-        del entities[s]
-    return entities
+    try:
+        for s in to_delete:
+            del entities[s]
+        return entities
+    except:
+        pass
 
 def auto_agent_instruction(context: ReadonlyContext):
     entity = context.state.get(EXTRACTED_ENTITY, {})
@@ -158,7 +154,7 @@ Today is {date.today()}
 <Agent Persona>
 Role: A friendly, knowledgeable, and encouraging course advisor.
 Tone: Professional yet warm, consultative, and aspirational. You are not a hard-seller; they are a career guide.
-Goal: To understand the student's ambitions and show them how a specific course is the perfect vehicle to achieve those ambitions, making the scholarship test a logical and beneficial next step.
+Goal: Answer the question asked by user and provide reasoning behind the answer
 </Agent Persona>
 
 <Scholarship>
@@ -169,6 +165,7 @@ Goal: To understand the student's ambitions and show them how a specific course 
 <Core Principles of the Agent's Dialogue>
 1) Connect Data to Benefits to frame couse as an investment. Be at your creative best to engage student. 
 2) Position the Scholarship Test as an Opportunity: It's not a test; it's a gateway to a more affordable, high-quality education and a chance to prove their potential.
+3) Reason about your ourput
 </Core Principles of the Agent's Dialogue>
 
 
@@ -212,6 +209,7 @@ Pathway: {prompt}
                     query_text (str): The user's natural language query.
                     program_level (str): level for which course is being discovered. Must be either UG or PG
                     course_stream_type (list[str], optional): A list of program types the user is searching for.
+                    qualification (str): for program level x we might have different qualifications so we must pass qualifiation if we have it in extracted_entity. 
                 Optional Keys: 'qualification', 'percentage', 'stream', 'subjects' (list), 'specialization'.
                 extracted_entity and current_query_entity will have required information.
             tenant_id (str): The ID of the client tenant.
@@ -231,27 +229,13 @@ Pathway: {prompt}
 
 
 
-
-<Flow>
-    Step 1. Identify the path way for graduation
-    Step 2. Show the courses based on required pathway
-    Step 3. Guide student to choose correct course.
-    Step 4. Keep on suggesting/asking questions till user has selected a course.
-</Flow>
 <Output>
 
-your output must be in following XML Schema
-
+We want to have a structured output which results 
 <Response>
-    <Markdown>
-        Output for tool find_by_discovery must always be in markdown optimized for best possible ui experience explaining why course from our university would help you get better prepared for job.
-        The output should create a sense of oppurtunity and urgency by talking about the CGCUET. 
-    </Markdown>
-    <Reason>
-        explain the reasoning for usage of the tool use if any
-    </Reason>
+    <Markdown> our final result </Markdown>
+    <Reason> reasoning to explain how result was reached </Reason> 
 </Response>
-
 
 </Output>
 

@@ -159,6 +159,9 @@ async def chat_endpoint(request: ChatRequest):
     agent_session = AgentSession(user_id, request.sessionId, False)
     await agent_session.start(AutoAgent(), initial_state={"course_level": request.courseLevel})
     
+    # Replace '%' with 'percent' in the request text
+    request.text = request.text.replace('%', ' percent')
+    
     return StreamingResponse(event_stream(agent_session, request.text), media_type="text/event-stream")
 
 @router.post("/get_course")
