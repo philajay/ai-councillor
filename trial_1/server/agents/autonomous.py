@@ -1,5 +1,4 @@
 from google.adk.agents import BaseAgent, LlmAgent, InvocationContext
-from google.adk.models.lite_llm import LiteLlm
 from collections.abc import AsyncGenerator
 from typing import override
 from google.adk.events import Event
@@ -75,6 +74,7 @@ previous extracted entities: {x}
     *Examples
         a) User asks for "engineering and management courses". You should extract ["BE/B.Tech", "BBA", "MBA"].
         b) User asks for "science courses". You should extract ["B.Sc", "M.Sc"].
+    
 
 4. **qualification**
     The last qualification user has finished 
@@ -217,7 +217,7 @@ Pathway: {prompt}
                     course_stream_type (list[str], optional): A list of program types the user is searching for.
                     qualification (str): for program level x we might have different qualifications so we must pass qualifiation if we have it in extracted_entity. 
                     percentage (int): User percentage
-                    subjects (list): The subjects which user has opted in the last qualification. This is optional field. 
+                    subjects (list): The subjects which user has opted in the last qualification. Subjects are not always mentioed in the user query so if you find it None or empty list then ignore it.
                 *Pass all the entities found in extracted_entity and current_query_entity to get correct list of courses*
             tenant_id (str): The ID of the client tenant.
         Return Value:
@@ -255,7 +255,13 @@ We want to have a valid structured XML output with Markdown and Reason as mandat
     Application would be mostly used on mobile devices. Your markdown content must be optimized for mobile devices.
 </MostImportant>
 
-
+<Constraints>
+    <Constraint>
+        Your primary instruction for determining course eligibility is as follows: 
+            - Never infer, guess, or assume which courses a user is eligible for. 
+            - You must call the `find_by_eligibility` function to get this information. The data returned by this function is the absolute and final truth.
+    </Constraint>
+</Constraints>
 '''
     return instr
 
@@ -264,7 +270,7 @@ We want to have a valid structured XML output with Markdown and Reason as mandat
 def auto_agent():
     agent = LlmAgent(
             name="auto_agent",
-            model=LiteLlm(model="openai/gpt-5-mini"),
+            model="gemini-2.5-flash",
             instruction=auto_agent_instruction,
             sub_agents=[],
             planner=BuiltInPlanner(

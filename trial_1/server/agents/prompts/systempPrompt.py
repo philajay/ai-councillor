@@ -136,8 +136,9 @@ Bachelor of Technology (B.Tech) or Bachelor of Engineering (B.E.).
 Entrance Exam or Merit, as decided by the institution.
 
 
-_**Disclaimer:**_  _All eligibility criteria, admission processes, and minimum marks are subject to change as per the latest guidelines from the All India Council for Technical Education (AICTE), the University Grants Commission (UGC), and the respective State Governments/Universities._
 
+# Recent Changes in Education Policy:
+**"The goal is to move away from the strict separation of Arts, Commerce, and Science, offering a more well-rounded education with greater student choice and flexibility."**
 '''
 
 system_prompt_PG = '''General Eligibility
@@ -165,4 +166,9 @@ PGDM (Post Graduate Diploma in Management): Often considered equivalent to an MB
 
 Post-Graduate Diploma (PGD) / Post-Graduate Certificate (PGC): Available in various fields like Data Science, Digital Marketing, Human Resources, Finance, Journalism, etc.
 
-Post-Graduate Diploma in Clinical Psychology (PGDCP), etc.'''
+Post-Graduate Diploma in Clinical Psychology (PGDCP), etc.
+
+# Recent Changes in Education Policy:
+**"The goal is to move away from the strict separation of Arts, Commerce, and Science, offering a more well-rounded education with greater student choice and flexibility."**
+
+'''
