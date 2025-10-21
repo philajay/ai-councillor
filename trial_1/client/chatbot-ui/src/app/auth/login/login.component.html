@@ -1,0 +1,11 @@
+<div *ngIf="!verificationSent">
+  <h2>Enter your phone number</h2>
+  <input type="text" [(ngModel)]="phoneNumber" placeholder="Phone Number">
+  <button (click)="sendVerificationCode()">Send Code</button>
+</div>
+
+<div *ngIf="verificationSent">
+  <h2>Enter the verification code</h2>
+  <input type="text" [(ngModel)]="verificationCode" placeholder="5-digit code">
+  <button (click)="verifyCode()">Verify</button>
+</div>

@@ -358,7 +358,7 @@ def find_by_eligibility(criteria:dict, tenant_id: str) -> list:
             where_clauses.append("( (rule ->> 'min_percentage') IS NULL OR (rule ->> 'min_percentage')::int <= %(percentage)s )")
             params['percentage'] = criteria['percentage']
 
-        if 'subjects' in criteria and criteria['subjects']:
+        if 'subjects' in criteria and criteria['subjects'] and len(criteria['subjects']) > 0:
             # Student must have all subjects in 'mandatory'
             where_clauses.append(
                 """( (rule -> 'mandatory') IS NULL OR 

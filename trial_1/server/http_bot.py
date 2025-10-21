@@ -61,12 +61,23 @@ async def event_stream(agent_session: AgentSession, data: str):
     # Wait for the model to be loaded before processing the request.
     await app_state.model_loaded_event.wait()
     
+    candidates_token_count = 0
+    prompt_token_count = 0
     try:
         yield f"data: {json.dumps({'progress_spinner': 'start'})}\n\n"
         await update_session_state(LAST_CLIENT_MESSAGE, data, agent_session.session, agent_session.runner.session_service)
         content = types.Content(role='user', parts=[types.Part(text=data)])
         
+
         async for event in agent_session.runner.run_async(user_id=agent_session.user_id, session_id=agent_session.session.id, new_message=content):
+            
+            try:
+                if event.usage_metadata:
+                    candidates_token_count += event.usage_metadata.candidates_token_count
+                    prompt_token_count += event.usage_metadata.prompt_token_count
+            except:
+                pass
+            
             if event.error_code:
                 yield f"data: {json.dumps({'error': event.error_code})}\n\n"
                 continue
@@ -122,6 +133,7 @@ async def event_stream(agent_session: AgentSession, data: str):
     finally:
         yield f"data: {json.dumps({'progress_spinner': 'end'})}\n\n"
         yield f"data: {json.dumps({'action': 'close'})}\n\n"
+        print(f'Token Count --- > prompt_token_count: {prompt_token_count} and candidates_token_count: {candidates_token_count}')
 
 
 @router.on_event("startup")
@@ -164,6 +176,8 @@ async def chat_endpoint(request: ChatRequest):
     
     return StreamingResponse(event_stream(agent_session, request.text), media_type="text/event-stream")
 
+from route_handlers.verification import send_verification_code, verify_code
+
 @router.post("/get_course")
 async def get_course_endpoint(request: CourseRequest):
     user_id = "John Doe"
@@ -172,4 +186,14 @@ async def get_course_endpoint(request: CourseRequest):
 
     return StreamingResponse(event_stream(agent_session, request.text), media_type="text/event-stream")
 
+@router.get("/send_verification_code/{phone_number}")
+async def send_verification_code_endpoint(phone_number: str):
+    return send_verification_code(phone_number)
 
+class VerifyCodeRequest(BaseModel):
+    phone_number: str
+    code: str
+
+@router.post("/verify_code")
+async def verify_code_endpoint(request: VerifyCodeRequest):
+    return verify_code(request.phone_number, request.code)

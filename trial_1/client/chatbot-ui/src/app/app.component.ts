@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ChatWindowComponent } from './components/chat-window/chat-window.component';
 import { CourseSelectionComponent } from './components/course-selection/course-selection.component';
 import { HttpService } from './services/http.service';
+import { LoginComponent } from './auth/login/login.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, ChatWindowComponent, CourseSelectionComponent],
+  imports: [CommonModule, ChatWindowComponent, CourseSelectionComponent, LoginComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
