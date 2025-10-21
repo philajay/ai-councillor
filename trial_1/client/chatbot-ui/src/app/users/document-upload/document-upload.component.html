@@ -1,0 +1,129 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Upload Documents</mat-card-title>
+    <mat-card-subtitle>Please upload the front and back of your Aadhaar card.</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-list>
+      <mat-list-item *ngFor="let tag of tags">
+        <div class="list-item-container">
+          <span class="tag-label">{{ tag | titlecase }}</span>
+          <div class="file-input-container">
+            <input type="file" #fileInput [attr.id]="'file-input-' + tag" (change)="onFileSelected($event, tag)" style="display: none;">
+            <button mat-stroked-button (click)="fileInput.click()" [disabled]="uploads.get(tag)?.isComplete">
+              <mat-icon>attach_file</mat-icon>
+              Choose File
+            </button>
+            <span *ngIf="uploads.get(tag)?.file as file" class="file-name">{{ file.name }}</span>
+          </div>
+          <div class="upload-actions">
+            <mat-icon *ngIf="uploads.get(tag)?.isComplete" color="primary" class="done-icon">check_circle</mat-icon>
+          </div>
+        </div>
+        <div *ngIf="uploads.has(tag) && !uploads.get(tag)?.isComplete">
+          <mat-progress-bar [value]="uploads.get(tag)?.progress$ | async"></mat-progress-bar>
+        </div>
+      </mat-list-item>
+    </mat-list>
+  </mat-card-content>
+  <mat-card-actions class="card-actions">
+    <button mat-raised-button color="primary" [disabled]="!areAllUploadsComplete || isExtracting" (click)="submitForExtraction()">
+      <span *ngIf="!isExtracting">Submit for Verification</span>
+      <mat-progress-spinner *ngIf="isExtracting" [diameter]="24" mode="indeterminate"></mat-progress-spinner>
+    </button>
+  </mat-card-actions>
+</mat-card>
+
+<!-- Verification Section -->
+<mat-card *ngIf="showConfirmation || missingFields.length > 0" class="verification-card">
+  <mat-card-header>
+    <mat-card-title>Verification Result</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <!-- Show Missing Fields -->
+    <div *ngIf="missingFields.length > 0" class="error-message">
+      <p>The following fields could not be extracted. Please check your documents and try again.</p>
+      <ul>
+        <li *ngFor="let field of missingFields">{{ field }}</li>
+      </ul>
+    </div>
+
+    <!-- Show Extracted Data for Confirmation -->
+    <div *ngIf="showConfirmation && extractedData">
+      <p>Please confirm the following extracted information is correct:</p>
+      <mat-list>
+        <mat-list-item>
+          <span matListItemTitle>Name</span>
+          <span matListItemLine>{{ extractedData.Name }}</span>
+        </mat-list-item>
+        <mat-list-item>
+          <span matListItemTitle>Date of Birth</span>
+          <span matListItemLine>{{ extractedData.DOB }}</span>
+        </mat-list-item>
+        <mat-list-item>
+          <span matListItemTitle>Sex</span>
+          <span matListItemLine>{{ extractedData.SEX }}</span>
+        </mat-list-item>
+        <mat-list-item>
+          <span matListItemTitle>Address</span>
+          <span matListItemLine>{{ extractedData.Address }}</span>
+        </mat-list-item>
+        <mat-list-item>
+          <span matListItemTitle>Zipcode</span>
+          <span matListItemLine>{{ extractedData.Zipcode }}</span>
+        </mat-list-item>
+        <mat-list-item>
+          <span matListItemTitle>State</span>
+          <span matListItemLine>{{ extractedData.State }}</span>
+        </mat-list-item>
+      </mat-list>
+    </div>
+  </mat-card-content>
+  <mat-card-actions *ngIf="showConfirmation" class="card-actions">
+    <button mat-stroked-button (click)="editData()">Edit</button>
+    <button mat-raised-button color="primary" (click)="confirmData()">Confirm & Schedule Exam</button>
+  </mat-card-actions>
+</mat-card>
+
+<!-- Scheduler Section -->
+<mat-card *ngIf="showScheduler && !isRegistrationComplete" class="scheduler-card">
+  <mat-card-header>
+    <mat-card-title>Schedule Your Entrance Exam</mat-card-title>
+    <mat-card-subtitle>Choose a convenient date and time</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content class="scheduler-content">
+    <mat-form-field appearance="fill">
+      <mat-label>Choose a date</mat-label>
+      <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate">
+      <mat-hint>MM/DD/YYYY</mat-hint>
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Choose a time</mat-label>
+      <mat-select [(ngModel)]="selectedTime">
+        <mat-option *ngFor="let time of availableTimes" [value]="time">
+          {{ time }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </mat-card-content>
+  <mat-card-actions class="card-actions">
+    <button mat-raised-button color="primary" [disabled]="!selectedDate || !selectedTime || isScheduling" (click)="scheduleExam()">
+      <span *ngIf="!isScheduling">Schedule Exam</span>
+      <mat-progress-spinner *ngIf="isScheduling" [diameter]="24" mode="indeterminate"></mat-progress-spinner>
+    </button>
+  </mat-card-actions>
+</mat-card>
+
+<!-- Completion Section -->
+<mat-card *ngIf="isRegistrationComplete" class="completion-card">
+  <mat-card-header>
+    <mat-card-title>Registration Complete!</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <p>Thank you for registering. Your entrance exam has been booked successfully.</p>
+    <p>You will receive a confirmation message shortly with all the details.</p>
+  </mat-card-content>
+</mat-card>

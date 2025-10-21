@@ -1,0 +1,72 @@
+mat-card {
+  max-width: 600px;
+  margin: 2rem auto;
+}
+
+.list-item-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 0;
+  box-sizing: border-box;
+}
+
+.tag-label {
+  font-weight: 500;
+  flex: 1;
+}
+
+.file-input-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 2;
+}
+
+.file-name {
+  font-style: italic;
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
+
+.upload-actions {
+  flex: 1;
+  text-align: right;
+}
+
+.done-icon {
+  color: green;
+  font-size: 28px;
+}
+
+mat-progress-bar {
+  margin-top: 8px;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px;
+  gap: 8px;
+}
+
+.verification-card {
+  margin-top: 2rem;
+}
+
+.error-message {
+  background-color: #fff5f5;
+  color: #c53030;
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid #c53030;
+}
+
+.error-message ul {
+  margin: 0.5rem 0 0 1rem;
+  padding: 0;
+}

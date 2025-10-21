@@ -179,3 +179,4 @@ zipp==3.23.0
 python-dotenv
 google-cloud-firestore
 firebase-admin
+litellm==1.78.5

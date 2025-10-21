@@ -1,4 +1,5 @@
 from google.adk.agents import BaseAgent, LlmAgent, InvocationContext
+from google.adk.models.lite_llm import LiteLlm
 from collections.abc import AsyncGenerator
 from typing import override
 from google.adk.events import Event
@@ -263,7 +264,7 @@ We want to have a valid structured XML output with Markdown and Reason as mandat
 def auto_agent():
     agent = LlmAgent(
             name="auto_agent",
-            model="gemini-2.5-flash",
+            model=LiteLlm(model="openai/gpt-5-mini"),
             instruction=auto_agent_instruction,
             sub_agents=[],
             planner=BuiltInPlanner(
