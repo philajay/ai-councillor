@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Auth, signInWithCustomToken } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +16,7 @@ export class LoginComponent {
   verificationCode: string = '';
   verificationSent: boolean = false;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private auth: Auth) { }
 
   sendVerificationCode() {
     this.http.get(`http://localhost:8080/send_verification_code/${this.phoneNumber}`).subscribe(() => {
@@ -24,9 +25,20 @@ export class LoginComponent {
   }
 
   verifyCode() {
-    this.http.post('http://localhost:8080/verify_code', { phone_number: this.phoneNumber, code: this.verificationCode }).subscribe(response => {
-      console.log(response);
-      // Handle successful verification
+    this.http.post<{token: string}>('http://localhost:8080/verify_code', { phone_number: this.phoneNumber, code: this.verificationCode }).subscribe(response => {
+      if (response.token) {
+        signInWithCustomToken(this.auth, response.token)
+          .then((userCredential) => {
+            // Signed in
+            const user = userCredential.user;
+            console.log('User signed in:', user);
+          })
+          .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.error('Sign in error:', errorCode, errorMessage);
+          });
+      }
     });
   }
 }

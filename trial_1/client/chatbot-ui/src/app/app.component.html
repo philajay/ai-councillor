@@ -1,3 +1,6 @@
-<!-- <app-course-selection *ngIf="!courseLevel" (courseLevelSelected)="onCourseLevelSelected($event)"></app-course-selection>
-<app-chat-window *ngIf="courseLevel"></app-chat-window> -->
-<app-login></app-login>
+<app-login *ngIf="!user"></app-login>
+
+<div *ngIf="user">
+  <app-course-selection *ngIf="!courseLevel" (courseLevelSelected)="onCourseLevelSelected($event)"></app-course-selection>
+  <app-chat-window *ngIf="courseLevel"></app-chat-window>
+</div>

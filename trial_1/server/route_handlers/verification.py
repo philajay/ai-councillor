@@ -27,9 +27,22 @@ def send_verification_code(phone_number: str):
     else:
         return {"error": "Failed to send verification code."}
 
+import firebase_admin
+from firebase_admin import credentials, auth
+
+# Initialize Firebase Admin SDK
+# Note: Replace 'path/to/your/serviceAccountKey.json' with the actual path to your service account key.
+# It's recommended to use environment variables for the key's path in a production environment.
+try:
+    firebase_admin.initialize_app()
+except Exception as e:
+    print(f"Firebase Admin SDK initialization failed: {e}")
+
+
 def verify_code(phone_number: str, code: str):
     """
     Verifies the provided verification code against the one stored in Firestore.
+    If successful, it generates a Firebase custom token.
     """
     doc_ref = db.collection("sms_verification").document(phone_number)
     doc = doc_ref.get()
@@ -49,4 +62,9 @@ def verify_code(phone_number: str, code: str):
     if time_difference.total_seconds() > 180:
         return {"error": "Verification code has expired."}
 
-    return {"message": "Verification successful."}
+    try:
+        custom_token = auth.create_custom_token(phone_number)
+        return {"token": custom_token.decode('utf-8')}
+    except Exception as e:
+        return {"error": f"Failed to create custom token: {e}"}
+

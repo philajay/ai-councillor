@@ -32,7 +32,8 @@ class VerificationTestCase(unittest.TestCase):
         self.assertEqual(response.json(), {"error": "Failed to send verification code."})
 
     @patch("route_handlers.verification.db.collection")
-    def test_verify_code_success(self, mock_collection):
+    @patch("route_handlers.verification.auth.create_custom_token")
+    def test_verify_code_success(self, mock_create_custom_token, mock_collection):
         mock_doc = MagicMock()
         mock_doc.exists = True
         mock_doc.to_dict.return_value = {
@@ -40,10 +41,11 @@ class VerificationTestCase(unittest.TestCase):
             "timestamp": datetime.datetime.now(datetime.timezone.utc)
         }
         mock_collection.return_value.document.return_value.get.return_value = mock_doc
+        mock_create_custom_token.return_value = b"test_token"
 
         response = self.client.post("/verify_code", json={"phone_number": "1234567890", "code": "12345"})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json(), {"message": "Verification successful."})
+        self.assertEqual(response.json(), {"token": "test_token"})
 
     @patch("route_handlers.verification.db.collection")
     def test_verify_code_phone_not_found(self, mock_collection):

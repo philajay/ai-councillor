@@ -178,3 +178,4 @@ youtube-transcript-api==1.0.3
 zipp==3.23.0
 python-dotenv
 google-cloud-firestore
+firebase-admin

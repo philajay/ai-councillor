@@ -4,6 +4,8 @@ import { ChatWindowComponent } from './components/chat-window/chat-window.compon
 import { CourseSelectionComponent } from './components/course-selection/course-selection.component';
 import { HttpService } from './services/http.service';
 import { LoginComponent } from './auth/login/login.component';
+import { Auth, onAuthStateChanged } from '@angular/fire/auth';
+import { User } from 'firebase/auth';
 
 @Component({
   selector: 'app-root',
@@ -14,8 +16,13 @@ import { LoginComponent } from './auth/login/login.component';
 })
 export class AppComponent {
   courseLevel: string | null = null;
+  user: User | null = null;
 
-  constructor(private httpService: HttpService) {}
+  constructor(private httpService: HttpService, private auth: Auth) {
+    onAuthStateChanged(this.auth, (user) => {
+      this.user = user;
+    });
+  }
 
   onCourseLevelSelected(level: string) {
     this.courseLevel = level;
