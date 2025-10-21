@@ -1,11 +1,31 @@
-<div *ngIf="!verificationSent">
-  <h2>Enter your phone number</h2>
-  <input type="text" [(ngModel)]="phoneNumber" placeholder="Phone Number">
-  <button (click)="sendVerificationCode()">Send Code</button>
-</div>
-
-<div *ngIf="verificationSent">
-  <h2>Enter the verification code</h2>
-  <input type="text" [(ngModel)]="verificationCode" placeholder="5-digit code">
-  <button (click)="verifyCode()">Verify</button>
+<div class="login-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{ verificationSent ? 'Enter Verification Code' : 'Login' }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div *ngIf="!verificationSent">
+        <mat-form-field appearance="fill">
+          <mat-label>Phone Number</mat-label>
+          <input matInput [(ngModel)]="phoneNumber" placeholder="Enter your phone number" required>
+        </mat-form-field>
+      </div>
+      <div *ngIf="verificationSent">
+        <mat-form-field appearance="fill">
+          <mat-label>Verification Code</mat-label>
+          <input matInput [(ngModel)]="verificationCode" placeholder="Enter the 5-digit code" required>
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button *ngIf="!verificationSent" mat-raised-button color="primary" (click)="sendVerificationCode()" [disabled]="loading">
+        <span *ngIf="!loading">Send Code</span>
+        <mat-spinner *ngIf="loading" [diameter]="24"></mat-spinner>
+      </button>
+      <button *ngIf="verificationSent" mat-raised-button color="primary" (click)="verifyCode()" [disabled]="loading">
+        <span *ngIf="!loading">Verify</span>
+        <mat-spinner *ngIf="loading" [diameter]="24"></mat-spinner>
+      </button>
+    </mat-card-actions>
+  </mat-card>
 </div>
