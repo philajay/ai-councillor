@@ -3,10 +3,12 @@ import { LoginComponent } from './auth/login/login.component';
 import { LogoutComponent } from './auth/logout/logout.component';
 import { MainComponent } from './main/main.component';
 import { authGuard } from './auth/auth.guard';
+import { DocumentUploadComponent } from './users/document-upload/document-upload.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'logout', component: LogoutComponent },
   { path: 'main', component: MainComponent, canActivate: [authGuard] },
+  { path: 'upload-documents', component: DocumentUploadComponent, canActivate: [authGuard] },
   { path: '', redirectTo: '/main', pathMatch: 'full' },
 ];

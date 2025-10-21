@@ -197,3 +197,13 @@ class VerifyCodeRequest(BaseModel):
 @router.post("/verify_code")
 async def verify_code_endpoint(request: VerifyCodeRequest):
     return verify_code(request.phone_number, request.code)
+
+from route_handlers.data_extraction import extract_data_from_urls
+from typing import List, Dict
+
+class DataExtractionRequest(BaseModel):
+    urls_and_tags: List[Dict[str, str]]
+
+@router.post("/extract-data")
+async def extract_data_endpoint(request: DataExtractionRequest):
+    return extract_data_from_urls(request.urls_and_tags)
