@@ -44,7 +44,8 @@ export class CourseDetailsComponent implements OnInit {
       { text: 'Register Now', type: 'navigate', payload: {
           route: '/upload-documents',
           tags: ['aadhaar-front', 'aadhaar-back'],
-          courseId: this.course.id
+          courseId: this.course.id,
+          courseName: this.course.name
         }
       }
     ];
@@ -61,7 +62,12 @@ export class CourseDetailsComponent implements OnInit {
         console.log('Opening tab with payload:', chip.payload);
         break;
       case 'navigate':
-        this.router.navigate([chip.payload.route], { state: { tags: chip.payload.tags, courseId: chip.payload.courseId } });
+        this.router.navigate([chip.payload.route], { state: { 
+            tags: chip.payload.tags, 
+            courseId: chip.payload.courseId,
+            courseName: chip.payload.courseName
+          } 
+        });
         break;
       default:
         console.error('Unknown chip action type:', chip.type);

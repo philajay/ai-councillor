@@ -54,6 +54,7 @@ interface Upload {
 export class DocumentUploadComponent {
   tags: string[] = [];
   courseId: string | null = null;
+  courseName: string | null = null;
   uploads = new Map<string, Upload>();
 
   // State for data extraction
@@ -79,10 +80,11 @@ export class DocumentUploadComponent {
   ) {
     this.generateTimeSlots();
     const navigation = this.router.getCurrentNavigation();
-    const state = navigation?.extras.state as { tags: string[], courseId: string };
+    const state = navigation?.extras.state as { tags: string[], courseId: string, courseName: string };
     if (state?.tags && state?.courseId) {
       this.tags = state.tags;
       this.courseId = state.courseId;
+      this.courseName = state.courseName;
     } else {
       console.error('Required data (tags or courseId) not provided for document upload.');
     }
@@ -187,9 +189,8 @@ export class DocumentUploadComponent {
   }
 
   async scheduleExam(): Promise<void> {
-    const userPhone = this.auth.currentUser?.uid;
-    if (!this.selectedDate || !this.selectedTime || !userPhone) {
-      console.error('Cannot schedule exam, missing date, time, or user phone number.');
+    if (!this.selectedDate || !this.selectedTime || !this.auth.currentUser?.uid) {
+      console.error('Cannot schedule exam, missing date, time, or user UID.');
       return;
     }
     this.isScheduling = true;
@@ -201,13 +202,31 @@ export class DocumentUploadComponent {
     const userExamData = {
       ...this.extractedData,
       courseId: this.courseId,
+      courseName: this.courseName,
       examDateTime: examDateTime.toISOString()
     };
 
     try {
-      const docRef = doc(this.firestore, 'user-exam', userPhone);
+      const userUid = this.auth.currentUser.uid;
+      const docRef = doc(this.firestore, 'user-exam', userUid);
       await setDoc(docRef, userExamData);
       console.log('Exam scheduled successfully!');
+
+      // Send WhatsApp confirmation message
+      const messagePayload = {
+        phonenumber: userUid,
+        name: this.extractedData.Name,
+        date: this.selectedDate.toLocaleDateString(),
+        time: this.selectedTime,
+        course_name: this.courseName
+      };
+
+      this.http.post('http://localhost:8080/send_template_whatsapp_message', messagePayload)
+        .subscribe({
+          next: () => console.log('WhatsApp confirmation sent successfully.'),
+          error: (err) => console.error('Failed to send WhatsApp confirmation:', err)
+        });
+
       this.isRegistrationComplete = true;
       this.showScheduler = false;
     } catch (error) {

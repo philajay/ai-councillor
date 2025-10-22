@@ -208,3 +208,6 @@ class DataExtractionRequest(BaseModel):
 @router.post("/extract-data")
 async def extract_data_endpoint(request: DataExtractionRequest):
     return extract_data_from_urls(request.urls_and_tags)
+
+from route_handlers.whatsapp_message import router as whatsapp_router
+router.include_router(whatsapp_router)
