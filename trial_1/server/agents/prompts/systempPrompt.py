@@ -169,6 +169,8 @@ Post-Graduate Diploma (PGD) / Post-Graduate Certificate (PGC): Available in vari
 Post-Graduate Diploma in Clinical Psychology (PGDCP), etc.
 
 # Recent Changes in Education Policy:
-**"The goal is to move away from the strict separation of Arts, Commerce, and Science, offering a more well-rounded education with greater student choice and flexibility."**
+**"The goal is to move away from the strict separation of Arts, Commerce, and Science, offering a more well-rounded education with greater student choice and flexibility."
+Primary implication of this is that the students from arts, commerce background can take admission in B.Sc courses. Courses would provided introduction to science subjects if required. 
+**
 
 '''

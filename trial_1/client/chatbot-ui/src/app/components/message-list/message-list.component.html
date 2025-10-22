@@ -20,7 +20,7 @@
           }
         </div>
       } @else {
-        <markdown [data]="message.text"></markdown>
+        <markdown [data]="cleanMarkdown(message.text)"></markdown>
       }
       @if (message.isComponent && message.component === 'course-info') {
         <app-course-info [data]="message.componentData"></app-course-info>

@@ -217,7 +217,7 @@ Pathway: {prompt}
                     course_stream_type (list[str], optional): A list of program types the user is searching for.
                     qualification (str): for program level x we might have different qualifications so we must pass qualifiation if we have it in extracted_entity. 
                     percentage (int): User percentage
-                    subjects (list): The subjects which user has opted in the last qualification. Subjects are not always mentioed in the user query so if you find it None or empty list then ignore it.
+                    subjects (list): OPTIONAL FIELD. Do not ask user for clarification if it is null or empty list
                 *Pass all the entities found in extracted_entity and current_query_entity to get correct list of courses*
             tenant_id (str): The ID of the client tenant.
         Return Value:
@@ -247,6 +247,7 @@ We want to have a valid structured XML output with Markdown and Reason as mandat
         *   How was the answer generated (e.g., "Based on your eligibility, I have found the following opportunities...")?
         *   Connect the answer back to the benefits of studying at CGC University.
         </Reason> 
+        <Confidence> Rate your confidence in the answer's accuracy on a scale of 1-10 and mention the single biggest caveat or simplification you made. </Confidence>
     </Response>
 </Output>
 
@@ -259,7 +260,7 @@ We want to have a valid structured XML output with Markdown and Reason as mandat
     <Constraint>
         Your primary instruction for determining course eligibility is as follows: 
             - Never infer, guess, or assume which courses a user is eligible for. 
-            - You must call the `find_by_eligibility` function to get this information. The data returned by this function is the absolute and final truth.
+            - The data returned by find_by_eligibility is the absolute and final truth.
     </Constraint>
 </Constraints>
 '''

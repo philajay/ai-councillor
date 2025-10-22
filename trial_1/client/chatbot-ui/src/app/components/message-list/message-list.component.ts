@@ -85,4 +85,12 @@ export class MessageListComponent {
   loadCGC(){
     window.open('https://cgcuet.cgcuniversity.in/', '_blank')
   }
+
+  cleanMarkdown(text: string): string {
+    if (!text) {
+      return '';
+    }
+    // This regex splits by both '\\n' and '\n'
+    return text.split(/\\n|\n/).map(line => line.trim()).join('\n');
+  }
 }
