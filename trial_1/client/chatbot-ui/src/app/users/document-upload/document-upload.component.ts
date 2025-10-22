@@ -1,3 +1,5 @@
+import { environment } from '../../../environments/environment';
+
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Auth } from '@angular/fire/auth';
@@ -70,6 +72,7 @@ export class DocumentUploadComponent {
   selectedTime: string | null = null;
   availableTimes: string[] = [];
   isRegistrationComplete = false;
+  private apiUrl = environment.apiUrl;
 
   constructor(
     private auth: Auth,
@@ -161,7 +164,7 @@ export class DocumentUploadComponent {
       tag: tag
     }));
 
-    this.http.post<any>('http://localhost:8080/extract-data', { "urls_and_tags": payload })
+    this.http.post<any>(`${this.apiUrl}/extract-data`, { "urls_and_tags": payload })
       .pipe(finalize(() => this.isExtracting = false))
       .subscribe(response => {
         const requiredFields = ["Name", "DOB", "SEX", "Address", "Zipcode", "State"];
@@ -221,7 +224,7 @@ export class DocumentUploadComponent {
         course_name: this.courseName
       };
 
-      this.http.post('http://localhost:8080/send_template_whatsapp_message', messagePayload)
+      this.http.post(`${this.apiUrl}/send_template_whatsapp_message`, messagePayload)
         .subscribe({
           next: () => console.log('WhatsApp confirmation sent successfully.'),
           error: (err) => console.error('Failed to send WhatsApp confirmation:', err)

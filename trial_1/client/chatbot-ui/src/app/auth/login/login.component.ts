@@ -10,6 +10,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
+import { environment } from '../../../environments/environment';
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -30,12 +32,13 @@ export class LoginComponent {
   verificationCode: string = '';
   verificationSent: boolean = false;
   loading: boolean = false;
+  private apiUrl = environment.apiUrl
 
   constructor(private http: HttpClient, private auth: Auth, private router: Router) { }
 
   sendVerificationCode() {
     this.loading = true;
-    this.http.get(`http://localhost:8080/send_verification_code/${this.phoneNumber}`).subscribe(() => {
+    this.http.get(`${this.apiUrl}/send_verification_code/${this.phoneNumber}`).subscribe(() => {
       this.verificationSent = true;
       this.loading = false;
     });
@@ -43,7 +46,7 @@ export class LoginComponent {
 
   verifyCode() {
     this.loading = true;
-    this.http.post<{token: string}>('http://localhost:8080/verify_code', { phone_number: this.phoneNumber, code: this.verificationCode }).subscribe(response => {
+    this.http.post<{token: string}>(`${this.apiUrl}/verify_code`, { phone_number: this.phoneNumber, code: this.verificationCode }).subscribe(response => {
       if (response.token) {
         signInWithCustomToken(this.auth, response.token)
           .then((userCredential) => {

@@ -3,7 +3,7 @@ import json
 from typing import Optional, Dict
 from google.adk.tools import ToolContext
 from google.adk.tools.base_tool import BaseTool
-
+APP_NAME = "http_bot"
 
 
 def remove_json_tags(llm_output_str: str) -> str:

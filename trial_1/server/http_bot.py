@@ -1,19 +1,28 @@
-import re
+import re, os
 from fastapi import APIRouter, Request
 from fastapi.responses import StreamingResponse
 import json
 from google.genai import types
 import asyncio
-from common.common import update_session_state, LAST_CLIENT_MESSAGE, LAST_DB_RESULTS
+from common.common import update_session_state, LAST_CLIENT_MESSAGE, LAST_DB_RESULTS, APP_NAME
 from google.genai.types import Part
 from pydantic import BaseModel
 from google.adk.sessions import InMemorySessionService, DatabaseSessionService
+from urllib.parse import quote
+
+DB_NAME = os.getenv("DB_NAME", "councillor-assistant")
+DB_USER = os.getenv("DB_USER", "postgres")
+DB_PASS = os.getenv("DB_PASS", "1234")
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_PORT = os.getenv("DB_PORT", "5432")
+
+DB_PASS = quote(DB_PASS)
 
 #session_service = DatabaseSessionService(db_url='postgresql+psycopg2://postgres:1234@localhost/councillor-assistant')
-#session_service = DatabaseSessionService(db_url='postgresql+psycopg2://postgres:Supabase%40123@db.tenztfzbcvypmjhsrfpo.supabase.co/postgres')
-session_service = InMemorySessionService()
+session_service = DatabaseSessionService(db_url=f'postgresql+psycopg2://postgres:{DB_PASS}@{DB_HOST}/{DB_USER}')
+#session_service = InMemorySessionService()
 
-APP_NAME = "http_bot"
+
 
 router = APIRouter()
 
@@ -211,3 +220,6 @@ async def extract_data_endpoint(request: DataExtractionRequest):
 
 from route_handlers.whatsapp_message import router as whatsapp_router
 router.include_router(whatsapp_router)
+
+from route_handlers.whatsapp_webhook import router as whatsapp_webhook_router
+router.include_router(whatsapp_webhook_router)
