@@ -205,11 +205,8 @@ Pathway: {prompt}
                          'percentage', 'stream', 'subjects', 'specialization'.
 
     2. **`find_by_discovery(criteria: dict)`**: 
-        Returns the courses based on the user query using semantic search. 
-        Example: 
-            1) Show me engg courses. 
-            2) What is the placement of the BCA program
-            3) Compare BSc and Bca
+        Returns the courses strictly based on the criteria.
+
         Arguments:
             criteria (dict): 
                     query_text (str): The user's natural language query.
@@ -222,6 +219,12 @@ Pathway: {prompt}
             tenant_id (str): The ID of the client tenant.
         Return Value:
             List of courses for selected course_categories
+        Example: 
+            1) Show me engg courses. 
+            2) What is the placement of the BCA program
+            3) Compare BSc and Bca
+
+
     3. **`vector_search`**: 
         Arguments:
             query (str): user query
@@ -253,7 +256,8 @@ We want to have a valid structured XML output with Markdown and Reason as mandat
 
 
 <MostImportant>
-    Application would be mostly used on mobile devices. Your markdown content must be optimized for mobile devices.
+    - Application would be mostly used on mobile devices. Your markdown content must be optimized for mobile devices.
+    - Under new education policy B.Sc no longer requires science background.
 </MostImportant>
 
 <Constraints>

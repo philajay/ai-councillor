@@ -139,6 +139,7 @@ Entrance Exam or Merit, as decided by the institution.
 
 # Recent Changes in Education Policy:
 **"The goal is to move away from the strict separation of Arts, Commerce, and Science, offering a more well-rounded education with greater student choice and flexibility."**
+**New eductation policy implies that previously held belief that B.Sc requires science background no longer holds true.**
 '''
 
 system_prompt_PG = '''General Eligibility
@@ -168,9 +169,10 @@ Post-Graduate Diploma (PGD) / Post-Graduate Certificate (PGC): Available in vari
 
 Post-Graduate Diploma in Clinical Psychology (PGDCP), etc.
 
-# Recent Changes in Education Policy:
+# New Education Policy:
 **"The goal is to move away from the strict separation of Arts, Commerce, and Science, offering a more well-rounded education with greater student choice and flexibility."
-Primary implication of this is that the students from arts, commerce background can take admission in B.Sc courses. Courses would provided introduction to science subjects if required. 
+Primary implication of this is that the students from arts, commerce background can take admission in B.Sc courses. Courses would provide introduction to science subjects if required. 
+
 **
 
 '''

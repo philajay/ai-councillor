@@ -1,5 +1,5 @@
 export const environment = {
-    apiUrl: 'https://ai-assistant-bot-183228620742.us-central1.run.app',
+    apiUrl: 'http://localhost:8080',
     firebase : {
         apiKey: "AIzaSyBpaEX3XgroBk8X0XTJkZ1yyJId3jmBUOU",
         authDomain: "councillorautomation.firebaseapp.com",
