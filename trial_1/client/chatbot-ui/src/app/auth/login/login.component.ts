@@ -53,6 +53,19 @@ export class LoginComponent {
             // Signed in
             const user = userCredential.user;
             console.log('User signed in:', user);
+
+            // Send welcome message
+            const messagePayload = {
+              phone_number: user.uid,
+              template_name: "welcome",
+              params: {}
+            };
+            this.http.post(`${this.apiUrl}/send_template_whatsapp_message`, messagePayload)
+              .subscribe({
+                next: () => console.log('Welcome message sent successfully.'),
+                error: (err) => console.error('Failed to send welcome message:', err)
+              });
+
             this.router.navigate(['/main']);
           })
           .catch((error) => {

@@ -217,11 +217,14 @@ export class DocumentUploadComponent {
 
       // Send WhatsApp confirmation message
       const messagePayload = {
-        phonenumber: userUid,
-        name: this.extractedData.Name,
-        date: this.selectedDate.toLocaleDateString(),
-        time: this.selectedTime,
-        course_name: this.courseName
+        phone_number: userUid,
+        template_name: "cgc_university",
+        params: {
+          "1": this.extractedData.Name,
+          "2": this.selectedDate.toLocaleDateString(),
+          "3": this.selectedTime,
+          "4": this.courseName
+        }
       };
 
       this.http.post(`${this.apiUrl}/send_template_whatsapp_message`, messagePayload)
