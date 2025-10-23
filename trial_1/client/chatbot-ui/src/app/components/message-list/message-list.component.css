@@ -33,7 +33,8 @@
 }
 
 
-.course-details-message{
+.course-details-message,
+.gallery-message {
   max-width: none;
   padding: 0;
   background-color: transparent;

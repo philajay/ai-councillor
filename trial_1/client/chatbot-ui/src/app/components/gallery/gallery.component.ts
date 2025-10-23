@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,7 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './gallery.component.html',
   styleUrl: './gallery.component.css'
 })
-export class GalleryComponent {
+export class GalleryComponent implements OnInit, OnDestroy {
   @Input() data: any;
 
   images = [
@@ -20,6 +20,19 @@ export class GalleryComponent {
     'https://www.cgcuniversity.in/public/course/assets/images/support/art_master.webp'
   ];
   currentIndex = 0;
+  private intervalId: any;
+
+  ngOnInit(): void {
+    this.intervalId = setInterval(() => {
+      this.next();
+    }, 1000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+  }
 
   previous(): void {
     this.currentIndex = (this.currentIndex > 0) ? this.currentIndex - 1 : this.images.length - 1;
