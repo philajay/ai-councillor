@@ -30,6 +30,22 @@ mat-tab-group {
   overflow-y: hidden;
 }
 
+:host ::ng-deep .mat-mdc-tab-group {
+  --mdc-tab-indicator-active-indicator-color: #fff;
+  --mat-tab-header-active-label-text-color: #fff;
+  --mat-tab-header-inactive-label-text-color: #e0e0e0;
+}
+
+:host ::ng-deep .mat-mdc-tab {
+  background-color: #6CA2EA; /* A slightly lighter blue for inactive tabs */
+  border-radius: 8px 8px 0 0;
+  margin-right: 4px;
+}
+
+:host ::ng-deep .mat-mdc-tab.mat-mdc-tab-active {
+  background-color: #4A90E2; /* A darker blue for the active tab */
+}
+
 .message-list-container {
   height: 100%;
   overflow-y: auto;
