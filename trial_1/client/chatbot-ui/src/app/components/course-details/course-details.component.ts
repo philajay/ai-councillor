@@ -36,8 +36,8 @@ export class CourseDetailsComponent implements OnInit {
 
     // Initialize action chips, potentially based on course data in the future
     this.actionChips = [
-      { text: 'Explore University', type: 'open_tab', payload: { tab: 'university', id: this.course.universityId || 'U123' } },
-      { text: 'View Hostel Options', type: 'open_tab', payload: { tab: 'hostels', id: this.course.universityId || 'U123' } },
+      { text: 'Explore University', type: 'open_tab', payload: { tab: 'university', id: "university" } },
+      { text: 'View Hostel Options', type: 'open_tab', payload: { tab: 'hostels', id: 'hostels' } },
       { text: 'Tell me about the faculty', type: 'message', payload: `Tell me about the faculty for ${this.course.name}` },
       { text: 'Scholarship', type: 'message', payload: `Are there any scholarships available for ${this.course.name}?` },
       { text: 'Loan Facilities', type: 'message', payload: `Are there any loan facilities available for ${this.course.name}?` },
@@ -57,16 +57,22 @@ export class CourseDetailsComponent implements OnInit {
         this.messageService.addMessage(chip.payload, 'user');
         break;
       case 'open_tab':
-        // For now, we'll just log this. This would eventually call a service
-        // to open a new tab in the UI.
-        console.log('Opening tab with payload:', chip.payload);
+        switch (chip.payload.tab) {
+          case 'university':
+          case 'hostels':
+            this.messageService.createGalleryThread(chip.payload.id, chip.text);
+            break;
+          default:
+            console.log('Opening tab with payload:', chip.payload);
+            break;
+        }
         break;
       case 'navigate':
-        this.router.navigate([chip.payload.route], { state: { 
-            tags: chip.payload.tags, 
+        this.router.navigate([chip.payload.route], { state: {
+            tags: chip.payload.tags,
             courseId: chip.payload.courseId,
             courseName: chip.payload.courseName
-          } 
+          }
         });
         break;
       default:

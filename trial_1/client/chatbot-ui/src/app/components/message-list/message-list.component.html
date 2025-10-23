@@ -28,6 +28,9 @@
       @if (message.isComponent && message.component === 'course-details') {
         <app-course-details [course]="message.componentData"></app-course-details>
       }
+      @if (message.isComponent && message.component === 'gallery') {
+        <app-gallery [data]="message.componentData"></app-gallery>
+      }
       @if (message.isComponent && message.component === 'course-chips') {
         <div appIntersectionObserver (visibilityChange)="onVisibilityChange($event)">
           <app-course-chips [courses]="message.componentData" (showCourses)="onShowCourses($event)" (showCareers)="onShowCareers($event)" (showFees)="onShowFees($event)" (showPlacements)="onShowPlacements($event)"></app-course-chips>

@@ -103,6 +103,26 @@ export class MessageService {
     return threadId;
   }
 
+  createGalleryThread(galleryId: string, name: string): string {
+    const threadId = `gallery_${galleryId}`;
+    if (!this.threads.has(threadId)) {
+      const initialMessage: Message = {
+        text: '',
+        sender: 'bot',
+        isComponent: true,
+        component: 'gallery',
+        componentData: { galleryId: galleryId },
+      };
+      this.threads.set(threadId, {
+        id: threadId,
+        name: name,
+        messages: [initialMessage],
+      });
+    }
+    this.setActiveThread(threadId);
+    return threadId;
+  }
+
   addMessage(text: string, sender: 'user' | 'bot', options: { clearChips?: boolean } = {}) {
     this.activeThread.messages.push({ text, sender });
     if (sender === 'user') {

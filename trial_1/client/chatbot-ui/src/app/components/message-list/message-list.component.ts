@@ -19,11 +19,12 @@ import { IntersectionObserverDirective } from '../../directives/intersection-obs
 import { StickyHeaderComponent } from '../sticky-header/sticky-header.component';
 import { CourseDetailsComponent } from '../course-details/course-details.component';
 import { MatIconModule } from '@angular/material/icon';
+import { GalleryComponent } from '../gallery/gallery.component';
 
 @Component({
   selector: 'app-message-list',
   standalone: true,
-  imports: [CommonModule, MarkdownComponent, CourseInfoComponent, CourseChipsComponent, MatProgressSpinnerModule, MatButtonModule, IntersectionObserverDirective, StickyHeaderComponent, CourseDetailsComponent, MatIconModule],
+  imports: [CommonModule, MarkdownComponent, CourseInfoComponent, CourseChipsComponent, MatProgressSpinnerModule, MatButtonModule, IntersectionObserverDirective, StickyHeaderComponent, CourseDetailsComponent, MatIconModule, GalleryComponent],
   templateUrl: './message-list.component.html',
   styleUrls: ['./message-list.component.css'],
 })
