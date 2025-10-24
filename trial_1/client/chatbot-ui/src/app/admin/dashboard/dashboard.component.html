@@ -1,0 +1,84 @@
+<div class="dashboard-container">
+  <h1>Admin Dashboard</h1>
+
+  <div class="cards-container">
+    <!-- User Chat Sessions -->
+    <mat-card class="dashboard-card card-sessions">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>people</mat-icon>
+        <mat-card-title>User Chat Sessions</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-item">
+          <span class="stat-label">Total Sessions</span>
+          <span class="stat-value">{{ totalUserSessions }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Avg. Time Spent</span>
+          <span class="stat-value">{{ avgTimeSpent }} min</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Avg. Interactions</span>
+          <span class="stat-value">{{ avgInteractions }}</span>
+        </div>
+        <div class="status-section">
+          <h4>Status</h4>
+          <div class="status-item">
+            <span>Hot</span>
+            <mat-progress-bar mode="determinate" [value]="(hotStatus / (hotStatus + coldStatus)) * 100"></mat-progress-bar>
+            <span>{{ hotStatus }}</span>
+          </div>
+          <div class="status-item">
+            <span>Cold</span>
+            <mat-progress-bar mode="determinate" [value]="(coldStatus / (hotStatus + coldStatus)) * 100"></mat-progress-bar>
+            <span>{{ coldStatus }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Query Categorization -->
+    <mat-card class="dashboard-card card-queries">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>question_answer</mat-icon>
+        <mat-card-title>Query Categorization</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-item">
+          <span class="stat-label">General</span>
+          <span class="stat-value">{{ generalQueries }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Admission</span>
+          <span class="stat-value">{{ admissionQueries }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Hostel/Facilities</span>
+          <span class="stat-value">{{ hostelQueries }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Scholarship/Aid</span>
+          <span class="stat-value">{{ scholarshipQueries }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Conversions -->
+    <mat-card class="dashboard-card card-conversions">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>trending_up</mat-icon>
+        <mat-card-title>Conversions</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="stat-item">
+          <span class="stat-label">Inquiries</span>
+          <span class="stat-value">{{ inquiries }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Enrollments</span>
+          <span class="stat-value">{{ enrollments }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

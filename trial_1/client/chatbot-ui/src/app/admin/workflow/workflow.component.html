@@ -1,0 +1,90 @@
+<div class="workflow-container" #workflowContainer>
+  <h1>Chatbot Interaction Workflow</h1>
+
+  <!-- SVG Layer for Connectors -->
+  <svg class="connector-svg">
+    <line *ngFor="let line of lines"
+          [attr.x1]="line.x1" [attr.y1]="line.y1"
+          [attr.x2]="line.x2" [attr.y2]="line.y2"
+          class="connector-line" />
+  </svg>
+
+  <div class="workflow-layout">
+    <!-- Main Vertical Path -->
+    <div class="workflow-path vertical main-path">
+      <div class="workflow-step">
+        <mat-card class="workflow-card user-card" id="step1">
+          <mat-icon>record_voice_over</mat-icon>
+          <div class="step-details">
+            <h3>User Query</h3>
+            <p>User asks a question via chat.</p>
+          </div>
+        </mat-card>
+      </div>
+      <div class="workflow-step">
+        <mat-card class="workflow-card bot-card" id="step2">
+          <mat-icon>psychology</mat-icon>
+          <div class="step-details">
+            <h3>Intent Analysis</h3>
+            <p>Bot uses NLP to determine user's intent and urgency.</p>
+          </div>
+        </mat-card>
+      </div>
+      <div class="workflow-step">
+        <mat-card class="workflow-card decision-card" id="step3">
+          <mat-icon>alt_route</mat-icon>
+          <div class="step-details">
+            <h3>Decision Point</h3>
+            <p>Route the query based on intent.</p>
+          </div>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Branching Paths Container -->
+    <div class="workflow-branches-container">
+      <div class="workflow-path vertical">
+        <div class="path-title">High Urgency Intent</div>
+        <div class="workflow-step">
+          <mat-card class="workflow-card action-card" id="step4a">
+            <mat-icon>message</mat-icon>
+            <div class="step-details">
+              <h3>Trigger WhatsApp</h3>
+              <p>Send instant notification to admissions counselor.</p>
+            </div>
+          </mat-card>
+        </div>
+        <div class="workflow-step">
+          <mat-card class="workflow-card action-card" id="step5a">
+            <mat-icon>add_ic_call</mat-icon>
+            <div class="step-details">
+              <h3>Initiate Audio Call</h3>
+              <p>Schedule or connect user with a live agent.</p>
+            </div>
+          </mat-card>
+        </div>
+      </div>
+      <div class="workflow-path vertical">
+        <div class="path-title">Low Urgency Intent</div>
+        <div class="workflow-step">
+          <mat-card class="workflow-card bot-card" id="step4b">
+            <mat-icon>article</mat-icon>
+            <div class="step-details">
+              <h3>Provide Standard Answer</h3>
+              <p>Bot gives a direct, pre-defined response.</p>
+            </div>
+          </mat-card>
+        </div>
+        <div class="workflow-step">
+          <mat-card class="workflow-card log-card" id="step5b">
+            <mat-icon>analytics</mat-icon>
+            <div class="step-details">
+              <h3>Log for Follow-up</h3>
+              <p>Query is logged for analytics and future improvements.</p>
+            </div>
+          </mat-card>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
