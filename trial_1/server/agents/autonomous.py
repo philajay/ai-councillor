@@ -219,6 +219,8 @@ Pathway: {prompt}
             tenant_id (str): The ID of the client tenant.
         Return Value:
             List of courses for selected course_categories
+        
+        
         Example: 
             1) Show me engg courses. 
             2) What is the placement of the BCA program
@@ -250,7 +252,6 @@ We want to have a valid structured XML output with Markdown and Reason as mandat
         *   How was the answer generated (e.g., "Based on your eligibility, I have found the following opportunities...")?
         *   Connect the answer back to the benefits of studying at CGC University.
         </Reason> 
-        <Confidence> Rate your confidence in the answer's accuracy on a scale of 1-10 and mention the single biggest caveat or simplification you made. </Confidence>
     </Response>
 </Output>
 

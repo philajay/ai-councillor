@@ -139,7 +139,7 @@ Entrance Exam or Merit, as decided by the institution.
 
 # Recent Changes in Education Policy:
 **"The goal is to move away from the strict separation of Arts, Commerce, and Science, offering a more well-rounded education with greater student choice and flexibility."**
-**New eductation policy implies that previously held belief that B.Sc requires science background no longer holds true.**
+**New eductation policy implies that previously held belief that B.Sc requires science background no longer holds true. **
 '''
 
 system_prompt_PG = '''General Eligibility

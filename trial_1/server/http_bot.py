@@ -125,8 +125,7 @@ async def event_stream(agent_session: AgentSession, data: str):
                         try:
                             markdown = re.search(r'<Markdown>(.*?)</Markdown>', final_response_text, re.DOTALL).group(1).strip()
                             reason = re.search(r'<Reason>(.*?)</Reason>', final_response_text, re.DOTALL).group(1).strip()
-                            confidence = re.search(r'<Confidence>(.*?)</Confidence>', final_response_text, re.DOTALL).group(1).strip()
-                            js = {"markdown": markdown, "reason": reason, "confidence": confidence}
+                            js = {"markdown": markdown, "reason": reason}
                             message = {"text": json.dumps(js), "agent": event.author}
                         except Exception as ex:
                             print(ex)
