@@ -3,7 +3,7 @@
         "query_1": "I have done my 12th with 60% in arts.",
         "query_2": "Show me courses in B.Sc",
         "count_1": 8,
-        "count_2": 5,
+        "count_2": 3,
         "count_2_operator": "<="
     },
     {

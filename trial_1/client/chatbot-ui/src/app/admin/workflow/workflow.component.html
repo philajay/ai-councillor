@@ -1,5 +1,5 @@
 <div class="workflow-container" #workflowContainer>
-  <h1>Chatbot Interaction Workflow</h1>
+  <h1>LLM Pre-Sales Agent Workflow</h1>
 
   <!-- SVG Layer for Connectors -->
   <svg class="connector-svg">
@@ -9,81 +9,88 @@
           class="connector-line" />
   </svg>
 
-  <div class="workflow-layout">
-    <!-- Main Vertical Path -->
-    <div class="workflow-path vertical main-path">
+  <!-- Main Vertical Path -->
+  <div class="workflow-path vertical">
+    <div class="workflow-step">
+      <mat-card class="workflow-card user-card" id="step1">
+        <mat-icon>question_answer</mat-icon>
+        <div class="step-details">
+          <h3>User Asks Course Question</h3>
+          <p>"What are the fees for the CS program?"</p>
+        </div>
+      </mat-card>
+    </div>
+    <div class="workflow-step">
+      <mat-card class="workflow-card llm-card" id="step2">
+        <mat-icon>model_training</mat-icon>
+        <div class="step-details">
+          <h3>LLM Comprehension</h3>
+          <p>Analyzes intent, sentiment, and extracts entities.</p>
+        </div>
+      </mat-card>
+    </div>
+    <div class="workflow-step">
+      <mat-card class="workflow-card knowledge-card" id="step3">
+        <mat-icon>dataset</mat-icon>
+        <div class="step-details">
+          <h3>Dynamic Knowledge Retrieval</h3>
+          <p>Queries vector database for up-to-date course info.</p>
+        </div>
+      </mat-card>
+    </div>
+    <div class="workflow-step">
+      <mat-card class="workflow-card decision-card" id="step4">
+        <mat-icon>filter_alt</mat-icon>
+        <div class="step-details">
+          <h3>Lead Qualification</h3>
+          <p>Is the user a "Hot Lead" or "Nurturing Lead"?</p>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Branching Paths Container -->
+  <div class="workflow-branch-container">
+    <div class="workflow-path vertical">
+      <div class="path-title">Hot Lead</div>
       <div class="workflow-step">
-        <mat-card class="workflow-card user-card" id="step1">
-          <mat-icon>record_voice_over</mat-icon>
+        <mat-card class="workflow-card action-card" id="step5a">
+          <mat-icon>ring_volume</mat-icon>
           <div class="step-details">
-            <h3>User Query</h3>
-            <p>User asks a question via chat.</p>
+            <h3>Proactive Engagement</h3>
+            <p>Asks for contact details to connect with a counselor.</p>
           </div>
         </mat-card>
       </div>
       <div class="workflow-step">
-        <mat-card class="workflow-card bot-card" id="step2">
-          <mat-icon>psychology</mat-icon>
+        <mat-card class="workflow-card crm-card" id="step6a">
+          <mat-icon>forward_to_inbox</mat-icon>
           <div class="step-details">
-            <h3>Intent Analysis</h3>
-            <p>Bot uses NLP to determine user's intent and urgency.</p>
-          </div>
-        </mat-card>
-      </div>
-      <div class="workflow-step">
-        <mat-card class="workflow-card decision-card" id="step3">
-          <mat-icon>alt_route</mat-icon>
-          <div class="step-details">
-            <h3>Decision Point</h3>
-            <p>Route the query based on intent.</p>
+            <h3>Trigger CRM & Notify Agent</h3>
+            <p>Creates lead and sends WhatsApp alert to sales team.</p>
           </div>
         </mat-card>
       </div>
     </div>
-
-    <!-- Branching Paths Container -->
-    <div class="workflow-branches-container">
-      <div class="workflow-path vertical">
-        <div class="path-title">High Urgency Intent</div>
-        <div class="workflow-step">
-          <mat-card class="workflow-card action-card" id="step4a">
-            <mat-icon>message</mat-icon>
-            <div class="step-details">
-              <h3>Trigger WhatsApp</h3>
-              <p>Send instant notification to admissions counselor.</p>
-            </div>
-          </mat-card>
-        </div>
-        <div class="workflow-step">
-          <mat-card class="workflow-card action-card" id="step5a">
-            <mat-icon>add_ic_call</mat-icon>
-            <div class="step-details">
-              <h3>Initiate Audio Call</h3>
-              <p>Schedule or connect user with a live agent.</p>
-            </div>
-          </mat-card>
-        </div>
+    <div class="workflow-path vertical">
+      <div class="path-title">Nurturing Lead</div>
+      <div class="workflow-step">
+        <mat-card class="workflow-card bot-card" id="step5b">
+          <mat-icon>article</mat-icon>
+          <div class="step-details">
+            <h3>Provide Info & Resources</h3>
+            <p>Gives detailed answer and links to brochures/tours.</p>
+          </div>
+        </mat-card>
       </div>
-      <div class="workflow-path vertical">
-        <div class="path-title">Low Urgency Intent</div>
-        <div class="workflow-step">
-          <mat-card class="workflow-card bot-card" id="step4b">
-            <mat-icon>article</mat-icon>
-            <div class="step-details">
-              <h3>Provide Standard Answer</h3>
-              <p>Bot gives a direct, pre-defined response.</p>
-            </div>
-          </mat-card>
-        </div>
-        <div class="workflow-step">
-          <mat-card class="workflow-card log-card" id="step5b">
-            <mat-icon>analytics</mat-icon>
-            <div class="step-details">
-              <h3>Log for Follow-up</h3>
-              <p>Query is logged for analytics and future improvements.</p>
-            </div>
-          </mat-card>
-        </div>
+      <div class="workflow-step">
+        <mat-card class="workflow-card log-card" id="step6b">
+          <mat-icon>campaign</mat-icon>
+          <div class="step-details">
+            <h3>Log for Marketing Automation</h3>
+            <p>Adds user to an email nurturing sequence.</p>
+          </div>
+        </mat-card>
       </div>
     </div>
   </div>

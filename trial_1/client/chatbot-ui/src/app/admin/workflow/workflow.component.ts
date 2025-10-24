@@ -26,7 +26,6 @@ export class WorkflowComponent implements AfterViewInit {
   lines: Line[] = [];
 
   ngAfterViewInit(): void {
-    // Use requestAnimationFrame to ensure the view is fully rendered before calculating positions
     requestAnimationFrame(() => this.drawConnectors());
   }
 
@@ -60,49 +59,56 @@ export class WorkflowComponent implements AfterViewInit {
     // Main vertical path
     this.connect(getCoords, 'step1', 'step2', 'vertical');
     this.connect(getCoords, 'step2', 'step3', 'vertical');
+    this.connect(getCoords, 'step3', 'step4', 'vertical');
 
     // Branching logic
-    const decisionCoords = getCoords('step3');
-    const branchACoords = getCoords('step4a');
-    const branchBCoords = getCoords('step4b');
+    const decisionCoords = getCoords('step4');
+    const branchACoords = getCoords('step5a');
+    const branchBCoords = getCoords('step5b');
 
     if (decisionCoords && branchACoords && branchBCoords) {
-      const midX = decisionCoords.right + 40;
+      const midY = decisionCoords.bottom + 40;
 
-      // 1. Horizontal line from decision right to the vertical line
+      // 1. Vertical line from decision down to the horizontal line level
       this.lines.push({
-        x1: decisionCoords.right, y1: decisionCoords.centerY,
-        x2: midX, y2: decisionCoords.centerY,
+        x1: decisionCoords.centerX, y1: decisionCoords.bottom,
+        x2: decisionCoords.centerX, y2: midY,
       });
 
-      // 2. Vertical line connecting the two branches
+      // 2. Horizontal line from center to branch A
       this.lines.push({
-        x1: midX, y1: branchACoords.centerY,
-        x2: midX, y2: branchBCoords.centerY,
+        x1: decisionCoords.centerX, y1: midY,
+        x2: branchACoords.centerX, y2: midY,
       });
 
-      // 3. Horizontal line from vertical line to branch A
+      // 3. Horizontal line from center to branch B
       this.lines.push({
-        x1: midX, y1: branchACoords.centerY,
-        x2: branchACoords.left, y2: branchACoords.centerY,
+        x1: decisionCoords.centerX, y1: midY,
+        x2: branchBCoords.centerX, y2: midY,
       });
 
-      // 4. Horizontal line from vertical line to branch B
+      // 4. Vertical line from horizontal line down to branch A
       this.lines.push({
-        x1: midX, y1: branchBCoords.centerY,
-        x2: branchBCoords.left, y2: branchBCoords.centerY,
+        x1: branchACoords.centerX, y1: midY,
+        x2: branchACoords.centerX, y2: branchACoords.top,
+      });
+
+      // 5. Vertical line from horizontal line down to branch B
+      this.lines.push({
+        x1: branchBCoords.centerX, y1: midY,
+        x2: branchBCoords.centerX, y2: branchBCoords.top,
       });
     }
 
     // Vertical paths within branches
-    this.connect(getCoords, 'step4a', 'step5a', 'vertical');
-    this.connect(getCoords, 'step4b', 'step5b', 'vertical');
+    this.connect(getCoords, 'step5a', 'step6a', 'vertical');
+    this.connect(getCoords, 'step5b', 'step6b', 'vertical');
   }
 
   private connect(getCoords: (id: string) => any, startId: string, endId: string, type: 'horizontal' | 'vertical'): void {
     const start = getCoords(startId);
     const end = getCoords(endId);
-    if (this.lines && start && end) {
+    if (start && end) {
         if (type === 'horizontal') {
             this.lines.push({ x1: start.right, y1: start.centerY, x2: end.left, y2: end.centerY });
         } else { // vertical
