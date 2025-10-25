@@ -20,11 +20,12 @@ import { StickyHeaderComponent } from '../sticky-header/sticky-header.component'
 import { CourseDetailsComponent } from '../course-details/course-details.component';
 import { MatIconModule } from '@angular/material/icon';
 import { GalleryComponent } from '../gallery/gallery.component';
+import { SuggestionChipsComponent } from '../suggestion-chips/suggestion-chips.component';
 
 @Component({
   selector: 'app-message-list',
   standalone: true,
-  imports: [CommonModule, MarkdownComponent, CourseInfoComponent, CourseChipsComponent, MatProgressSpinnerModule, MatButtonModule, IntersectionObserverDirective, StickyHeaderComponent, CourseDetailsComponent, MatIconModule, GalleryComponent],
+  imports: [CommonModule, MarkdownComponent, CourseInfoComponent, CourseChipsComponent, MatProgressSpinnerModule, MatButtonModule, IntersectionObserverDirective, StickyHeaderComponent, CourseDetailsComponent, MatIconModule, GalleryComponent, SuggestionChipsComponent],
   templateUrl: './message-list.component.html',
   styleUrls: ['./message-list.component.css'],
 })
@@ -70,6 +71,10 @@ export class MessageListComponent {
   onShowPlacements(course: string): void {
     const newMessage = `What are the placement details for ${course}?`;
     this.messageService.addMessage(newMessage, 'user');
+  }
+
+  onQuestionSelected(question: string): void {
+    this.messageService.addMessage(question, 'user');
   }
 
   onRetry(message: Message): void {

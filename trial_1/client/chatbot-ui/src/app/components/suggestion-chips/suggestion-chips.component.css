@@ -1,0 +1,17 @@
+.suggestion-container {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.suggestion-card {
+  flex: 1;
+  min-width: 250px;
+}
+
+mat-chip-listbox {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}

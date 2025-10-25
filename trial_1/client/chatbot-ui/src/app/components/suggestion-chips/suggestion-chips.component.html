@@ -1,0 +1,15 @@
+<div class="suggestion-container">
+  <mat-card *ngFor="let category of suggestions" class="suggestion-card">
+    <mat-card-header>
+      <mat-icon mat-card-avatar>{{category.icon}}</mat-icon>
+      <mat-card-title>{{ category.title }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-chip-listbox aria-label="Question selection">
+        <mat-chip-option *ngFor="let question of category.questions" (click)="onQuestionClick(question)">
+          {{ question }}
+        </mat-chip-option>
+      </mat-chip-listbox>
+    </mat-card-content>
+  </mat-card>
+</div>

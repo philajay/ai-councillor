@@ -1,5 +1,5 @@
 <div class="scroll-container" #scrollMe>
-
+  <app-suggestion-chips (questionSelected)="onQuestionSelected($event)"></app-suggestion-chips>
 
   <app-sticky-header *ngIf="showStickyHeader" (headerClick)="scrollToCourseChips()"></app-sticky-header>
   

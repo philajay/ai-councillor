@@ -55,7 +55,7 @@ export class MessageService {
     this.threads.set('explore', {
       id: 'explore',
       name: 'Chat',
-      messages: [{ text: this._message, sender: 'bot' }],
+      messages: [],
     });
     this.httpService.messages$.subscribe({
       next: (event) => this.handleServerEvent(event),
