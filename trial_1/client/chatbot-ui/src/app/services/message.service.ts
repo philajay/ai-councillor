@@ -55,7 +55,14 @@ export class MessageService {
     this.threads.set('explore', {
       id: 'explore',
       name: 'Chat',
-      messages: [],
+      messages: [
+        {
+          text: '',
+          sender: 'bot',
+          isComponent: true,
+          component: 'suggestion-chips',
+        },
+      ],
     });
     this.httpService.messages$.subscribe({
       next: (event) => this.handleServerEvent(event),

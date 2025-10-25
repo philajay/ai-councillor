@@ -1,6 +1,4 @@
 <div class="scroll-container" #scrollMe>
-  <app-suggestion-chips (questionSelected)="onQuestionSelected($event)"></app-suggestion-chips>
-
   <app-sticky-header *ngIf="showStickyHeader" (headerClick)="scrollToCourseChips()"></app-sticky-header>
   
   @for (message of messages; track message) {
@@ -11,7 +9,8 @@
       'course-chips-message': message.component === 'course-chips',
       'course-info-message': message.component === 'course-info',
       'course-details-message': message.component === 'course-details',
-      'gallery-message': message.component === 'gallery'
+      'gallery-message': message.component === 'gallery',
+      'suggestion-chips-message': message.component === 'suggestion-chips'
     }">
       @if (message.isJson) {
         <div class="json-container">
@@ -36,6 +35,9 @@
         <div appIntersectionObserver (visibilityChange)="onVisibilityChange($event)">
           <app-course-chips [courses]="message.componentData" (showCourses)="onShowCourses($event)" (showCareers)="onShowCareers($event)" (showFees)="onShowFees($event)" (showPlacements)="onShowPlacements($event)"></app-course-chips>
         </div>
+      }
+      @if (message.isComponent && message.component === 'suggestion-chips') {
+        <app-suggestion-chips (questionSelected)="onQuestionSelected($event)"></app-suggestion-chips>
       }
       @if (message.isError) {
         <div class="error-container">

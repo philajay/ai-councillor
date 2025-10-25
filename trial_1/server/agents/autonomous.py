@@ -205,7 +205,7 @@ Pathway: {prompt}
                          'percentage', 'stream', 'subjects', 'specialization'.
 
     2. **`find_by_discovery(criteria: dict)`**: 
-        Returns the courses strictly based on the criteria.
+        Returns the courses strictly based on the criteria. Call this function eagerly to show choice to user as soon as possible.
 
         Arguments:
             criteria (dict): 

@@ -34,7 +34,8 @@
 
 
 .course-details-message,
-.gallery-message {
+.gallery-message,
+.suggestion-chips-message {
   max-width: none;
   padding: 0;
   background-color: transparent;
