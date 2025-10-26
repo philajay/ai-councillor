@@ -23,7 +23,7 @@ session_service = DatabaseSessionService(db_url=f'postgresql+psycopg2://postgres
 from google.adk.planners import BuiltInPlanner
 from google.genai import types
 
-async def send_user_response(phone_number, txt):
+async def send_user_response(phone_number, txt, instruction = 'Answer the question of the user based on chat history.'):
     
     print(f"Args are {phone_number} and {txt}")
     
@@ -39,14 +39,11 @@ async def send_user_response(phone_number, txt):
     session_id = data["session"]
     final_response_content = ''
 
-    instructions  = '''
-Answer the question of the user based on chat history.
-'''
 
     agent = LlmAgent(
             name="watsapp_agent",
             model="gemini-2.5-flash",
-            instruction=instructions,
+            instruction=instruction,
             planner=BuiltInPlanner(
                 thinking_config=types.ThinkingConfig(
                     include_thoughts=False,
@@ -204,7 +201,7 @@ async def receive_message(request: Request):
                 text_body = message_object["text"]["body"]
                 print(f"received message {from_number} and message is '{text_body}'")
                 try:
-                    await send_user_response(from_number, text_body)
+                    await send_user_response(from_number, text_body, "Answer the question of the user based on chat history.")
                 except Exception as ex:
                     import traceback
                     traceback.print_exception(ex)
@@ -217,5 +214,44 @@ async def receive_message(request: Request):
     except Exception as e:
         print(f"Error processing webhook: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
+
+import google.genai as genai
+
+@router.get("/categorize_lead/{phone_number}")
+async def categorize_lead(phone_number: str):
+    """
+    Analyzes a conversation and categorizes the user as a 'hot' or 'cold' lead.
+    """
+    try:
+        
+
+        # 4. Create the prompt and call the LLM
+        prompt = f"""
+Phone Number: {phone_number}
+You are an expert sales analyst for a university. Your task is to analyze a conversation between a prospective student (User) and a university assistant (Assistant) to determine if the student is a 'hot lead' or a 'cold lead'.
+
+- **Hot Lead**: A user showing strong buying signals. They ask specific questions about admission deadlines, fee structures, application processes, specific course details, or express a clear intent to apply.
+- **Cold Lead**: A user who is just browsing. They ask very general questions, are unresponsive, or show little engagement or interest in taking the next steps.
+
+
+Based on the analysis, classify the user. 
+1. "classification": Either "hot" or "cold".
+2. Phone Number: The phone number of the user.
+3. Course of Interest: The course the user is interested.
+4. "reason": A brief, one-sentence explanation for your classification.
+"""
+        await send_user_response(phone_number, "Categorize the conversation", instruction=prompt)
+
+         # Acknowledge the request
+        return Response(status_code=200)
+
+    except HTTPException as he:
+        # Re-raise HTTP exceptions directly
+        raise he
+    except Exception as e:
+        print(f"Error during lead categorization: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"An internal error occurred: {e}")
 
 

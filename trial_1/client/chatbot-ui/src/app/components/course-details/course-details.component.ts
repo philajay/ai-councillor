@@ -7,6 +7,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MarkdownComponent } from 'ngx-markdown';
 import { Router } from '@angular/router';
 import { MessageService } from '../../services/message.service';
+import { HttpService } from '../../services/http.service';
 
 @Component({
   selector: 'app-course-details',
@@ -28,7 +29,7 @@ export class CourseDetailsComponent implements OnInit {
   // A more generic structure for action chips
   actionChips: { text: string, type: 'message' | 'open_tab' | 'navigate', payload: any }[] = [];
 
-  constructor(private messageService: MessageService, private router: Router) {}
+  constructor(private messageService: MessageService, private router: Router, private httpService: HttpService) {}
 
   ngOnInit(): void {
     // const initialMessage = `Why should I choose the ${this.course.name} course from your university?`;
@@ -53,6 +54,10 @@ export class CourseDetailsComponent implements OnInit {
     switch (chip.type) {
       case 'message':
         this.messageService.addMessage(chip.payload, 'user');
+        if( chip.text == "Loan Facilities" ){
+          //make get call to categorize_lead/{phone_number} which is the uid of logged in user
+          this.httpService.categorizeLead();
+        }
         break;
       case 'open_tab':
         switch (chip.payload.tab) {

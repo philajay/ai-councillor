@@ -166,4 +166,17 @@ export class HttpService {
       console.warn('SSE connection closed');
     }
   }
+
+  categorizeLead(): void {
+    const user = this.auth.currentUser;
+    if (user) {
+      const url = `https://ai-assistant-bot-183228620742.us-central1.run.app/categorize_lead/${user.uid}`;
+      this.http.get(url).subscribe({
+        next: (res) => console.log('categorize_lead response:', res),
+        error: (err) => console.error('categorize_lead error:', err)
+      });
+    } else {
+      console.error('User not authenticated. Cannot categorize lead.');
+    }
+  }
 }

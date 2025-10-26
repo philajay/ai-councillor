@@ -267,6 +267,9 @@ We want to have a valid structured XML output with Markdown and Reason as mandat
             - Never infer, guess, or assume which courses a user is eligible for. 
             - The data returned by find_by_eligibility is the absolute and final truth.
     </Constraint>
+    <Constraint>
+        Courses recommended must strictly be based on the tools used and their results.
+    </Constraint>
 </Constraints>
 '''
     return instr
