@@ -23,12 +23,14 @@ session_service = DatabaseSessionService(db_url=f'postgresql+psycopg2://postgres
 from google.adk.planners import BuiltInPlanner
 from google.genai import types
 
-async def send_user_response(phone_number, txt, instruction = 'Answer the question of the user based on chat history.'):
-    
+
+
+
+async def get_llm_response(phone_number, txt, instruction = 'Answer the question of the user based on chat history.'):
     print(f"Args are {phone_number} and {txt}")
     
     doc_phone_number = phone_number
-    if len(phone_number) == 12:
+    if len(phone_number) > 10:
         doc_phone_number = phone_number[-10:]
         
     from google.cloud import firestore
@@ -106,12 +108,17 @@ async def send_user_response(phone_number, txt, instruction = 'Answer the questi
         print(f"--- ERROR DURING LLM AGENT EXECUTION ---")
         print(f"An exception occurred: {ex}")
         import traceback   
-        traceback.print_exc()      
-        
+        traceback.print_exc()   
+    return final_response_content
+
+
+
+async def send_user_response(phone_number, txt, instruction = 'Answer the question of the user based on chat history.'):
+    
+    final_response_content = await get_llm_response(phone_number, txt, instruction)
     # --- DIAGNOSTIC LOGGING ---
     print(f"Final response from LLM Agent for {phone_number}: '{final_response_content}'")
     # --------------------------
-
     await send_template_whatsapp_message(phone_number, final_response_content)
 
 
@@ -215,7 +222,34 @@ async def receive_message(request: Request):
         print(f"Error processing webhook: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
-import google.genai as genai
+
+
+@router.post("/summarize_session")
+async def categorize_lead(request: Request):
+    """
+    Analyzes a conversation and categorizes the user as a 'hot' or 'cold' lead.
+    """
+    try:
+        data = await request.json()
+        phone_number = data.get("phone_number")
+        user_question = data.get("user_question")
+        prompt = data.get("prompt", "")
+
+        res = await get_llm_response(phone_number, user_question, instruction=prompt)
+
+        # Send the response back
+        return {"response": res, "status": "success"}
+
+    except HTTPException as he:
+        # Re-raise HTTP exceptions directly
+        raise he
+    except Exception as e:
+        print(f"Error during lead categorization: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"An internal error occurred: {e}")
+
+
 
 @router.get("/categorize_lead/{phone_number}")
 async def categorize_lead(phone_number: str):
