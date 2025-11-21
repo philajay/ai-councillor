@@ -13,6 +13,7 @@ from common.common import APP_NAME
 
 load_dotenv()
 
+
 DB_NAME = os.getenv("DB_NAME", "councillor-assistant")
 DB_USER = os.getenv("DB_USER", "postgres")
 DB_PASS = os.getenv("DB_PASS", "1234")

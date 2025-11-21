@@ -143,3 +143,4 @@ cython_debug/
 
 
 trial_1/security/
+trial_1/server/models/
